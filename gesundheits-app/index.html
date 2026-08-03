@@ -6,60 +6,60 @@
 <title>VITARA – Gesundheits-App Konzept</title>
 <style>
   :root {
-    /* Neutrals with a cool pine bias */
-    --bg: #eef2f0;
-    --stage: #e2e8e5;
+    /* Warm neutrals · coral + periwinkle */
+    --bg: #f6f4f2;
+    --stage: #ece7e3;
     --surface: #ffffff;
-    --surface-2: #f4f7f5;
-    --ink: #10231d;
-    --ink-2: #486159;
-    --ink-3: #7d938b;
-    --line: #e2e9e5;
-    /* Accents */
-    --pine: #0d6e5a;
-    --pine-deep: #0a4a3c;
-    --mint: #37c48f;
+    --surface-2: #f7f3f0;
+    --ink: #231f2a;
+    --ink-2: #645d68;
+    --ink-3: #9a929c;
+    --line: #efe7e2;
+    /* Accents: Koralle (Brand) + Periwinkle */
+    --pine: #ff5a5f;         /* Brand-Primär – Koralle */
+    --pine-deep: #6b62ff;    /* Brand-Sekundär – Periwinkle */
+    --mint: #ff8a5c;
     /* Semantic */
-    --supp: #d98a2b;     /* Nahrungsergänzung – amber */
-    --joint: #e0674c;    /* Gelenke – coral */
-    --vital: #0d6e5a;    /* Vitalwerte – pine */
-    --good: #37a86b;
+    --supp: #e0894a;     /* Nahrungsergänzung – amber */
+    --joint: #ff6b57;    /* Gelenke – warmes Koralle */
+    --vital: #6b62ff;    /* Vitalwerte – Periwinkle */
+    --good: #12b3a6;
     --warn: #e0a52e;
-    --crit: #dd5540;
-    --shadow: 0 1px 2px rgba(16,35,29,.05), 0 12px 34px -14px rgba(16,35,29,.22);
-    --shadow-phone: 0 40px 90px -30px rgba(10,45,36,.55), 0 8px 24px -12px rgba(10,45,36,.4);
+    --crit: #e5473d;
+    --shadow: 0 1px 2px rgba(35,25,45,.05), 0 12px 34px -14px rgba(35,25,45,.18);
+    --shadow-phone: 0 40px 90px -30px rgba(90,60,130,.42), 0 8px 24px -12px rgba(40,25,50,.35);
     --r: 20px;
     --font: ui-rounded, "SF Pro Rounded", "Segoe UI", system-ui, -apple-system, sans-serif;
     --num: "SF Mono", "SFMono-Regular", ui-monospace, "Cascadia Mono", Menlo, monospace;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #0b1512; --stage: #0e1a16; --surface: #14211d; --surface-2: #182a24;
-      --ink: #eaf3ef; --ink-2: #a7bdb4; --ink-3: #6f877e; --line: #223730;
-      --pine: #35c396; --pine-deep: #2aa87f; --mint: #4dd6a0;
-      --supp: #eaa347; --joint: #f0836a; --vital: #35c396;
-      --good: #4dcf8a; --warn: #eab946; --crit: #f0715a;
+      --bg: #14121a; --stage: #1a1720; --surface: #1e1a26; --surface-2: #241f2e;
+      --ink: #efedf6; --ink-2: #b1adc4; --ink-3: #746e82; --line: #2c2838;
+      --pine: #ff6f73; --pine-deep: #8a86ff; --mint: #ff9e6b;
+      --supp: #eaa347; --joint: #ff7a68; --vital: #8a86ff;
+      --good: #2fd0bf; --warn: #eab946; --crit: #f0715a;
       --shadow: 0 1px 2px rgba(0,0,0,.3), 0 14px 34px -16px rgba(0,0,0,.6);
       --shadow-phone: 0 50px 100px -30px rgba(0,0,0,.75), 0 8px 24px -12px rgba(0,0,0,.6);
     }
   }
   :root[data-theme="dark"] {
-    --bg: #0b1512; --stage: #0e1a16; --surface: #14211d; --surface-2: #182a24;
-    --ink: #eaf3ef; --ink-2: #a7bdb4; --ink-3: #6f877e; --line: #223730;
-    --pine: #35c396; --pine-deep: #2aa87f; --mint: #4dd6a0;
-    --supp: #eaa347; --joint: #f0836a; --vital: #35c396;
-    --good: #4dcf8a; --warn: #eab946; --crit: #f0715a;
+    --bg: #14121a; --stage: #1a1720; --surface: #1e1a26; --surface-2: #241f2e;
+    --ink: #efedf6; --ink-2: #b1adc4; --ink-3: #746e82; --line: #2c2838;
+    --pine: #ff6f73; --pine-deep: #8a86ff; --mint: #ff9e6b;
+    --supp: #eaa347; --joint: #ff7a68; --vital: #8a86ff;
+    --good: #2fd0bf; --warn: #eab946; --crit: #f0715a;
     --shadow: 0 1px 2px rgba(0,0,0,.3), 0 14px 34px -16px rgba(0,0,0,.6);
     --shadow-phone: 0 50px 100px -30px rgba(0,0,0,.75), 0 8px 24px -12px rgba(0,0,0,.6);
   }
   :root[data-theme="light"] {
-    --bg: #eef2f0; --stage: #e2e8e5; --surface: #ffffff; --surface-2: #f4f7f5;
-    --ink: #10231d; --ink-2: #486159; --ink-3: #7d938b; --line: #e2e9e5;
-    --pine: #0d6e5a; --pine-deep: #0a4a3c; --mint: #37c48f;
-    --supp: #d98a2b; --joint: #e0674c; --vital: #0d6e5a;
-    --good: #37a86b; --warn: #e0a52e; --crit: #dd5540;
-    --shadow: 0 1px 2px rgba(16,35,29,.05), 0 12px 34px -14px rgba(16,35,29,.22);
-    --shadow-phone: 0 40px 90px -30px rgba(10,45,36,.55), 0 8px 24px -12px rgba(10,45,36,.4);
+    --bg: #f6f4f2; --stage: #ece7e3; --surface: #ffffff; --surface-2: #f7f3f0;
+    --ink: #231f2a; --ink-2: #645d68; --ink-3: #9a929c; --line: #efe7e2;
+    --pine: #ff5a5f; --pine-deep: #6b62ff; --mint: #ff8a5c;
+    --supp: #e0894a; --joint: #ff6b57; --vital: #6b62ff;
+    --good: #12b3a6; --warn: #e0a52e; --crit: #e5473d;
+    --shadow: 0 1px 2px rgba(35,25,45,.05), 0 12px 34px -14px rgba(35,25,45,.18);
+    --shadow-phone: 0 40px 90px -30px rgba(90,60,130,.42), 0 8px 24px -12px rgba(40,25,50,.35);
   }
 
   * { box-sizing: border-box; }
@@ -130,7 +130,7 @@
   .sec-title a { color: var(--pine); text-decoration: none; font-weight: 700; text-transform: none; letter-spacing: 0; font-size: 12.5px; }
 
   /* Score ring hero */
-  .hero { background: linear-gradient(150deg, var(--pine), var(--pine-deep)); color: #eafff6; border: none; position: relative; overflow: hidden; }
+  .hero { background: linear-gradient(135deg, var(--pine), var(--pine-deep)); color: #fff; border: none; position: relative; overflow: hidden; }
   .hero::after { content: ""; position: absolute; inset: 0; background: radial-gradient(220px 160px at 88% -10%, rgba(255,255,255,.18), transparent 70%); }
   .hero .row { display: flex; align-items: center; gap: 18px; position: relative; z-index: 1; }
   .ring { width: 92px; height: 92px; flex: none; }
@@ -227,6 +227,21 @@
   .disc { font-size: 11.5px; color: var(--ink-3); background: var(--surface-2); border: 1px dashed var(--line); border-radius: 12px; padding: 10px 12px; line-height: 1.5; }
   .clickable { cursor: pointer; }
 
+  /* KI-Tipp Banner (Personalisierung) */
+  .aitip { display: flex; gap: 11px; align-items: center; border-radius: var(--r); padding: 13px 14px; margin-bottom: 2px;
+    background: linear-gradient(120deg, color-mix(in srgb, var(--pine) 13%, var(--surface)), color-mix(in srgb, var(--pine-deep) 12%, var(--surface)));
+    border: 1px solid color-mix(in srgb, var(--pine) 28%, transparent); box-shadow: var(--shadow); }
+  .aitip .sp { width: 30px; height: 30px; border-radius: 10px; flex: none; display: grid; place-items: center; color: #fff; font-size: 15px; background: linear-gradient(135deg, var(--pine), var(--pine-deep)); }
+  .aitip .tt { font-size: 12.5px; line-height: 1.42; color: var(--ink); }
+  .aitip .tt b { font-weight: 800; }
+
+  /* Handgezeichneter Akzent */
+  .doodle { display: block; width: 118px; height: 11px; color: var(--pine); margin-top: 3px; }
+
+  /* Sanfte Bewegung */
+  .floaty { animation: floaty 6s ease-in-out infinite; }
+  @keyframes floaty { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+
   /* Training */
   .btnp { width: 100%; border: none; border-radius: 14px; padding: 14px; font: inherit; font-weight: 800; font-size: 14px; color: #fff; background: linear-gradient(135deg, var(--pine), var(--pine-deep)); cursor: pointer; box-shadow: var(--shadow); display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
   .btnp:focus-visible { outline: 2px solid var(--pine); outline-offset: 2px; }
@@ -280,15 +295,22 @@
           <!-- HOME -->
           <section class="view" id="v-home">
             <div class="apphead">
-              <div><div class="greet">Sonntag, 27. Juli</div><div class="name">Moin! 👋</div></div>
+              <div><div class="greet">Sonntag, 3. August</div><div class="name">Moin, Oliver 👋</div>
+                <svg class="doodle" viewBox="0 0 118 11" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M2 7c22-6 62-7 114-3"/></svg>
+              </div>
               <div class="avatar">O</div>
             </div>
 
-            <div class="card hero">
+            <div class="aitip">
+              <div class="sp">✦</div>
+              <div class="tt"><b>KI-Tipp:</b> Deine Erholung ist heute top — ein guter Tag für dein Krafttraining 💪</div>
+            </div>
+
+            <div class="card hero floaty">
               <div class="row">
                 <svg class="ring" viewBox="0 0 100 100">
                   <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="9"/>
-                  <circle cx="50" cy="50" r="40" fill="none" stroke="#eafff6" stroke-width="9" stroke-linecap="round" stroke-dasharray="251.3" stroke-dashoffset="52" transform="rotate(-90 50 50)"/>
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-dasharray="251.3" stroke-dashoffset="52" transform="rotate(-90 50 50)"/>
                   <text x="50" y="47" text-anchor="middle" font-size="21" font-weight="800" fill="#fff" font-family="var(--font)">79</text>
                   <text x="50" y="63" text-anchor="middle" font-size="9" fill="rgba(255,255,255,.8)">von 100</text>
                 </svg>
@@ -590,19 +612,19 @@
             <div class="sec-title">Top-Videos für deine Gelenke</div>
             <div class="stack">
               <a class="card vidcard clickable" href="#" onclick="return false">
-                <div class="thumb" style="background:linear-gradient(135deg,#0a4a3c,#e0674c)"><div class="play"><svg width="12" height="12" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><span class="dur">11:24</span></div>
+                <div class="thumb" style="background:linear-gradient(135deg,#6b62ff,#ff5a5f)"><div class="play"><svg width="12" height="12" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><span class="dur">11:24</span></div>
                 <div class="vidmeta"><div class="vt">Schulterschmerzen: 5 sanfte Übungen für zuhause</div><div class="vc">▶ YouTube · Physio-Kanal</div></div>
               </a>
               <a class="card vidcard clickable" href="#" onclick="return false">
-                <div class="thumb" style="background:linear-gradient(135deg,#0d6e5a,#d98a2b)"><div class="play"><svg width="12" height="12" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><span class="dur">8:03</span></div>
+                <div class="thumb" style="background:linear-gradient(135deg,#ff5a5f,#e0894a)"><div class="play"><svg width="12" height="12" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><span class="dur">8:03</span></div>
                 <div class="vidmeta"><div class="vt">HWS-Syndrom & Nackenschmerz: Mobilisation Schritt für Schritt</div><div class="vc">▶ YouTube · Reha-Kanal</div></div>
               </a>
               <a class="card vidcard clickable" href="#" onclick="return false">
-                <div class="thumb" style="background:linear-gradient(135deg,#b8492f,#0a4a3c)"><div class="play"><svg width="12" height="12" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><span class="dur">14:47</span></div>
+                <div class="thumb" style="background:linear-gradient(135deg,#ff6b57,#6b62ff)"><div class="play"><svg width="12" height="12" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><span class="dur">14:47</span></div>
                 <div class="vidmeta"><div class="vt">Hüftschmerzen lindern: Dehnung & Kräftigung</div><div class="vc">▶ YouTube · Sportmedizin</div></div>
               </a>
               <a class="card vidcard clickable" href="#" onclick="return false">
-                <div class="thumb" style="background:linear-gradient(135deg,#d98a2b,#0d6e5a)"><div class="play"><svg width="12" height="12" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><span class="dur">6:58</span></div>
+                <div class="thumb" style="background:linear-gradient(135deg,#e0894a,#6b62ff)"><div class="play"><svg width="12" height="12" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><span class="dur">6:58</span></div>
                 <div class="vidmeta"><div class="vt">Nackenverspannung lösen: kurze Routine für den Alltag</div><div class="vc">▶ YouTube · Faszien & Beweglichkeit</div></div>
               </a>
             </div>

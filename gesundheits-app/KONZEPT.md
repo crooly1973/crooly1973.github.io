@@ -144,8 +144,10 @@ Themen, die mich besonders interessieren (für Forschung & Videos):
 ## 4. Entscheidungen (was wir schon festgelegt haben)
 
 - ✅ Name des Konzepts: **VITARA** (Arbeitstitel, änderbar)
-- ✅ Drei Kernbereiche + Wissens-Bereich
-- ✅ Farb-Logik: Grün = Vitalwerte · Bernstein = Nahrungsergänzung · Koralle = Gelenke
+- ✅ Drei Kernbereiche + Wissens- & Trainings-Bereich
+- ✅ **Design-Richtung:** hell, **Koralle + Periwinkle** (Mix aus Richtung A & B),
+  mit handgezeichneten Akzenten, sanfter Bewegung und KI-Tipp oben (statt Grün)
+- ✅ Farb-Logik: Koralle = Brand/Gelenke · Periwinkle = Vitalwerte · Bernstein = Nahrungsergänzung
 - ✅ Ziel: Handy-App; vorerst als Web-Mockup zum Durchklicken
 - ✅ Projekt liegt im Repo unter `gesundheits-app/` auf eigenem Branch (noch nicht öffentlich)
 
