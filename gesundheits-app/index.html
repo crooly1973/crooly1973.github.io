@@ -194,9 +194,9 @@
   .rangebox b { display: block; font-size: 17px; font-weight: 800; margin-top: 3px; font-variant-numeric: tabular-nums; }
 
   /* Bottom nav */
-  .tabbar { display: flex; justify-content: space-around; padding: 10px 10px calc(10px + env(safe-area-inset-bottom)); background: color-mix(in srgb, var(--surface) 92%, transparent); backdrop-filter: blur(12px); border-top: 1px solid var(--line); }
-  .tab { border: none; background: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; font: inherit; font-size: 10.5px; font-weight: 700; color: var(--ink-3); padding: 4px 6px; }
-  .tab svg { width: 24px; height: 24px; }
+  .tabbar { display: flex; justify-content: space-around; padding: 8px 4px calc(8px + env(safe-area-inset-bottom)); background: color-mix(in srgb, var(--surface) 92%, transparent); backdrop-filter: blur(12px); border-top: 1px solid var(--line); }
+  .tab { border: none; background: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; font: inherit; font-size: 9.5px; font-weight: 700; color: var(--ink-3); padding: 4px 2px; white-space: nowrap; }
+  .tab svg { width: 22px; height: 22px; }
   .tab.on { color: var(--pine); }
   .tab:focus-visible { outline: 2px solid var(--pine); outline-offset: 2px; border-radius: 8px; }
 
@@ -227,6 +227,16 @@
   .disc { font-size: 11.5px; color: var(--ink-3); background: var(--surface-2); border: 1px dashed var(--line); border-radius: 12px; padding: 10px 12px; line-height: 1.5; }
   .clickable { cursor: pointer; }
 
+  /* Training */
+  .btnp { width: 100%; border: none; border-radius: 14px; padding: 14px; font: inherit; font-weight: 800; font-size: 14px; color: #fff; background: linear-gradient(135deg, var(--pine), var(--pine-deep)); cursor: pointer; box-shadow: var(--shadow); display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+  .btnp:focus-visible { outline: 2px solid var(--pine); outline-offset: 2px; }
+  .weekstrip { display: flex; justify-content: space-between; gap: 5px; }
+  .weekstrip .d { flex: 1; text-align: center; font-size: 10.5px; font-weight: 700; color: var(--ink-3); }
+  .weekstrip .d i { display: grid; place-items: center; width: 27px; height: 27px; margin: 6px auto 0; border-radius: 50%; border: 2px solid var(--line); font-style: normal; font-size: 12px; color: var(--ink-3); }
+  .weekstrip .d.done i { background: var(--pine); border-color: var(--pine); color: #fff; }
+  .weekstrip .d.today i { border-color: var(--pine); color: var(--pine); border-style: dashed; }
+  .ex-set { font-variant-numeric: tabular-nums; }
+
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
@@ -250,6 +260,7 @@
       <div class="pillar"><h3><span class="dot" style="background:var(--vital)"></span>Vitalwerte</h3><p>Blutdruck, Puls, HRV, Gewicht, Schlaf & SpO₂ — mit Trend und Zielbereich.</p></div>
       <div class="pillar"><h3><span class="dot" style="background:var(--supp)"></span>Nahrungsergänzung</h3><p>Einnahme-Plan, Abhaken pro Tageszeit und Vorrats-Warnung, wenn etwas knapp wird.</p></div>
       <div class="pillar"><h3><span class="dot" style="background:var(--joint)"></span>Gelenke</h3><p>Antippbare Körperkarte, Schmerz-Tagebuch (0–10) und Beweglichkeit über Zeit.</p></div>
+      <div class="pillar"><h3><span class="dot" style="background:var(--pine)"></span>Training</h3><p>Krafttraining 2× pro Woche mit deinen Übungen (Liegestütz, Kniebeugen, Hanteln) — schulter- & hüftschonend, mit Wochenziel und Fortschritt.</p></div>
       <div class="pillar"><h3><span class="dot" style="background:var(--pine)"></span>Wissen</h3><p>Neueste Forschung zu Arthrose & HWS-Syndrom plus Top-YouTube-Übungen für Schulter, Nacken, HWS & Hüfte — nach deinen Themen gefiltert.</p></div>
       <p class="hint">Das ist ein unverbindliches Design-Mockup. Noch keine echten Daten, keine Medizin­funktion — wir stimmen erst Inhalte & Optik ab.</p>
     </aside>
@@ -324,6 +335,15 @@
                 <div class="supp-ico" style="background:color-mix(in srgb,var(--joint) 14%,transparent)">🔥</div>
                 <div class="supp-meta"><div class="t">Wärme / Sauna heute?</div><div class="s">Tut deinen Gelenken gut</div></div>
                 <button class="check" aria-label="Als erledigt markieren"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button>
+              </div>
+            </div>
+
+            <div class="sec-title">Training diese Woche <a href="#" data-goto="training">Öffnen ›</a></div>
+            <div class="card">
+              <div class="supp-row" style="padding-top:2px">
+                <div class="supp-ico" style="background:color-mix(in srgb,var(--pine) 14%,transparent)">💪</div>
+                <div class="supp-meta"><div class="t">Krafttraining · 1 / 2</div><div class="s">Nächste Einheit heute · 4 Übungen</div></div>
+                <span class="pill warn">1 offen</span>
               </div>
             </div>
 
@@ -491,6 +511,44 @@
             </div>
           </section>
 
+          <!-- TRAINING -->
+          <section class="view" id="v-training" hidden>
+            <div class="apphead"><div><div class="greet">Krafttraining · 2× pro Woche</div><div class="name">Training</div></div><div class="avatar clickable" data-goto="profile" style="background:linear-gradient(135deg,var(--pine),var(--pine-deep))">💪</div></div>
+
+            <div class="card">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+                <div><div style="font-weight:800;font-size:15px">Diese Woche</div><div style="font-size:12px;color:var(--ink-3)">Ziel: 2 Einheiten</div></div>
+                <span class="pill warn">1 / 2 geschafft</span>
+              </div>
+              <div class="weekstrip">
+                <div class="d done"><span>Mo</span><i>✓</i></div>
+                <div class="d"><span>Di</span><i></i></div>
+                <div class="d"><span>Mi</span><i></i></div>
+                <div class="d today"><span>Do</span><i>•</i></div>
+                <div class="d"><span>Fr</span><i></i></div>
+                <div class="d"><span>Sa</span><i></i></div>
+                <div class="d"><span>So</span><i></i></div>
+              </div>
+            </div>
+
+            <div class="sec-title">Mein Programm <a href="#" onclick="return false">4 Übungen</a></div>
+            <div class="card">
+              <div class="supp-row" style="padding-top:2px"><div class="supp-ico" style="background:color-mix(in srgb,var(--pine) 14%,transparent)">🤸</div><div class="supp-meta"><div class="t">Liegestütz</div><div class="s ex-set">3 Sätze × 12 · zuletzt 3×10</div></div><button class="check" aria-label="erledigt"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button></div>
+              <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--pine) 14%,transparent)">🦵</div><div class="supp-meta"><div class="t">Kniebeugen</div><div class="s ex-set">3 Sätze × 15 · eigenes Körpergewicht</div></div><button class="check" aria-label="erledigt"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button></div>
+              <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--supp) 16%,transparent)">🏋️</div><div class="supp-meta"><div class="t">Bizeps-Curls · Hanteln</div><div class="s ex-set">3 Sätze × 12 · 2×5 kg</div></div><button class="check" aria-label="erledigt"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button></div>
+              <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--joint) 14%,transparent)">💪</div><div class="supp-meta"><div class="t">Schulterdrücken · Hanteln</div><div class="s ex-set">3 Sätze × 10 · <span style="color:var(--joint);font-weight:700">schulterschonend</span></div></div><button class="check" aria-label="erledigt"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button></div>
+            </div>
+
+            <div style="margin-top:14px"><button class="btnp" id="startWorkout"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> Workout starten</button></div>
+
+            <div class="sec-title">Fortschritt · Liegestütz</div>
+            <div class="card"><canvas id="exChart" width="640" height="240" style="width:100%;height:120px"></canvas>
+              <div class="legend2"><span style="color:var(--ink-3)">Max. Wiederholungen pro Satz · letzte Wochen — Trend steigend 📈</span></div>
+            </div>
+
+            <div class="disc" style="margin-top:14px">💡 Auf dich abgestimmt: <b>Schulterdrücken</b> ist wegen deiner rechten Schulter als „schulterschonend" markiert (leichteres Gewicht, saubere Ausführung). Bei <b>Kniebeugen</b> auf die Hüftprothese achten. Übungen bei Bedarf mit Physio/Arzt abstimmen — die App dokumentiert nur.</div>
+          </section>
+
           <!-- WISSEN -->
           <section class="view" id="v-wissen" hidden>
             <div class="apphead"><div><div class="greet">Forschung & Übungen</div><div class="name">Wissen</div></div><div class="avatar clickable" data-goto="profile" style="background:linear-gradient(135deg,var(--pine),var(--pine-deep))">🔎</div></div>
@@ -569,10 +627,11 @@
           </button>
 
           <nav class="tabbar" role="tablist">
-            <button class="tab on" data-view="home" role="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11 12 3l9 8"/><path d="M5 10v10h14V10"/></svg>Übersicht</button>
+            <button class="tab on" data-view="home" role="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11 12 3l9 8"/><path d="M5 10v10h14V10"/></svg>Start</button>
             <button class="tab" data-view="vitals" role="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l2 6 4-14 2 8h6"/></svg>Vitalwerte</button>
             <button class="tab" data-view="supp" role="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="9" width="18" height="6" rx="3" transform="rotate(45 12 12)"/></svg>Ergänzung</button>
             <button class="tab" data-view="joints" role="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="2.4"/><path d="M12 8v5m0 0-3 6m3-6 3 6"/><path d="M8 10h8"/></svg>Gelenke</button>
+            <button class="tab" data-view="training" role="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9v6M7 7v10M17 7v10M20 9v6M7 12h10"/></svg>Training</button>
             <button class="tab" data-view="wissen" role="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5a2 2 0 0 1 2-2h6v16H6a2 2 0 0 0-2 2z"/><path d="M20 5a2 2 0 0 0-2-2h-6v16h6a2 2 0 0 1 2 2z"/></svg>Wissen</button>
           </nav>
         </div>
@@ -596,7 +655,7 @@
 
   // Tab switching
   var tabs = document.querySelectorAll('.tab');
-  var views = { home:'v-home', vitals:'v-vitals', supp:'v-supp', joints:'v-joints', wissen:'v-wissen', profile:'v-profile' };
+  var views = { home:'v-home', vitals:'v-vitals', supp:'v-supp', joints:'v-joints', training:'v-training', wissen:'v-wissen', profile:'v-profile' };
   function show(v){
     Object.keys(views).forEach(function(k){ document.getElementById(views[k]).hidden = (k!==v); });
     tabs.forEach(function(t){ t.classList.toggle('on', t.dataset.view===v); });
@@ -641,6 +700,10 @@
   }); }); }
 
   document.getElementById('fab').addEventListener('click', function(){ this.animate([{transform:'scale(1)'},{transform:'scale(.88)'},{transform:'scale(1)'}],{duration:220}); });
+  var sw = document.getElementById('startWorkout');
+  if(sw){ sw.addEventListener('click', function(){ this.animate([{transform:'scale(1)'},{transform:'scale(.97)'},{transform:'scale(1)'}],{duration:180});
+    var i=0, checks=sw.closest('.view').querySelectorAll('.check');
+    checks.forEach(function(ch){ setTimeout(function(){ ch.classList.add('on'); }, 120*(++i)); }); }); }
 
   // ---- Charts ----
   function css(n){ return getComputedStyle(root).getPropertyValue(n).trim(); }
@@ -669,7 +732,11 @@
   }
   function drawMinis(){ document.querySelectorAll('.mini').forEach(function(c){ var ctx=c.getContext('2d'); var w=c.width,h=c.height; ctx.clearRect(0,0,w,h);
     var v=series(+c.dataset.seed,12,50,20); line(ctx, mapPts(v,w,h,10), css('--pine'), 'color-mix(in srgb,'+css('--pine')+' 20%, transparent)'); }); }
-  function drawAll(){ drawBP(); drawJoint(); drawMinis(); }
+  function drawEx(){ var c=document.getElementById('exChart'); if(!c) return; var ctx=c.getContext('2d'); var w=c.width,h=c.height; ctx.clearRect(0,0,w,h);
+    var v=[]; for(var i=0;i<10;i++){ v.push(8 + i*0.6 + Math.sin(i)*0.5); }
+    line(ctx, mapPts(v,w,h,18), css('--pine'), 'color-mix(in srgb,'+css('--pine')+' 22%, transparent)');
+    var pp=mapPts(v,w,h,18), last=pp[pp.length-1]; ctx.beginPath(); ctx.arc(last[0],last[1],5,0,7); ctx.fillStyle=css('--pine'); ctx.fill(); ctx.strokeStyle=css('--surface'); ctx.lineWidth=2.5; ctx.stroke(); }
+  function drawAll(){ drawBP(); drawJoint(); drawMinis(); drawEx(); }
   drawAll();
   window.addEventListener('resize', function(){ setTimeout(drawAll,60); });
 })();

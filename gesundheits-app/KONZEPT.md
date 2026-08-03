@@ -30,6 +30,7 @@ Forschung und Übungsvideos.
 | **Vitalwerte** | Blutdruck, Puls, HRV, Gewicht, Schlaf, SpO₂ mit Trends & Zielbereich | ✅ im Mockup (vertieft) |
 | **Nahrungsergänzung** | Einnahme-Plan nach Tageszeit, Abhaken, Vorrats-Warnung | ✅ im Mockup |
 | **Gelenke** | Körperkarte, Schmerz-Tagebuch (0–10), Beweglichkeit | ✅ im Mockup |
+| **Training** | Krafttraining 2×/Woche, Übungen, Wochenziel, Fortschritt | ✅ im Mockup |
 | **Wissen** | Forschung (Arthrose, HWS) + kuratierte YouTube-Übungen | ✅ im Mockup (Beispielinhalte) |
 | **Profil** | Geräte verbinden, Ziele, Arzt-Bericht (PDF), Datenschutz | ✅ im Mockup |
 
@@ -118,6 +119,25 @@ Themen, die mich besonders interessieren (für Forschung & Videos):
 - Nackenschmerzen
 - Hüftschmerzen
 - _weitere?_
+
+### 3.5 Sport / Training 🏋️
+
+**Rhythmus:** Krafttraining **2× pro Woche**, viel mit eigenem Körpergewicht + Hanteln.
+
+| Übung | Art | Vorgabe (Startwert) | Hinweis |
+|---|---|---|---|
+| Liegestütz | Körpergewicht | 3 Sätze × 12 | — |
+| Kniebeugen | Körpergewicht | 3 Sätze × 15 | auf Hüftprothese achten |
+| Bizeps-Curls | Hanteln (2×5 kg) | 3 Sätze × 12 | — |
+| Schulterdrücken | Hanteln | 3 Sätze × 10 | **schulterschonend** (re. Schulter) |
+
+**App-Funktionen (im Mockup):**
+- Wochenübersicht mit Ziel „2 Einheiten" und Fortschritt.
+- Übungen abhaken, „Workout starten".
+- Fortschritts-Diagramm (z.B. max. Wiederholungen über Zeit).
+- Verknüpfung mit Gelenken: Übungen schulter-/hüftschonend markiert.
+
+*Sätze/Wiederholungen/Gewichte sind Startwerte – gern später an deinen Stand anpassen.*
 
 ---
 
