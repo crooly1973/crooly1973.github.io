@@ -3,6 +3,7 @@
 > Dies ist unsere gemeinsame Konzept-Notiz. Hier sammeln wir alle Ideen, Entscheidungen
 > und deine echten Daten, damit über die Sitzungen hinweg nichts verloren geht.
 > Der anklickbare Prototyp liegt in `gesundheits-app/index.html`.
+> Den Fahrplan „von der Idee zur App im App Store" findest du in `LERNPFAD.md`.
 
 **Stand:** 3. August 2026
 **Status:** Konzeptphase (Mockup steht, Inhalte werden gefüllt)
