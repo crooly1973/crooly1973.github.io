@@ -145,9 +145,10 @@ Themen, die mich besonders interessieren (für Forschung & Videos):
 
 - ✅ Name des Konzepts: **VITARA** (Arbeitstitel, änderbar)
 - ✅ Drei Kernbereiche + Wissens- & Trainings-Bereich
-- ✅ **Design-Richtung:** hell, **Koralle + Periwinkle** (Mix aus Richtung A & B),
-  mit handgezeichneten Akzenten, sanfter Bewegung und KI-Tipp oben (statt Grün)
-- ✅ Farb-Logik: Koralle = Brand/Gelenke · Periwinkle = Vitalwerte · Bernstein = Nahrungsergänzung
+- 🧪 **Design-Richtung (aktueller Test):** hell, **Türkis + Ozeanblau** („Meeresblick"),
+  mit handgezeichneten Akzenten, sanfter Bewegung und KI-Tipp oben
+  (davor getestet: Koralle + Periwinkle — jederzeit rückholbar über die Git-Historie)
+- ✅ Farb-Logik: Türkis = Brand · Blau = Vitalwerte · Koralle = Gelenke (warmer Kontrast) · Bernstein = Nahrungsergänzung
 - ✅ Ziel: Handy-App; vorerst als Web-Mockup zum Durchklicken
 - ✅ Projekt liegt im Repo unter `gesundheits-app/` auf eigenem Branch (noch nicht öffentlich)
 
