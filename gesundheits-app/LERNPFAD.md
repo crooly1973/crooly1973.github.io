@@ -39,10 +39,17 @@ Weg C heben wir uns auf, falls wir später sehr tiefe Funktionen brauchen.
 
 ### 🟢 Etappe 2 – Aus dem Mockup wird eine echte Web-App  *(läuft)*
 - [x] **Lektion 1:** Die 3 Bausteine verstehen (HTML, CSS, JavaScript) → `lernen/lektion-1.html`
-- [ ] Lektion 2: Gemeinsam eine Zeile Code ändern und live sehen, was passiert
-- [ ] Die Klick-Buttons mit echter Logik verbinden
-- [ ] Daten speichern (erst im Browser, später in einer kleinen Datenbank)
-- **Was du hier lernst:** Wie eine App „von innen" funktioniert.
+- [x] **Erstes echtes Feature:** Nahrungsergänzung wird lokal gespeichert (localStorage)
+      + Tageszähler zählt live mit → die App „merkt" sich jetzt Eingaben ✅
+- [ ] Weitere Features speicherbar machen (Training, Gelenk-Schmerz, Vitalwerte)
+- [ ] Eigenes Datenmodell / Struktur der gespeicherten Daten sauber aufsetzen
+- **Was du hier lernst:** Wie eine App „von innen" funktioniert und Daten behält.
+
+### ⚪ Fitbit-Anbindung (eigener Meilenstein, nach dem Fundament)
+- [ ] Entwickler-App bei Fitbit/Google registrieren (Client-ID) — **nur Oliver kann das**
+- [ ] Anmelde-/Erlaubnis-Ablauf (OAuth) einbauen
+- [ ] Werte abholen und lokal speichern
+- ⚠️ **Wichtig:** Alte Fitbit-Web-API wird Sept. 2026 abgeschaltet → neue **Google-Health-API** nutzen.
 
 ### ⚪ Etappe 3 – PWA: installierbar machen
 - [ ] „Manifest" + „Service Worker" hinzufügen (macht die Web-App installierbar & offline-fähig)

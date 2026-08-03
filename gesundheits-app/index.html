@@ -453,21 +453,21 @@
 
             <div class="card" style="background:color-mix(in srgb,var(--supp) 12%,var(--surface))">
               <div style="display:flex;align-items:center;gap:14px">
-                <div style="font-size:26px;font-weight:800;font-variant-numeric:tabular-nums">2<span style="color:var(--ink-3);font-size:18px">/4</span></div>
-                <div style="flex:1"><div style="font-weight:700;font-size:14px">Heute schon genommen</div><div class="bar"><i style="width:50%;background:var(--supp)"></i></div></div>
+                <div style="font-size:26px;font-weight:800;font-variant-numeric:tabular-nums"><span id="suppDone">0</span><span style="color:var(--ink-3);font-size:18px">/4</span></div>
+                <div style="flex:1"><div style="font-weight:700;font-size:14px">Heute schon genommen</div><div class="bar"><i id="suppBar" style="width:0%;background:var(--supp)"></i></div></div>
               </div>
             </div>
 
             <div class="sec-title">🌅 Morgens</div>
             <div class="card">
-              <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--supp) 16%,transparent)">☀️</div><div class="supp-meta"><div class="t">Vitamin D3 + K2</div><div class="s">natural elements · 1 Tablette</div></div><button class="check on" aria-label="eingenommen"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button></div>
-              <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--pine) 14%,transparent)">💪</div><div class="supp-meta"><div class="t">Kreatin Monohydrat</div><div class="s">WeightWorld · 3000 mg · mit dem D3</div></div><button class="check on" aria-label="eingenommen"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button></div>
-              <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--joint) 14%,transparent)">💜</div><div class="supp-meta"><div class="t">Vitamin B12</div><div class="s">Cosphera Spray · 1 Sprühstoß (25 µg)</div></div><button class="check" aria-label="eingenommen"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button></div>
+              <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--supp) 16%,transparent)">☀️</div><div class="supp-meta"><div class="t">Vitamin D3 + K2</div><div class="s">natural elements · 1 Tablette</div></div><button class="check" data-key="supp-d3k2" aria-label="eingenommen"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button></div>
+              <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--pine) 14%,transparent)">💪</div><div class="supp-meta"><div class="t">Kreatin Monohydrat</div><div class="s">WeightWorld · 3000 mg · mit dem D3</div></div><button class="check" data-key="supp-kreatin" aria-label="eingenommen"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button></div>
+              <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--joint) 14%,transparent)">💜</div><div class="supp-meta"><div class="t">Vitamin B12</div><div class="s">Cosphera Spray · 1 Sprühstoß (25 µg)</div></div><button class="check" data-key="supp-b12" aria-label="eingenommen"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button></div>
             </div>
 
             <div class="sec-title">🌙 Abends</div>
             <div class="card">
-              <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--vital) 14%,transparent)">🧲</div><div class="supp-meta"><div class="t">Magnesium</div><div class="s">Verla N · 40 mg · vor dem Schlafen</div></div><button class="check" aria-label="eingenommen"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button></div>
+              <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--vital) 14%,transparent)">🧲</div><div class="supp-meta"><div class="t">Magnesium</div><div class="s">Verla N · 40 mg · vor dem Schlafen</div></div><button class="check" data-key="supp-magnesium" aria-label="eingenommen"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button></div>
             </div>
           </section>
 
@@ -693,8 +693,35 @@
     chips.querySelectorAll('.chip').forEach(function(x){ x.classList.remove('on'); }); c.classList.add('on');
   }); }); }
 
-  // Supplement checks
-  document.querySelectorAll('.check').forEach(function(c){ c.addEventListener('click', function(){ c.classList.toggle('on'); }); });
+  // --- Daten lokal auf dem Gerät speichern (localStorage) ---
+  // Schlüssel enthält das Datum, damit die Häkchen jeden Tag frisch starten.
+  function heute(){ return new Date().toISOString().slice(0,10); }        // z.B. "2026-08-03"
+  function keyFuer(name){ return 'vitara.' + heute() + '.' + name; }
+  function ladeStand(name){ try { return localStorage.getItem(keyFuer(name)) === '1'; } catch(e){ return false; } }
+  function speichereStand(name, an){ try { localStorage.setItem(keyFuer(name), an ? '1' : '0'); } catch(e){} }
+
+  // Zählt die genommenen Präparate und aktualisiert Zahl + Balken
+  function updateSupp(){
+    var checks = document.querySelectorAll('.check[data-key^="supp-"]');
+    var genommen = [].filter.call(checks, function(c){ return c.classList.contains('on'); }).length;
+    var zahl = document.getElementById('suppDone'); if(zahl) zahl.textContent = genommen;
+    var bar = document.getElementById('suppBar'); if(bar) bar.style.width = (checks.length ? genommen/checks.length*100 : 0) + '%';
+  }
+
+  // Knöpfe MIT Namensschild (data-key): merken sich ihren Stand
+  document.querySelectorAll('.check[data-key]').forEach(function(c){
+    var name = c.dataset.key;
+    if(ladeStand(name)) c.classList.add('on');            // beim Laden: gespeicherten Stand wiederherstellen
+    c.addEventListener('click', function(){
+      c.classList.toggle('on');
+      speichereStand(name, c.classList.contains('on'));   // beim Tippen: neuen Stand merken
+      updateSupp();
+    });
+  });
+  updateSupp();
+
+  // Knöpfe OHNE Namensschild: verhalten sich wie bisher (nur optisch)
+  document.querySelectorAll('.check:not([data-key])').forEach(function(c){ c.addEventListener('click', function(){ c.classList.toggle('on'); }); });
 
   // Pain scale
   var scale = document.getElementById('painScale');
