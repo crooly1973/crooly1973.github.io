@@ -1,4 +1,4 @@
-# Automatischer Upload der App zu IONOS (Webspace) per FTPS.
+# Automatischer Upload der App zu IONOS (Webspace) per SFTP.
 # Läuft bei jeder Änderung im Ordner gesundheits-app/ auf dem main-Branch
 # und kann auch von Hand über den Actions-Tab gestartet werden.
 # Die Zugangsdaten liegen sicher in den GitHub-Secrets (nicht im Code).
@@ -20,21 +20,19 @@ jobs:
       - name: Code aus dem Repository holen
         uses: actions/checkout@v4
 
-      - name: Dateien per FTPS zu IONOS hochladen
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      - name: Nur Web-Dateien vorbereiten (interne .md-Notizen weglassen)
+        run: |
+          mkdir -p dist
+          rsync -a --exclude='*.md' gesundheits-app/ dist/
+
+      - name: Dateien per SFTP zu IONOS hochladen
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
           server:   ${{ secrets.IONOS_FTP_SERVER }}
           username: ${{ secrets.IONOS_FTP_USER }}
           password: ${{ secrets.IONOS_FTP_PASSWORD }}
-          protocol: ftps          # verschlüsselte Verbindung
-          port: 21
-          # Was hochgeladen wird (lokaler Ordner) ...
-          local-dir: ./gesundheits-app/
-          # ... und wohin auf dem Webspace (nur dieser Unterordner wird berührt):
-          server-dir: ./gesundheits-app/
-          # interne Notizen NICHT mit veröffentlichen:
-          exclude: |
-            **/*.md
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
+          port: 22
+          local_path: './dist/*'
+          remote_path: '/gesundheits-app'   # Ziel-Ordner auf dem Webspace
+          sftp_only: true
+          delete_remote_files: false          # nichts anderes auf dem Webspace anfassen
