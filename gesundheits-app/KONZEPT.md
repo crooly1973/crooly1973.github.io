@@ -68,12 +68,24 @@ ein eigener Lernschritt in **Etappe 4** – jetzt nur vormerken, noch nichts tun
 
 ### 3.2 Nahrungsergänzung 💊
 
-Meine echten Präparate, Dosierung und Einnahmezeit:
+Meine echten Präparate, sortiert nach Tageszeit:
 
-| Präparat | Dosierung | Wann (morgens/mittags/abends) | Wofür |
-|---|---|---|---|
-| _z.B. Vitamin D3+K2_ | _offen_ | _offen_ | _offen_ |
-| | | | |
+**🌅 Morgens**
+
+| Präparat | Marke / Form | Dosierung | Einnahme | Wofür (allgemein) |
+|---|---|---|---|---|
+| Vitamin D3 + K2 | natural elements (MK-7, Tabletten) | 1 Tablette | morgens | Knochen & Immunsystem |
+| Kreatin Monohydrat | WeightWorld (Tabletten) | 3000 mg pro Portion | morgens (zusammen mit D3) | Kraft & Sport |
+| Vitamin B12 | Cosphera (Spray) | Spray | morgens nach dem Zähneputzen | Nerven & Energie |
+
+**🌙 Abends**
+
+| Präparat | Marke / Form | Dosierung | Einnahme | Wofür (allgemein) |
+|---|---|---|---|---|
+| Magnesium | Verla N (Dragées) | lt. Packung | abends vor dem Schlafen | Muskeln & Entspannung |
+
+*Angaben laut Verpackung/deinen Fotos. „Wofür" ist allgemein beschrieben –
+keine Heilaussagen. Dosierung ggf. später präzisieren.*
 
 ### 3.3 Gelenke 🦵
 
@@ -111,7 +123,7 @@ Themen, die mich besonders interessieren (für Forschung & Videos):
 
 - [x] Echte Vitalwerte + Quellen eintragen (Abschnitt 3.1) → Fitbit Charge 6 + manuell
 - [ ] Persönliche Zielbereiche (Blutdruck, Gewicht, Schlaf) mit Arzt abstimmen
-- [ ] Echte Präparate-Liste aufnehmen (Abschnitt 3.2)
+- [x] Echte Präparate-Liste aufnehmen (Abschnitt 3.2) → D3+K2, Kreatin, B12, Magnesium
 - [ ] Betroffene Gelenke konkretisieren (Abschnitt 3.3)
 - [ ] Entscheiden: Bleibt der Name „VITARA"?
 - [ ] Etappe 4: Fitbit-Daten anbinden (Web-API / Health Connect)
