@@ -126,7 +126,7 @@ Themen, die mich besonders interessieren (für Forschung & Videos):
 
 | Übung | Art | Vorgabe (Startwert) | Hinweis |
 |---|---|---|---|
-| Liegestütz | Körpergewicht | 3 Sätze × 12 | — |
+| Liegestütz | Körpergewicht (erhöht, an Badewannenkante) | 3 Sätze × 50 | gelenkschonend (schräg) |
 | Kniebeugen | Körpergewicht | 3 Sätze × 15 | auf Hüftprothese achten |
 | Bizeps-Curls | Hanteln (2×5 kg) | 3 Sätze × 12 | — |
 | Schulterdrücken | Hanteln | 3 Sätze × 10 | **schulterschonend** (re. Schulter) |
