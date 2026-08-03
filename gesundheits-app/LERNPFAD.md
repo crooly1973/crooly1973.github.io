@@ -37,8 +37,9 @@ Weg C heben wir uns auf, falls wir später sehr tiefe Funktionen brauchen.
 - [ ] Echte Inhalte einfüllen (Vitalwerte, Präparate, Gelenke)
 - **Was du hier lernst:** Wie man eine App-Idee strukturiert und visualisiert.
 
-### ⚪ Etappe 2 – Aus dem Mockup wird eine echte Web-App
-- [ ] Grundlagen HTML / CSS / JavaScript verstehen (die 3 Bausteine jeder Web-App)
+### 🟢 Etappe 2 – Aus dem Mockup wird eine echte Web-App  *(läuft)*
+- [x] **Lektion 1:** Die 3 Bausteine verstehen (HTML, CSS, JavaScript) → `lernen/lektion-1.html`
+- [ ] Lektion 2: Gemeinsam eine Zeile Code ändern und live sehen, was passiert
 - [ ] Die Klick-Buttons mit echter Logik verbinden
 - [ ] Daten speichern (erst im Browser, später in einer kleinen Datenbank)
 - **Was du hier lernst:** Wie eine App „von innen" funktioniert.

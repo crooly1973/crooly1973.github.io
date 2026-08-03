@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Etappe 2 · Lektion 1 – Die 3 Bausteine</title>
+<style>
+  :root{
+    --bg:#eef4f7; --surface:#fff; --surface-2:#f1f6f9; --ink:#0f2839; --ink-2:#4a6170; --ink-3:#8399a6; --line:#e2ebf0;
+    --tq:#06c2cf; --tq-deep:#1596c9; --amber:#e0894a; --coral:#ef7a63; --good:#1bb98e;
+    --code-bg:#0f2433; --code-ink:#dCEBF2;
+    --shadow:0 1px 2px rgba(15,40,60,.05),0 12px 34px -14px rgba(15,40,60,.18);
+  }
+  @media (prefers-color-scheme:dark){:root{
+    --bg:#0a1622; --surface:#10202f; --surface-2:#16293a; --ink:#e6f1f6; --ink-2:#a6bcc8; --ink-3:#6b8494; --line:#21384a;
+    --tq:#2ed9e2; --tq-deep:#24b1d8; --code-bg:#081420; --code-ink:#cfe6f0;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 14px 34px -16px rgba(0,0,0,.6);
+  }}
+  :root[data-theme="dark"]{
+    --bg:#0a1622; --surface:#10202f; --surface-2:#16293a; --ink:#e6f1f6; --ink-2:#a6bcc8; --ink-3:#6b8494; --line:#21384a;
+    --tq:#2ed9e2; --tq-deep:#24b1d8; --code-bg:#081420; --code-ink:#cfe6f0;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 14px 34px -16px rgba(0,0,0,.6);
+  }
+  :root[data-theme="light"]{
+    --bg:#eef4f7; --surface:#fff; --surface-2:#f1f6f9; --ink:#0f2839; --ink-2:#4a6170; --ink-3:#8399a6; --line:#e2ebf0;
+    --tq:#06c2cf; --tq-deep:#1596c9; --code-bg:#0f2433; --code-ink:#dceBF2;
+    --shadow:0 1px 2px rgba(15,40,60,.05),0 12px 34px -14px rgba(15,40,60,.18);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:ui-rounded,"SF Pro Rounded","Segoe UI",system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.55}
+  .wrap{max-width:760px;margin:0 auto;padding:40px 22px 70px}
+  .eyebrow{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--tq-deep);font-weight:800;margin:0 0 10px}
+  h1{font-size:clamp(27px,4vw,38px);line-height:1.05;margin:0;letter-spacing:-.02em;font-weight:800;text-wrap:balance}
+  .lede{color:var(--ink-2);font-size:16px;margin:14px 0 0}
+  h2{font-size:20px;margin:38px 0 4px;letter-spacing:-.01em}
+  .sub{color:var(--ink-3);font-size:14px;margin:0 0 16px}
+  .themebtn{position:fixed;top:16px;right:16px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);
+    padding:8px 13px;border-radius:999px;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;box-shadow:var(--shadow);z-index:10}
+
+  .houses{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:8px}
+  @media (max-width:640px){.houses{grid-template-columns:1fr}}
+  .house{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow)}
+  .house .em{font-size:26px}
+  .house h3{margin:8px 0 5px;font-size:16px}
+  .house h3 span{color:var(--ink-3);font-weight:700;font-size:12.5px;display:block;margin-top:1px}
+  .house p{margin:0;font-size:13.5px;color:var(--ink-2)}
+  .house.tq{border-top:3px solid var(--tq)} .house.am{border-top:3px solid var(--amber)} .house.co{border-top:3px solid var(--coral)}
+
+  .demo{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow);margin-top:8px}
+  .demorow{display:flex;align-items:center;gap:14px;padding:12px;border-radius:12px;background:var(--surface-2)}
+  .demorow .ic{width:38px;height:38px;border-radius:12px;background:color-mix(in srgb,var(--amber) 18%,transparent);display:grid;place-items:center;font-size:18px}
+  .demorow .m{flex:1}
+  .demorow .t{font-weight:700;font-size:14.5px}
+  .demorow .s{font-size:12px;color:var(--ink-3)}
+  .check{width:32px;height:32px;border-radius:50%;border:2px solid var(--line);background:transparent;cursor:pointer;flex:none;
+    display:grid;place-items:center;color:transparent;transition:.18s}
+  .check.on{background:var(--good);border-color:var(--good);color:#fff}
+  .check:focus-visible{outline:2px solid var(--tq);outline-offset:2px}
+  .tiphint{text-align:center;font-size:13px;color:var(--tq-deep);font-weight:700;margin-top:12px}
+
+  .block{margin-top:16px;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--surface)}
+  .block .bh{display:flex;align-items:center;gap:9px;padding:12px 15px;font-weight:800;font-size:14.5px;border-bottom:1px solid var(--line)}
+  .block .bh .tag{margin-left:auto;font-size:11px;font-weight:700;color:var(--ink-3)}
+  pre{margin:0;padding:15px;background:var(--code-bg);color:var(--code-ink);overflow-x:auto;font-size:12.5px;line-height:1.7;
+    font-family:"SF Mono",ui-monospace,Menlo,monospace}
+  pre .c{color:#7fd7e0} pre .k{color:#ffb27a} pre .s{color:#9ce6b0} pre .m{color:#7f93a8}
+  .exp{padding:14px 15px;font-size:13.5px;color:var(--ink-2)}
+  .exp b{color:var(--ink)}
+  .exp code{background:var(--surface-2);padding:1px 6px;border-radius:6px;font-family:"SF Mono",ui-monospace,monospace;font-size:12px;color:var(--tq-deep)}
+
+  .callout{margin-top:34px;background:linear-gradient(120deg,color-mix(in srgb,var(--tq) 14%,var(--surface)),color-mix(in srgb,var(--tq-deep) 12%,var(--surface)));
+    border:1px solid color-mix(in srgb,var(--tq) 30%,transparent);border-radius:16px;padding:18px 18px}
+  .callout h3{margin:0 0 6px;font-size:16px}
+  .callout p{margin:0;font-size:14px;color:var(--ink-2)}
+  .foot{margin-top:26px;color:var(--ink-3);font-size:13px;text-align:center}
+</style>
+</head>
+<body>
+
+<button class="themebtn" id="tt">◐ Hell / Dunkel</button>
+
+<div class="wrap">
+  <p class="eyebrow">Etappe 2 · Lektion 1</p>
+  <h1>Wie funktioniert deine App unter der Haube?</h1>
+  <p class="lede">Jede App – auch deine VITARA – besteht aus <b>drei Bausteinen</b>, die zusammenarbeiten. Stell dir vor, wir bauen ein Haus.</p>
+
+  <h2>Die 3 Bausteine – wie beim Hausbau</h2>
+  <div class="houses">
+    <div class="house tq"><div class="em">🧱</div><h3>HTML<span>Der Rohbau</span></h3><p>Die Struktur: Wände, Räume, Türen. Beim Handy sind das die Texte, Knöpfe und Bilder – <i>was</i> da ist.</p></div>
+    <div class="house am"><div class="em">🎨</div><h3>CSS<span>Der Anstrich</span></h3><p>Das Aussehen: Farben, Formen, Abstände. Also dein Türkis, die runden Ecken, die Schatten – <i>wie</i> es aussieht.</p></div>
+    <div class="house co"><div class="em">⚡</div><h3>JavaScript<span>Die Technik</span></h3><p>Das Verhalten: Lichtschalter, Klingel. Was passiert, wenn du tippst – <i>was</i> die App <i>tut</i>.</p></div>
+  </div>
+
+  <h2>Ein echtes Beispiel aus deiner App</h2>
+  <p class="sub">Der Häkchen-Knopf, mit dem du ein Präparat als „genommen" markierst. Probier ihn hier:</p>
+
+  <div class="demo">
+    <div class="demorow">
+      <div class="ic">☀️</div>
+      <div class="m"><div class="t">Vitamin D3 + K2</div><div class="s">natural elements · 1 Tablette</div></div>
+      <button class="check" id="democheck" aria-label="Als genommen markieren"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button>
+    </div>
+    <div class="tiphint" id="hint">↑ Tippe auf den Kreis rechts</div>
+  </div>
+
+  <p class="sub" style="margin-top:26px">Und so ist genau dieser Knopf aus den 3 Bausteinen gebaut:</p>
+
+  <div class="block">
+    <div class="bh">🧱 HTML <span class="tag">der Knopf selbst</span></div>
+    <pre><span class="m">&lt;</span><span class="k">button</span> <span class="c">class</span>=<span class="s">"check"</span><span class="m">&gt;</span>
+   <span class="m">&lt;</span><span class="k">svg</span><span class="m">&gt;</span> ✓ <span class="m">&lt;/</span><span class="k">svg</span><span class="m">&gt;</span>   <span class="m">&lt;!-- das Häkchen-Symbol --&gt;</span>
+<span class="m">&lt;/</span><span class="k">button</span><span class="m">&gt;</span></pre>
+    <div class="exp">Das erzeugt einen <b>Knopf</b>. Das <code>class="check"</code> ist wie ein Namensschild – daran erkennen ihn CSS und JavaScript wieder. Innen steckt ein kleines Häkchen-Symbol.</div>
+  </div>
+
+  <div class="block">
+    <div class="bh">🎨 CSS <span class="tag">das Aussehen</span></div>
+    <pre><span class="c">.check</span> {
+   <span class="k">border-radius</span>: <span class="s">50%</span>;      <span class="m">/* macht ihn rund */</span>
+   <span class="k">border</span>: <span class="s">2px solid grau</span>;  <span class="m">/* dünner Rand */</span>
+   <span class="k">color</span>: <span class="s">durchsichtig</span>;   <span class="m">/* Häkchen unsichtbar */</span>
+}
+<span class="c">.check.on</span> {              <span class="m">/* wenn "an": */</span>
+   <span class="k">background</span>: <span class="s">grün</span>;      <span class="m">/* wird grün gefüllt */</span>
+   <span class="k">color</span>: <span class="s">weiß</span>;         <span class="m">/* Häkchen sichtbar */</span>
+}</pre>
+    <div class="exp">Zwei Zustände: normal ist der Kreis <b>leer mit Rand</b>. Sobald er die Markierung <code>on</code> bekommt, wird er <b>grün gefüllt</b> und das Häkchen erscheint. CSS beschreibt nur, wie beides <i>aussieht</i> – noch passiert nichts von allein.</div>
+  </div>
+
+  <div class="block">
+    <div class="bh">⚡ JavaScript <span class="tag">das Verhalten</span></div>
+    <pre><span class="c">// "Wenn jemand auf den Knopf tippt ..."</span>
+knopf.<span class="k">addEventListener</span>(<span class="s">'click'</span>, () =&gt; {
+   <span class="c">// ... schalte die Markierung 'on' um."</span>
+   knopf.classList.<span class="k">toggle</span>(<span class="s">'on'</span>);
+});</pre>
+    <div class="exp"><b>Das</b> bringt Leben rein. <code>addEventListener('click', …)</code> heißt „hör auf einen Tipp". <code>toggle('on')</code> ist ein <b>Umschalter</b>: ist die Markierung da, nimmt er sie weg – ist sie weg, setzt er sie. Genau deshalb wird der Kreis beim Antippen abwechselnd grün und wieder leer.</div>
+  </div>
+
+  <div class="callout">
+    <h3>💡 Das Zusammenspiel</h3>
+    <p>HTML stellt den Knopf hin, CSS macht ihn schön und definiert das grüne „an"-Aussehen, und JavaScript entscheidet beim Tippen, wann „an" gilt. <b>Drei Bausteine, ein Ergebnis</b> – und genau so ist deine ganze App aufgebaut, nur mit vielen solcher Teile.</p>
+  </div>
+
+  <p class="foot">Lektion 1 von Etappe 2 · Als Nächstes: Wir ändern gemeinsam eine Zeile und du siehst live, was passiert.</p>
+</div>
+
+<script>
+  var root=document.documentElement;
+  document.getElementById('tt').addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    root.setAttribute('data-theme',cur==='dark'?'light':'dark');
+  });
+  // genau dieselbe Logik wie in deiner App:
+  var knopf=document.getElementById('democheck');
+  var hint=document.getElementById('hint');
+  knopf.addEventListener('click',function(){
+    knopf.classList.toggle('on');
+    hint.textContent = knopf.classList.contains('on') ? '✓ Genommen! Tippe nochmal zum Zurücksetzen' : '↑ Tippe auf den Kreis rechts';
+  });
+</script>
+</body>
+</html>
