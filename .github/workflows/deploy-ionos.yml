@@ -1,0 +1,38 @@
+# Automatischer Upload der App zu IONOS (Webspace) per SFTP.
+# Läuft bei jeder Änderung im Ordner gesundheits-app/ auf dem main-Branch
+# und kann auch von Hand über den Actions-Tab gestartet werden.
+# Die Zugangsdaten liegen sicher in den GitHub-Secrets (nicht im Code).
+
+name: App zu IONOS hochladen
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'gesundheits-app/**'
+      - '.github/workflows/deploy-ionos.yml'
+  workflow_dispatch:        # erlaubt manuelles Starten per Knopfdruck
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code aus dem Repository holen
+        uses: actions/checkout@v4
+
+      - name: Nur Web-Dateien vorbereiten (interne .md-Notizen weglassen)
+        run: |
+          mkdir -p dist
+          rsync -a --exclude='*.md' gesundheits-app/ dist/
+
+      - name: Dateien per SFTP zu IONOS hochladen
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        with:
+          server:   ${{ secrets.IONOS_FTP_SERVER }}
+          username: ${{ secrets.IONOS_FTP_USER }}
+          password: ${{ secrets.IONOS_FTP_PASSWORD }}
+          port: 22
+          local_path: './dist/*'
+          remote_path: '/gesundheitsapp'   # Ziel-Ordner auf dem Webspace
+          sftp_only: true
+          delete_remote_files: false          # nichts anderes auf dem Webspace anfassen
