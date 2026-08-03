@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VITARA – Gesundheits-App Konzept</title>
+<style>
+  :root {
+    /* Neutrals with a cool pine bias */
+    --bg: #eef2f0;
+    --stage: #e2e8e5;
+    --surface: #ffffff;
+    --surface-2: #f4f7f5;
+    --ink: #10231d;
+    --ink-2: #486159;
+    --ink-3: #7d938b;
+    --line: #e2e9e5;
+    /* Accents */
+    --pine: #0d6e5a;
+    --pine-deep: #0a4a3c;
+    --mint: #37c48f;
+    /* Semantic */
+    --supp: #d98a2b;     /* Nahrungsergänzung – amber */
+    --joint: #e0674c;    /* Gelenke – coral */
+    --vital: #0d6e5a;    /* Vitalwerte – pine */
+    --good: #37a86b;
+    --warn: #e0a52e;
+    --crit: #dd5540;
+    --shadow: 0 1px 2px rgba(16,35,29,.05), 0 12px 34px -14px rgba(16,35,29,.22);
+    --shadow-phone: 0 40px 90px -30px rgba(10,45,36,.55), 0 8px 24px -12px rgba(10,45,36,.4);
+    --r: 20px;
+    --font: ui-rounded, "SF Pro Rounded", "Segoe UI", system-ui, -apple-system, sans-serif;
+    --num: "SF Mono", "SFMono-Regular", ui-monospace, "Cascadia Mono", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0b1512; --stage: #0e1a16; --surface: #14211d; --surface-2: #182a24;
+      --ink: #eaf3ef; --ink-2: #a7bdb4; --ink-3: #6f877e; --line: #223730;
+      --pine: #35c396; --pine-deep: #2aa87f; --mint: #4dd6a0;
+      --supp: #eaa347; --joint: #f0836a; --vital: #35c396;
+      --good: #4dcf8a; --warn: #eab946; --crit: #f0715a;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 14px 34px -16px rgba(0,0,0,.6);
+      --shadow-phone: 0 50px 100px -30px rgba(0,0,0,.75), 0 8px 24px -12px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0b1512; --stage: #0e1a16; --surface: #14211d; --surface-2: #182a24;
+    --ink: #eaf3ef; --ink-2: #a7bdb4; --ink-3: #6f877e; --line: #223730;
+    --pine: #35c396; --pine-deep: #2aa87f; --mint: #4dd6a0;
+    --supp: #eaa347; --joint: #f0836a; --vital: #35c396;
+    --good: #4dcf8a; --warn: #eab946; --crit: #f0715a;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 14px 34px -16px rgba(0,0,0,.6);
+    --shadow-phone: 0 50px 100px -30px rgba(0,0,0,.75), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+  :root[data-theme="light"] {
+    --bg: #eef2f0; --stage: #e2e8e5; --surface: #ffffff; --surface-2: #f4f7f5;
+    --ink: #10231d; --ink-2: #486159; --ink-3: #7d938b; --line: #e2e9e5;
+    --pine: #0d6e5a; --pine-deep: #0a4a3c; --mint: #37c48f;
+    --supp: #d98a2b; --joint: #e0674c; --vital: #0d6e5a;
+    --good: #37a86b; --warn: #e0a52e; --crit: #dd5540;
+    --shadow: 0 1px 2px rgba(16,35,29,.05), 0 12px 34px -14px rgba(16,35,29,.22);
+    --shadow-phone: 0 40px 90px -30px rgba(10,45,36,.55), 0 8px 24px -12px rgba(10,45,36,.4);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: var(--font); color: var(--ink);
+    background:
+      radial-gradient(1200px 600px at 12% -5%, color-mix(in srgb, var(--pine) 14%, transparent), transparent 60%),
+      radial-gradient(900px 500px at 100% 0%, color-mix(in srgb, var(--supp) 10%, transparent), transparent 55%),
+      var(--bg);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1160px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  /* Intro */
+  .intro { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 34px; }
+  .eyebrow { font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: var(--pine); font-weight: 700; margin: 0 0 10px; }
+  h1 { font-size: clamp(30px, 4.5vw, 46px); line-height: 1.02; margin: 0; letter-spacing: -.02em; text-wrap: balance; font-weight: 800; }
+  h1 .thin { color: var(--ink-3); font-weight: 500; }
+  .lede { color: var(--ink-2); max-width: 46ch; margin: 14px 0 0; font-size: 16px; line-height: 1.55; }
+  .themebtn {
+    border: 1px solid var(--line); background: var(--surface); color: var(--ink-2);
+    padding: 9px 15px; border-radius: 999px; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 8px; box-shadow: var(--shadow);
+  }
+  .themebtn:hover { color: var(--ink); }
+  .themebtn:focus-visible { outline: 2px solid var(--pine); outline-offset: 2px; }
+
+  .stage { display: grid; grid-template-columns: 300px 1fr; gap: 40px; align-items: start; }
+  @media (max-width: 860px) { .stage { grid-template-columns: 1fr; gap: 30px; } }
+
+  /* Concept legend rail */
+  .rail { display: flex; flex-direction: column; gap: 14px; position: sticky; top: 28px; }
+  @media (max-width: 860px) { .rail { position: static; } }
+  .pillar { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px 16px 15px; box-shadow: var(--shadow); }
+  .pillar h3 { margin: 0 0 4px; font-size: 15px; display: flex; align-items: center; gap: 9px; }
+  .pillar p { margin: 0; font-size: 13px; color: var(--ink-2); line-height: 1.5; }
+  .dot { width: 10px; height: 10px; border-radius: 4px; flex: none; }
+  .hint { font-size: 12.5px; color: var(--ink-3); line-height: 1.5; padding: 2px 4px; }
+
+  /* Phone */
+  .phone-area { display: flex; justify-content: center; }
+  .phone {
+    width: 390px; max-width: 100%; background: var(--surface); border-radius: 46px;
+    box-shadow: var(--shadow-phone); border: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
+    padding: 12px; position: relative;
+  }
+  .screen { background: var(--surface-2); border-radius: 36px; overflow: hidden; position: relative; height: 780px; display: flex; flex-direction: column; }
+  .notch { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 120px; height: 26px; background: #05100c; border-radius: 999px; z-index: 30; }
+  :root[data-theme="light"] .notch, :root:not([data-theme]) .notch { background: #05100c; }
+
+  .statusbar { display: flex; justify-content: space-between; align-items: center; padding: 15px 26px 6px; font-size: 13px; font-weight: 600; color: var(--ink); }
+  .statusbar .r { display: flex; gap: 6px; align-items: center; }
+
+  .view { flex: 1; overflow-y: auto; padding: 6px 18px 20px; scrollbar-width: none; }
+  .view::-webkit-scrollbar { display: none; }
+  .view[hidden] { display: none; }
+
+  .apphead { display: flex; align-items: center; justify-content: space-between; padding: 10px 4px 16px; }
+  .apphead .greet { font-size: 13px; color: var(--ink-3); }
+  .apphead .name { font-size: 22px; font-weight: 800; letter-spacing: -.01em; }
+  .avatar { width: 42px; height: 42px; border-radius: 14px; background: linear-gradient(135deg, var(--pine), var(--pine-deep)); color: #fff; display: grid; place-items: center; font-weight: 800; }
+
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; box-shadow: var(--shadow); }
+  .stack { display: flex; flex-direction: column; gap: 14px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .sec-title { font-size: 13px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-3); margin: 20px 4px 10px; display: flex; justify-content: space-between; align-items: center; }
+  .sec-title a { color: var(--pine); text-decoration: none; font-weight: 700; text-transform: none; letter-spacing: 0; font-size: 12.5px; }
+
+  /* Score ring hero */
+  .hero { background: linear-gradient(150deg, var(--pine), var(--pine-deep)); color: #eafff6; border: none; position: relative; overflow: hidden; }
+  .hero::after { content: ""; position: absolute; inset: 0; background: radial-gradient(220px 160px at 88% -10%, rgba(255,255,255,.18), transparent 70%); }
+  .hero .row { display: flex; align-items: center; gap: 18px; position: relative; z-index: 1; }
+  .ring { width: 92px; height: 92px; flex: none; }
+  .hero .big { font-size: 30px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+  .hero .sub { font-size: 13px; opacity: .85; margin-top: 3px; }
+  .hero .tag { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,.16); padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; margin-top: 8px; }
+
+  /* Metric tile */
+  .metric { position: relative; }
+  .metric .lab { font-size: 12px; color: var(--ink-3); font-weight: 600; display: flex; align-items: center; gap: 7px; }
+  .metric .val { font-size: 25px; font-weight: 800; letter-spacing: -.01em; font-variant-numeric: tabular-nums; margin-top: 8px; }
+  .metric .val small { font-size: 13px; font-weight: 600; color: var(--ink-3); }
+  .metric .foot { font-size: 11.5px; margin-top: 6px; display: flex; align-items: center; gap: 5px; font-weight: 600; }
+  .up { color: var(--good); } .down { color: var(--crit); } .flat { color: var(--ink-3); }
+  .spark { position: absolute; right: 14px; bottom: 14px; opacity: .9; }
+  .icoq { width: 22px; height: 22px; border-radius: 8px; display: grid; place-items: center; flex: none; }
+
+  .pill { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 700; padding: 3px 9px; border-radius: 999px; }
+  .pill.good { background: color-mix(in srgb, var(--good) 16%, transparent); color: var(--good); }
+  .pill.warn { background: color-mix(in srgb, var(--warn) 18%, transparent); color: var(--warn); }
+  .pill.crit { background: color-mix(in srgb, var(--crit) 16%, transparent); color: var(--crit); }
+
+  /* Supplement row */
+  .supp-row { display: flex; align-items: center; gap: 13px; padding: 11px 4px; }
+  .supp-row + .supp-row { border-top: 1px solid var(--line); }
+  .supp-ico { width: 40px; height: 40px; border-radius: 13px; display: grid; place-items: center; flex: none; font-size: 19px; }
+  .supp-meta { flex: 1; min-width: 0; }
+  .supp-meta .t { font-weight: 700; font-size: 14.5px; }
+  .supp-meta .s { font-size: 12px; color: var(--ink-3); margin-top: 1px; }
+  .check { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--line); background: transparent; cursor: pointer; flex: none; display: grid; place-items: center; transition: .18s; color: transparent; }
+  .check.on { background: var(--good); border-color: var(--good); color: #fff; }
+  .check:focus-visible { outline: 2px solid var(--pine); outline-offset: 2px; }
+
+  .bar { height: 6px; border-radius: 999px; background: var(--line); overflow: hidden; margin-top: 8px; }
+  .bar > i { display: block; height: 100%; border-radius: 999px; }
+
+  /* Body map */
+  .bodymap { display: flex; gap: 8px; align-items: stretch; }
+  .bodymap .figure { flex: 1; display: grid; place-items: center; padding: 8px 0; }
+  .jointlist { flex: 1; display: flex; flex-direction: column; gap: 8px; justify-content: center; }
+  .jrow { display: flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 600; }
+  .jrow .lv { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+  .jrow .n { flex: 1; }
+  .jrow .g { font-size: 11.5px; color: var(--ink-3); font-weight: 600; }
+  .bpin { cursor: pointer; transition: r .15s, opacity .15s; }
+  .bpin:hover { opacity: .8; }
+
+  .painscale { display: flex; gap: 6px; margin-top: 12px; }
+  .painscale button { flex: 1; border: 1px solid var(--line); background: var(--surface-2); border-radius: 10px; padding: 9px 0; font: inherit; font-weight: 700; font-size: 13px; color: var(--ink-2); cursor: pointer; }
+  .painscale button.sel { color: #fff; border-color: transparent; }
+  .painscale button:focus-visible { outline: 2px solid var(--pine); outline-offset: 2px; }
+
+  /* Vital chart */
+  .chartcard { padding-bottom: 8px; }
+  .segbar { display: flex; gap: 4px; background: var(--surface-2); padding: 4px; border-radius: 12px; margin: 4px 0 14px; }
+  .segbar button { flex: 1; border: none; background: transparent; padding: 7px 0; border-radius: 9px; font: inherit; font-weight: 700; font-size: 12.5px; color: var(--ink-3); cursor: pointer; }
+  .segbar button.on { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+  .legend2 { display: flex; gap: 16px; font-size: 12px; color: var(--ink-2); margin-top: 10px; }
+  .legend2 span { display: inline-flex; align-items: center; gap: 6px; }
+  .rangebox { display: flex; justify-content: space-between; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 12px; }
+  .rangebox b { display: block; font-size: 17px; font-weight: 800; margin-top: 3px; font-variant-numeric: tabular-nums; }
+
+  /* Bottom nav */
+  .tabbar { display: flex; justify-content: space-around; padding: 10px 10px calc(10px + env(safe-area-inset-bottom)); background: color-mix(in srgb, var(--surface) 92%, transparent); backdrop-filter: blur(12px); border-top: 1px solid var(--line); }
+  .tab { border: none; background: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; font: inherit; font-size: 10.5px; font-weight: 700; color: var(--ink-3); padding: 4px 6px; }
+  .tab svg { width: 24px; height: 24px; }
+  .tab.on { color: var(--pine); }
+  .tab:focus-visible { outline: 2px solid var(--pine); outline-offset: 2px; border-radius: 8px; }
+
+  .fab { position: absolute; right: 18px; bottom: 92px; width: 54px; height: 54px; border-radius: 18px; background: linear-gradient(135deg, var(--pine), var(--pine-deep)); color: #fff; border: none; box-shadow: 0 12px 24px -8px color-mix(in srgb, var(--pine) 70%, black); cursor: pointer; display: grid; place-items: center; z-index: 20; }
+  .fab:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+  .foot-note { text-align: center; color: var(--ink-3); font-size: 12.5px; margin-top: 26px; }
+
+  /* Knowledge / Wissen */
+  .searchbar { display: flex; align-items: center; gap: 9px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 11px 14px; color: var(--ink-3); font-size: 13.5px; box-shadow: var(--shadow); }
+  .chips { display: flex; gap: 8px; overflow-x: auto; padding: 12px 2px 4px; scrollbar-width: none; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip { flex: none; border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); border-radius: 999px; padding: 7px 13px; font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+  .chip.on { background: var(--joint); border-color: transparent; color: #fff; }
+  .chip:focus-visible { outline: 2px solid var(--pine); outline-offset: 2px; }
+  .artcard { display: block; text-decoration: none; color: inherit; }
+  .artcard .src { font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--joint); display: flex; gap: 8px; align-items: center; }
+  .artcard .src .date { color: var(--ink-3); text-transform: none; letter-spacing: 0; font-weight: 600; }
+  .artcard .h { font-weight: 800; font-size: 15px; line-height: 1.25; margin: 7px 0 5px; letter-spacing: -.01em; text-wrap: balance; }
+  .artcard .d { font-size: 12.5px; color: var(--ink-2); line-height: 1.5; }
+  .vidcard { display: flex; gap: 12px; align-items: center; text-decoration: none; color: inherit; }
+  .thumb { width: 108px; height: 66px; border-radius: 12px; flex: none; position: relative; overflow: hidden; display: grid; place-items: center; background: linear-gradient(135deg, var(--pine-deep), var(--joint)); }
+  .thumb .play { width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,.9); display: grid; place-items: center; }
+  .thumb .play svg { fill: var(--pine-deep); margin-left: 2px; }
+  .thumb .dur { position: absolute; right: 5px; bottom: 5px; background: rgba(0,0,0,.72); color: #fff; font-size: 10px; font-weight: 700; padding: 1px 5px; border-radius: 5px; }
+  .vidmeta .vt { font-weight: 700; font-size: 13.5px; line-height: 1.3; text-wrap: balance; }
+  .vidmeta .vc { font-size: 12px; color: var(--ink-3); margin-top: 4px; display: flex; align-items: center; gap: 6px; }
+  .disc { font-size: 11.5px; color: var(--ink-3); background: var(--surface-2); border: 1px dashed var(--line); border-radius: 12px; padding: 10px 12px; line-height: 1.5; }
+  .clickable { cursor: pointer; }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="intro">
+    <div>
+      <p class="eyebrow">App-Konzept · Mockup</p>
+      <h1>VITARA <span class="thin">— dein Gesundheits-Cockpit</span></h1>
+      <p class="lede">Vitalwerte, Nahrungsergänzung und Gelenke an einem Ort. Klick dich unten durch die Tab-Leiste des Prototyps — die Häkchen, die Schmerz-Skala und die Diagramm-Zeiträume sind schon anklickbar.</p>
+    </div>
+    <button class="themebtn" id="themeToggle" aria-label="Design wechseln">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4 12H2M22 12h-2M6 6 4.5 4.5M19.5 19.5 18 18M18 6l1.5-1.5M4.5 19.5 6 18"/></svg>
+      Hell / Dunkel
+    </button>
+  </div>
+
+  <div class="stage">
+    <aside class="rail">
+      <div class="pillar"><h3><span class="dot" style="background:var(--vital)"></span>Vitalwerte</h3><p>Blutdruck, Puls, HRV, Gewicht, Schlaf & SpO₂ — mit Trend und Zielbereich.</p></div>
+      <div class="pillar"><h3><span class="dot" style="background:var(--supp)"></span>Nahrungsergänzung</h3><p>Einnahme-Plan, Abhaken pro Tageszeit und Vorrats-Warnung, wenn etwas knapp wird.</p></div>
+      <div class="pillar"><h3><span class="dot" style="background:var(--joint)"></span>Gelenke</h3><p>Antippbare Körperkarte, Schmerz-Tagebuch (0–10) und Beweglichkeit über Zeit.</p></div>
+      <div class="pillar"><h3><span class="dot" style="background:var(--pine)"></span>Wissen</h3><p>Neueste Forschung zu Arthrose & HWS-Syndrom plus Top-YouTube-Übungen für Schulter, Nacken, HWS & Hüfte — nach deinen Themen gefiltert.</p></div>
+      <p class="hint">Das ist ein unverbindliches Design-Mockup. Noch keine echten Daten, keine Medizin­funktion — wir stimmen erst Inhalte & Optik ab.</p>
+    </aside>
+
+    <div class="phone-area">
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="screen">
+          <div class="statusbar">
+            <span>9:41</span>
+            <span class="r">
+              <svg width="17" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="7" width="3" height="5" rx="1"/><rect x="5" y="4" width="3" height="8" rx="1"/><rect x="10" y="1" width="3" height="11" rx="1" opacity=".4"/><rect x="15" y="1" width="3" height="11" rx="1" opacity=".4"/></svg>
+              <svg width="22" height="12" viewBox="0 0 24 12" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="19" height="10" rx="3"/><rect x="3" y="3" width="12" height="6" rx="1.5" fill="currentColor" stroke="none"/><rect x="21" y="4" width="2" height="4" rx="1" fill="currentColor" stroke="none"/></svg>
+            </span>
+          </div>
+
+          <!-- HOME -->
+          <section class="view" id="v-home">
+            <div class="apphead">
+              <div><div class="greet">Sonntag, 27. Juli</div><div class="name">Moin! 👋</div></div>
+              <div class="avatar">M</div>
+            </div>
+
+            <div class="card hero">
+              <div class="row">
+                <svg class="ring" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="9"/>
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="#eafff6" stroke-width="9" stroke-linecap="round" stroke-dasharray="251.3" stroke-dashoffset="52" transform="rotate(-90 50 50)"/>
+                  <text x="50" y="47" text-anchor="middle" font-size="21" font-weight="800" fill="#fff" font-family="var(--font)">79</text>
+                  <text x="50" y="63" text-anchor="middle" font-size="9" fill="rgba(255,255,255,.8)">von 100</text>
+                </svg>
+                <div>
+                  <div class="big">Gut in Form</div>
+                  <div class="sub">Dein Gesundheits-Score heute</div>
+                  <span class="tag">▲ 4 Punkte vs. gestern</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="sec-title">Vitalwerte heute <a href="#" data-goto="vitals">Alle ›</a></div>
+            <div class="grid2">
+              <div class="card metric">
+                <div class="lab"><span class="icoq" style="background:color-mix(in srgb,var(--joint) 16%,transparent);color:var(--joint)">❤</span>Puls</div>
+                <div class="val">62 <small>bpm</small></div>
+                <div class="foot flat">Ruhe · normal</div>
+              </div>
+              <div class="card metric">
+                <div class="lab"><span class="icoq" style="background:color-mix(in srgb,var(--vital) 16%,transparent);color:var(--vital)">🩸</span>Blutdruck</div>
+                <div class="val">124<small>/78</small></div>
+                <div class="foot up">▲ leicht erhöht</div>
+              </div>
+              <div class="card metric">
+                <div class="lab"><span class="icoq" style="background:color-mix(in srgb,var(--mint) 22%,transparent);color:var(--pine)">〰</span>HRV</div>
+                <div class="val">48 <small>ms</small></div>
+                <div class="foot up">▲ gute Erholung</div>
+              </div>
+              <div class="card metric">
+                <div class="lab"><span class="icoq" style="background:color-mix(in srgb,var(--supp) 18%,transparent);color:var(--supp)">☾</span>Schlaf</div>
+                <div class="val">7:12 <small>h</small></div>
+                <div class="foot up">▲ +40 Min</div>
+              </div>
+            </div>
+
+            <div class="sec-title">Als Nächstes fällig</div>
+            <div class="card">
+              <div class="supp-row">
+                <div class="supp-ico" style="background:color-mix(in srgb,var(--supp) 16%,transparent)">💊</div>
+                <div class="supp-meta"><div class="t">Omega-3 + Vitamin D</div><div class="s">Mittags · zum Essen</div></div>
+                <button class="check" aria-label="Als eingenommen markieren"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button>
+              </div>
+              <div class="supp-row">
+                <div class="supp-ico" style="background:color-mix(in srgb,var(--joint) 14%,transparent)">🦴</div>
+                <div class="supp-meta"><div class="t">Glucosamin · Knie</div><div class="s">Mittags · Gelenk-Kur</div></div>
+                <button class="check" aria-label="Als eingenommen markieren"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button>
+              </div>
+            </div>
+
+            <div class="sec-title">Gelenk-Status <a href="#" data-goto="joints">Karte ›</a></div>
+            <div class="card">
+              <div class="supp-row" style="padding-top:2px">
+                <div class="supp-ico" style="background:color-mix(in srgb,var(--joint) 14%,transparent)">🦵</div>
+                <div class="supp-meta"><div class="t">Rechtes Knie</div><div class="s">Heute 2/10 · deutlich besser</div></div>
+                <span class="pill good">Stabil</span>
+              </div>
+              <div class="supp-row">
+                <div class="supp-ico" style="background:color-mix(in srgb,var(--warn) 16%,transparent)">💪</div>
+                <div class="supp-meta"><div class="t">Linke Schulter</div><div class="s">Heute 4/10 · morgens steif</div></div>
+                <span class="pill warn">Beobachten</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- VITALS -->
+          <section class="view" id="v-vitals" hidden>
+            <div class="apphead"><div><div class="greet">Verlauf</div><div class="name">Vitalwerte</div></div><div class="avatar" style="background:linear-gradient(135deg,var(--joint),#b8492f)">❤</div></div>
+
+            <div class="card chartcard">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <div><div style="font-weight:800;font-size:15px">Blutdruck</div><div style="font-size:12px;color:var(--ink-3)">systolisch / diastolisch</div></div>
+                <span class="pill warn">Ø 122/79</span>
+              </div>
+              <div class="segbar" id="rangeSeg">
+                <button class="on">Woche</button><button>Monat</button><button>Jahr</button>
+              </div>
+              <canvas id="bpChart" width="640" height="320" style="width:100%;height:160px"></canvas>
+              <div class="legend2">
+                <span><span class="dot" style="background:var(--joint)"></span>Systolisch</span>
+                <span><span class="dot" style="background:var(--pine)"></span>Diastolisch</span>
+                <span style="margin-left:auto;color:var(--ink-3)">Zielband 110–130</span>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top:14px">
+              <div style="display:flex;justify-content:space-between;align-items:center"><div style="font-weight:800;font-size:14px">Mein Zielbereich</div><span style="font-size:12px;color:var(--pine);font-weight:700" class="clickable">Anpassen ›</span></div>
+              <div style="font-size:12px;color:var(--ink-3);margin:4px 0 10px">Systolisch · aktuell im grünen Band</div>
+              <div style="position:relative;height:12px;border-radius:999px;background:linear-gradient(90deg,var(--good) 0 55%,var(--warn) 55% 80%,var(--crit) 80%);">
+                <div style="position:absolute;top:-4px;left:52%;width:4px;height:20px;border-radius:3px;background:var(--ink);box-shadow:0 0 0 3px var(--surface)"></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--ink-3);margin-top:6px"><span>100</span><span>130 Ziel</span><span>160</span></div>
+            </div>
+
+            <div class="sec-title">Weitere Werte</div>
+            <div class="stack">
+              <div class="card metric clickable" style="display:flex;align-items:center;gap:14px">
+                <div style="flex:1"><div class="lab"><span class="icoq" style="background:color-mix(in srgb,var(--joint) 16%,transparent);color:var(--joint)">❤</span>Ruhepuls</div><div class="val" style="font-size:22px">62 <small>bpm</small></div></div>
+                <canvas class="mini" data-seed="5" width="200" height="70" style="width:110px;height:44px"></canvas>
+              </div>
+              <div class="card metric clickable" style="display:flex;align-items:center;gap:14px">
+                <div style="flex:1"><div class="lab"><span class="icoq" style="background:color-mix(in srgb,var(--pine) 16%,transparent);color:var(--pine)">〰</span>Herzratenvariabilität</div><div class="val" style="font-size:22px">48 <small>ms</small></div></div>
+                <canvas class="mini" data-seed="4" width="200" height="70" style="width:110px;height:44px"></canvas>
+              </div>
+              <div class="card metric clickable" style="display:flex;align-items:center;gap:14px">
+                <div style="flex:1"><div class="lab"><span class="icoq" style="background:color-mix(in srgb,var(--supp) 18%,transparent);color:var(--supp)">☾</span>Schlaf</div><div class="val" style="font-size:22px">7:12 <small>h</small></div></div>
+                <canvas class="mini" data-seed="6" width="200" height="70" style="width:110px;height:44px"></canvas>
+              </div>
+              <div class="card metric clickable" style="display:flex;align-items:center;gap:14px">
+                <div style="flex:1"><div class="lab"><span class="icoq" style="background:color-mix(in srgb,var(--supp) 18%,transparent);color:var(--supp)">⚖</span>Gewicht</div><div class="val" style="font-size:22px">84,2 <small>kg</small></div></div>
+                <canvas class="mini" data-seed="9" width="200" height="70" style="width:110px;height:44px"></canvas>
+              </div>
+              <div class="card metric clickable" style="display:flex;align-items:center;gap:14px">
+                <div style="flex:1"><div class="lab"><span class="icoq" style="background:color-mix(in srgb,var(--joint) 16%,transparent);color:var(--joint)">🫁</span>Sauerstoff SpO₂</div><div class="val" style="font-size:22px">97 <small>%</small></div></div>
+                <canvas class="mini" data-seed="2" width="200" height="70" style="width:110px;height:44px"></canvas>
+              </div>
+            </div>
+
+            <div class="sec-title">Puls · Spanne heute</div>
+            <div class="card rangebox" style="margin:0">
+              <div>Niedrigst<b>58 bpm</b></div>
+              <div>Durchschnitt<b>64 bpm</b></div>
+              <div>Höchst<b>132 bpm</b></div>
+            </div>
+
+            <div class="disc" style="margin-top:16px">Eingabe: manuell, per Smartwatch oder Blutdruckmessgerät (Bluetooth). Zielbereiche stimmst du individuell ab — VITARA ersetzt keine ärztliche Beurteilung.</div>
+          </section>
+
+          <!-- SUPPLEMENTS -->
+          <section class="view" id="v-supp" hidden>
+            <div class="apphead"><div><div class="greet">Heute · 27. Juli</div><div class="name">Nahrungsergänzung</div></div><div class="avatar" style="background:linear-gradient(135deg,var(--supp),#b06d18)">💊</div></div>
+
+            <div class="card" style="background:color-mix(in srgb,var(--supp) 12%,var(--surface))">
+              <div style="display:flex;align-items:center;gap:14px">
+                <div style="font-size:26px;font-weight:800;font-variant-numeric:tabular-nums">4<span style="color:var(--ink-3);font-size:18px">/6</span></div>
+                <div style="flex:1"><div style="font-weight:700;font-size:14px">Heute schon genommen</div><div class="bar"><i style="width:66%;background:var(--supp)"></i></div></div>
+              </div>
+            </div>
+
+            <div class="sec-title">Morgens</div>
+            <div class="card">
+              <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--supp) 16%,transparent)">☀️</div><div class="supp-meta"><div class="t">Vitamin D3 + K2</div><div class="s">2000 I.E. · Vorrat 21 Tage</div></div><button class="check on" aria-label="eingenommen"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button></div>
+              <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--vital) 14%,transparent)">🧲</div><div class="supp-meta"><div class="t">Magnesium</div><div class="s">400 mg · Vorrat 8 Tage</div></div><button class="check on" aria-label="eingenommen"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button></div>
+            </div>
+
+            <div class="sec-title">Mittags</div>
+            <div class="card">
+              <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--joint) 14%,transparent)">🐟</div><div class="supp-meta"><div class="t">Omega-3</div><div class="s">1000 mg · zum Essen</div></div><button class="check" aria-label="eingenommen"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button></div>
+              <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--joint) 14%,transparent)">🦴</div><div class="supp-meta"><div class="t">Glucosamin + Chondroitin</div><div class="s">Gelenk-Kur · <span style="color:var(--crit);font-weight:700">Vorrat 3 Tage</span></div></div><button class="check" aria-label="eingenommen"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button></div>
+            </div>
+
+            <div class="sec-title">Abends</div>
+            <div class="card">
+              <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--vital) 14%,transparent)">🌙</div><div class="supp-meta"><div class="t">Zink + Selen</div><div class="s">nach dem Training</div></div><button class="check" aria-label="eingenommen"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button></div>
+              <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--pine) 14%,transparent)">🌿</div><div class="supp-meta"><div class="t">Kurkuma + Pfeffer</div><div class="s">entzündungshemmend</div></div><button class="check" aria-label="eingenommen"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button></div>
+            </div>
+          </section>
+
+          <!-- JOINTS -->
+          <section class="view" id="v-joints" hidden>
+            <div class="apphead"><div><div class="greet">Beweglichkeit & Schmerz</div><div class="name">Gelenke</div></div><div class="avatar" style="background:linear-gradient(135deg,var(--joint),#b8492f)">🦵</div></div>
+
+            <div class="card">
+              <div style="font-weight:800;font-size:15px;margin-bottom:2px">Wo tut's heute weh?</div>
+              <div style="font-size:12px;color:var(--ink-3);margin-bottom:6px">Tippe auf einen Punkt in der Körperkarte</div>
+              <div class="bodymap">
+                <div class="figure">
+                  <svg width="120" height="300" viewBox="0 0 120 300" id="bodySvg" aria-label="Körperkarte">
+                    <g fill="none" stroke="var(--line)" stroke-width="2">
+                      <circle cx="60" cy="30" r="18" fill="var(--surface-2)"/>
+                      <path d="M60 48 L60 150" />
+                      <path d="M60 62 L30 120 M60 62 L90 120" />
+                      <path d="M60 150 L42 250 M60 150 L78 250" />
+                      <rect x="44" y="60" width="32" height="92" rx="16" fill="var(--surface-2)"/>
+                    </g>
+                    <!-- pins: left/right shoulder, elbows, wrists, hips, knees, ankles -->
+                    <circle class="bpin" data-j="Linke Schulter" data-lv="2" cx="42" cy="66" r="8" fill="var(--warn)"/>
+                    <circle class="bpin" data-j="Rechte Schulter" data-lv="0" cx="78" cy="66" r="7" fill="var(--good)"/>
+                    <circle class="bpin" data-j="Linker Ellenbogen" data-lv="0" cx="32" cy="110" r="7" fill="var(--good)"/>
+                    <circle class="bpin" data-j="Rechter Ellenbogen" data-lv="1" cx="88" cy="110" r="7" fill="var(--good)"/>
+                    <circle class="bpin" data-j="Linke Hüfte" data-lv="1" cx="50" cy="152" r="7" fill="var(--good)"/>
+                    <circle class="bpin" data-j="Rechte Hüfte" data-lv="1" cx="70" cy="152" r="7" fill="var(--good)"/>
+                    <circle class="bpin" data-j="Linkes Knie" data-lv="1" cx="46" cy="205" r="7" fill="var(--good)"/>
+                    <circle class="bpin" data-j="Rechtes Knie" data-lv="3" cx="74" cy="205" r="9" fill="var(--crit)"/>
+                    <circle class="bpin" data-j="Linker Knöchel" data-lv="0" cx="44" cy="250" r="6" fill="var(--good)"/>
+                    <circle class="bpin" data-j="Rechter Knöchel" data-lv="0" cx="76" cy="250" r="6" fill="var(--good)"/>
+                  </svg>
+                </div>
+                <div class="jointlist">
+                  <div class="jrow"><span class="lv" style="background:var(--crit)"></span><span class="n">Rechtes Knie</span><span class="g">3/10</span></div>
+                  <div class="jrow"><span class="lv" style="background:var(--warn)"></span><span class="n">Linke Schulter</span><span class="g">4/10</span></div>
+                  <div class="jrow"><span class="lv" style="background:var(--good)"></span><span class="n">Hüften</span><span class="g">1/10</span></div>
+                  <div class="jrow"><span class="lv" style="background:var(--good)"></span><span class="n">Ellenbogen</span><span class="g">0–1/10</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="sec-title" id="painTitle">Rechtes Knie · Schmerz eintragen</div>
+            <div class="card">
+              <div style="font-size:12px;color:var(--ink-3)">Wie stark ist der Schmerz gerade?</div>
+              <div class="painscale" id="painScale"></div>
+              <div class="supp-row" style="padding-bottom:2px"><div class="supp-meta"><div class="t">Beweglichkeit diese Woche</div><div class="s">Beugung 0–120° · +8° seit Kur-Start</div></div><span class="pill good">▲ besser</span></div>
+              <div class="bar"><i style="width:78%;background:linear-gradient(90deg,var(--joint),var(--good))"></i></div>
+            </div>
+
+            <div class="sec-title">Verlauf · rechtes Knie</div>
+            <div class="card"><canvas id="jointChart" width="640" height="240" style="width:100%;height:120px"></canvas>
+              <div class="legend2"><span style="color:var(--ink-3)">Schmerz 0–10 · letzte 30 Tage — Trend fallend seit Glucosamin-Start 💊</span></div>
+            </div>
+          </section>
+
+          <!-- WISSEN -->
+          <section class="view" id="v-wissen" hidden>
+            <div class="apphead"><div><div class="greet">Forschung & Übungen</div><div class="name">Wissen</div></div><div class="avatar clickable" data-goto="profile" style="background:linear-gradient(135deg,var(--pine),var(--pine-deep))">🔎</div></div>
+
+            <div class="searchbar clickable">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>
+              Arthrose, HWS, Nacken, Hüfte durchsuchen …
+            </div>
+
+            <div class="chips" id="topicChips">
+              <button class="chip on">Alle</button>
+              <button class="chip">Arthrose</button>
+              <button class="chip">HWS-Syndrom</button>
+              <button class="chip">Schulter</button>
+              <button class="chip">Nacken</button>
+              <button class="chip">Hüfte</button>
+              <button class="chip">Knie</button>
+            </div>
+
+            <div class="sec-title">Neueste Forschung <a href="#" onclick="return false">Alle ›</a></div>
+            <div class="stack">
+              <a class="card artcard clickable" href="#" onclick="return false">
+                <div class="src">Übersichtsarbeit <span class="date">· aktualisiert Juli 2026</span></div>
+                <div class="h">Bewegung & Krafttraining bei Kniearthrose: was aktuelle Leitlinien empfehlen</div>
+                <div class="d">Zusammenfassung des Forschungsstands zu gelenkschonendem Training, Gewichtsmanagement und wann Nahrungsergänzung sinnvoll sein kann.</div>
+              </a>
+              <a class="card artcard clickable" href="#" onclick="return false">
+                <div class="src">HWS-Syndrom <span class="date">· Juni 2026</span></div>
+                <div class="h">Nackenschmerz & Halswirbelsäule: Haltung, Mobilisation und Faktoren im Alltag</div>
+                <div class="d">Überblick zu konservativen Ansätzen bei HWS-Beschwerden und welche Übungen in Studien untersucht wurden.</div>
+              </a>
+              <a class="card artcard clickable" href="#" onclick="return false">
+                <div class="src">Nährstoffe <span class="date">· Mai 2026</span></div>
+                <div class="h">Omega-3, Kurkuma & Glucosamin bei Gelenkbeschwerden — Studienlage im Überblick</div>
+                <div class="d">Was die Forschung zu häufig genutzten Nahrungsergänzungsmitteln sagt, inklusive offener Fragen.</div>
+              </a>
+            </div>
+
+            <div class="sec-title">Top-Videos für deine Gelenke</div>
+            <div class="stack">
+              <a class="card vidcard clickable" href="#" onclick="return false">
+                <div class="thumb" style="background:linear-gradient(135deg,#0a4a3c,#e0674c)"><div class="play"><svg width="12" height="12" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><span class="dur">11:24</span></div>
+                <div class="vidmeta"><div class="vt">Schulterschmerzen: 5 sanfte Übungen für zuhause</div><div class="vc">▶ YouTube · Physio-Kanal</div></div>
+              </a>
+              <a class="card vidcard clickable" href="#" onclick="return false">
+                <div class="thumb" style="background:linear-gradient(135deg,#0d6e5a,#d98a2b)"><div class="play"><svg width="12" height="12" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><span class="dur">8:03</span></div>
+                <div class="vidmeta"><div class="vt">HWS-Syndrom & Nackenschmerz: Mobilisation Schritt für Schritt</div><div class="vc">▶ YouTube · Reha-Kanal</div></div>
+              </a>
+              <a class="card vidcard clickable" href="#" onclick="return false">
+                <div class="thumb" style="background:linear-gradient(135deg,#b8492f,#0a4a3c)"><div class="play"><svg width="12" height="12" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><span class="dur">14:47</span></div>
+                <div class="vidmeta"><div class="vt">Hüftschmerzen lindern: Dehnung & Kräftigung</div><div class="vc">▶ YouTube · Sportmedizin</div></div>
+              </a>
+              <a class="card vidcard clickable" href="#" onclick="return false">
+                <div class="thumb" style="background:linear-gradient(135deg,#d98a2b,#0d6e5a)"><div class="play"><svg width="12" height="12" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><span class="dur">6:58</span></div>
+                <div class="vidmeta"><div class="vt">Nackenverspannung lösen: kurze Routine für den Alltag</div><div class="vc">▶ YouTube · Faszien & Beweglichkeit</div></div>
+              </a>
+            </div>
+
+            <div class="disc" style="margin-top:18px">Beispiel-Inhalte fürs Mockup. In der echten App werden hier tagesaktuelle Artikel und Videos aus vertrauenswürdigen Quellen geladen und nach deinen Themen (Arthrose, HWS, Schulter, Hüfte …) gefiltert. Ersetzt keine ärztliche oder physiotherapeutische Beratung.</div>
+          </section>
+
+          <!-- PROFILE -->
+          <section class="view" id="v-profile" hidden>
+            <div class="apphead"><div><div class="greet">Konto</div><div class="name">Profil</div></div><div class="avatar">M</div></div>
+            <div class="card stack">
+              <div class="supp-row" style="padding-top:2px"><div class="supp-ico" style="background:color-mix(in srgb,var(--vital) 14%,transparent)">⌚</div><div class="supp-meta"><div class="t">Geräte verbinden</div><div class="s">Smartwatch, Blutdruck­messer, Waage</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
+              <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--supp) 14%,transparent)">🎯</div><div class="supp-meta"><div class="t">Meine Ziele</div><div class="s">Zielbereiche & Erinnerungen</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
+              <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--joint) 14%,transparent)">📄</div><div class="supp-meta"><div class="t">Bericht für den Arzt</div><div class="s">PDF-Export der letzten 3 Monate</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
+              <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--pine) 14%,transparent)">🔒</div><div class="supp-meta"><div class="t">Daten & Privatsphäre</div><div class="s">Lokal gespeichert · deine Kontrolle</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
+            </div>
+            <p class="hint" style="text-align:center;margin-top:16px">VITARA ist ein Konzept-Entwurf und ersetzt keine ärztliche Beratung.</p>
+          </section>
+
+          <button class="fab" id="fab" aria-label="Wert hinzufügen">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+
+          <nav class="tabbar" role="tablist">
+            <button class="tab on" data-view="home" role="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11 12 3l9 8"/><path d="M5 10v10h14V10"/></svg>Übersicht</button>
+            <button class="tab" data-view="vitals" role="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l2 6 4-14 2 8h6"/></svg>Vitalwerte</button>
+            <button class="tab" data-view="supp" role="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="9" width="18" height="6" rx="3" transform="rotate(45 12 12)"/></svg>Ergänzung</button>
+            <button class="tab" data-view="joints" role="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="2.4"/><path d="M12 8v5m0 0-3 6m3-6 3 6"/><path d="M8 10h8"/></svg>Gelenke</button>
+            <button class="tab" data-view="wissen" role="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5a2 2 0 0 1 2-2h6v16H6a2 2 0 0 0-2 2z"/><path d="M20 5a2 2 0 0 0-2-2h-6v16h6a2 2 0 0 1 2 2z"/></svg>Wissen</button>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="foot-note">Interaktiver Konzept-Prototyp · Tabs, Häkchen, Zeiträume und die Körperkarte reagieren auf Klicks.</p>
+</div>
+
+<script>
+(function(){
+  var root = document.documentElement;
+  // Theme toggle
+  document.getElementById('themeToggle').addEventListener('click', function(){
+    var cur = root.getAttribute('data-theme');
+    if(!cur){ cur = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark':'light'; }
+    var next = cur === 'dark' ? 'light':'dark';
+    root.setAttribute('data-theme', next);
+    setTimeout(drawAll, 30);
+  });
+
+  // Tab switching
+  var tabs = document.querySelectorAll('.tab');
+  var views = { home:'v-home', vitals:'v-vitals', supp:'v-supp', joints:'v-joints', wissen:'v-wissen', profile:'v-profile' };
+  function show(v){
+    Object.keys(views).forEach(function(k){ document.getElementById(views[k]).hidden = (k!==v); });
+    tabs.forEach(function(t){ t.classList.toggle('on', t.dataset.view===v); });
+    drawAll();
+  }
+  tabs.forEach(function(t){ t.addEventListener('click', function(){ show(t.dataset.view); }); });
+  document.querySelectorAll('[data-goto]').forEach(function(a){ a.addEventListener('click', function(e){ e.preventDefault(); show(a.dataset.goto); }); });
+  document.querySelectorAll('.apphead .avatar').forEach(function(a){ a.style.cursor='pointer'; a.addEventListener('click', function(){ show('profile'); }); });
+
+  // Topic chips (Wissen)
+  var chips = document.getElementById('topicChips');
+  if(chips){ chips.querySelectorAll('.chip').forEach(function(c){ c.addEventListener('click', function(){
+    chips.querySelectorAll('.chip').forEach(function(x){ x.classList.remove('on'); }); c.classList.add('on');
+  }); }); }
+
+  // Supplement checks
+  document.querySelectorAll('.check').forEach(function(c){ c.addEventListener('click', function(){ c.classList.toggle('on'); }); });
+
+  // Pain scale
+  var scale = document.getElementById('painScale');
+  if(scale){ for(var i=0;i<=10;i+=2){ var b=document.createElement('button'); b.textContent=i; b.dataset.v=i; scale.appendChild(b); }
+    scale.querySelectorAll('button').forEach(function(b){ b.addEventListener('click', function(){
+      scale.querySelectorAll('button').forEach(function(x){ x.classList.remove('sel'); x.style.background=''; });
+      b.classList.add('sel');
+      var v=+b.dataset.v; b.style.background = v>=6?'var(--crit)': v>=3?'var(--warn)':'var(--good)';
+    }); });
+    var mid = scale.querySelector('[data-v="4"]'); if(mid){ mid.classList.add('sel'); mid.style.background='var(--warn)'; }
+  }
+
+  // Body pins
+  document.querySelectorAll('.bpin').forEach(function(p){ p.addEventListener('click', function(){
+    document.querySelectorAll('.bpin').forEach(function(x){ x.setAttribute('stroke','none'); });
+    p.setAttribute('stroke','var(--ink)'); p.setAttribute('stroke-width','2.5');
+    var t=document.getElementById('painTitle'); if(t){ t.firstChild.nodeValue = p.dataset.j + ' · Schmerz eintragen'; }
+  }); });
+
+  // Range segments
+  var seg = document.getElementById('rangeSeg');
+  if(seg){ seg.querySelectorAll('button').forEach(function(b){ b.addEventListener('click', function(){
+    seg.querySelectorAll('button').forEach(function(x){ x.classList.remove('on'); }); b.classList.add('on');
+    drawBP(seg.querySelectorAll('button').length && b.textContent);
+  }); }); }
+
+  document.getElementById('fab').addEventListener('click', function(){ this.animate([{transform:'scale(1)'},{transform:'scale(.88)'},{transform:'scale(1)'}],{duration:220}); });
+
+  // ---- Charts ----
+  function css(n){ return getComputedStyle(root).getPropertyValue(n).trim(); }
+  function line(ctx,pts,color,fill){
+    ctx.beginPath(); pts.forEach(function(p,i){ i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]); });
+    ctx.lineWidth=3; ctx.strokeStyle=color; ctx.lineJoin='round'; ctx.stroke();
+    if(fill){ ctx.lineTo(pts[pts.length-1][0],ctx.canvas.height); ctx.lineTo(pts[0][0],ctx.canvas.height); ctx.closePath();
+      var g=ctx.createLinearGradient(0,0,0,ctx.canvas.height); g.addColorStop(0,fill); g.addColorStop(1,'transparent'); ctx.fillStyle=g; ctx.fill(); }
+  }
+  function series(seed,n,base,amp){ var a=[],x=seed*9301%233280/233280; for(var i=0;i<n;i++){ x=(x*9301+49297)%233280/233280; a.push(base+Math.sin(i/1.7+seed)*amp*0.5+(x-0.5)*amp); } return a; }
+  function mapPts(vals,w,h,pad){ var mn=Math.min.apply(0,vals),mx=Math.max.apply(0,vals),r=mx-mn||1; return vals.map(function(v,i){ return [pad+i/(vals.length-1)*(w-2*pad), h-pad-(v-mn)/r*(h-2*pad)]; }); }
+
+  var bpRange='Woche';
+  function drawBP(range){ bpRange = range||bpRange; var c=document.getElementById('bpChart'); if(!c) return; var ctx=c.getContext('2d'); var w=c.width,h=c.height; ctx.clearRect(0,0,w,h);
+    var n = bpRange==='Woche'?7: bpRange==='Monat'?30:12;
+    // grid
+    ctx.strokeStyle=css('--line'); ctx.lineWidth=1; for(var g=1;g<4;g++){ var y=h/4*g; ctx.beginPath(); ctx.moveTo(20,y); ctx.lineTo(w-10,y); ctx.stroke(); }
+    var sys=series(3,n,124,26), dia=series(7,n,78,18);
+    line(ctx, mapPts(sys,w,h,26), css('--joint'), 'color-mix(in srgb,'+css('--joint')+' 22%, transparent)');
+    line(ctx, mapPts(dia,w,h,26), css('--pine'), 'color-mix(in srgb,'+css('--pine')+' 18%, transparent)');
+    [mapPts(sys,w,h,26),mapPts(dia,w,h,26)].forEach(function(pp,idx){ var last=pp[pp.length-1]; ctx.beginPath(); ctx.arc(last[0],last[1],5,0,7); ctx.fillStyle=idx?css('--pine'):css('--joint'); ctx.fill(); ctx.strokeStyle=css('--surface'); ctx.lineWidth=2.5; ctx.stroke(); });
+  }
+  function drawJoint(){ var c=document.getElementById('jointChart'); if(!c) return; var ctx=c.getContext('2d'); var w=c.width,h=c.height; ctx.clearRect(0,0,w,h);
+    var v=[]; for(var i=0;i<30;i++){ v.push(Math.max(0, 7 - i*0.16 + Math.sin(i)*0.8)); }
+    line(ctx, mapPts(v,w,h,18), css('--joint'), 'color-mix(in srgb,'+css('--joint')+' 22%, transparent)');
+  }
+  function drawMinis(){ document.querySelectorAll('.mini').forEach(function(c){ var ctx=c.getContext('2d'); var w=c.width,h=c.height; ctx.clearRect(0,0,w,h);
+    var v=series(+c.dataset.seed,12,50,20); line(ctx, mapPts(v,w,h,10), css('--pine'), 'color-mix(in srgb,'+css('--pine')+' 20%, transparent)'); }); }
+  function drawAll(){ drawBP(); drawJoint(); drawMinis(); }
+  drawAll();
+  window.addEventListener('resize', function(){ setTimeout(drawAll,60); });
+})();
+</script>
+
+</body>
+</html>
