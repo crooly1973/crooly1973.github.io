@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VITARA – Design-Richtungen</title>
+<style>
+  /* ---------- Page chrome (theme-aware) ---------- */
+  :root{
+    --pg-bg:#f2f1f5; --pg-surface:#ffffff; --pg-ink:#181622; --pg-ink2:#5c586e; --pg-ink3:#8b879b; --pg-line:#e5e3ec;
+    --pg-shadow:0 1px 2px rgba(20,16,34,.05),0 14px 34px -16px rgba(20,16,34,.2);
+  }
+  @media (prefers-color-scheme:dark){:root{
+    --pg-bg:#0c0b12; --pg-surface:#161522; --pg-ink:#efedf6; --pg-ink2:#b1adc4; --pg-ink3:#726e86; --pg-line:#262435;
+    --pg-shadow:0 1px 2px rgba(0,0,0,.4),0 16px 36px -18px rgba(0,0,0,.7);
+  }}
+  :root[data-theme="dark"]{
+    --pg-bg:#0c0b12; --pg-surface:#161522; --pg-ink:#efedf6; --pg-ink2:#b1adc4; --pg-ink3:#726e86; --pg-line:#262435;
+    --pg-shadow:0 1px 2px rgba(0,0,0,.4),0 16px 36px -18px rgba(0,0,0,.7);
+  }
+  :root[data-theme="light"]{
+    --pg-bg:#f2f1f5; --pg-surface:#ffffff; --pg-ink:#181622; --pg-ink2:#5c586e; --pg-ink3:#8b879b; --pg-line:#e5e3ec;
+    --pg-shadow:0 1px 2px rgba(20,16,34,.05),0 14px 34px -16px rgba(20,16,34,.2);
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--pg-bg);color:var(--pg-ink);
+    font-family:ui-rounded,"SF Pro Rounded","Segoe UI",system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+  .page{max-width:1180px;margin:0 auto;padding:40px 24px 70px}
+
+  .top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap}
+  .eyebrow{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--pg-ink3);font-weight:800;margin:0 0 10px}
+  h1{font-size:clamp(28px,4vw,42px);line-height:1.03;margin:0;letter-spacing:-.02em;font-weight:800;text-wrap:balance}
+  .lede{color:var(--pg-ink2);max-width:56ch;margin:14px 0 0;font-size:15.5px;line-height:1.55}
+  .themebtn{border:1px solid var(--pg-line);background:var(--pg-surface);color:var(--pg-ink2);padding:9px 15px;border-radius:999px;
+    font:inherit;font-size:13px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:var(--pg-shadow);white-space:nowrap}
+  .themebtn:focus-visible{outline:2px solid #7c86ff;outline-offset:2px}
+
+  .trends{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0 8px}
+  .trend{display:inline-flex;align-items:center;gap:8px;background:var(--pg-surface);border:1px solid var(--pg-line);
+    border-radius:12px;padding:9px 13px;font-size:12.5px;font-weight:700;color:var(--pg-ink2);box-shadow:var(--pg-shadow)}
+  .trend b{color:var(--pg-ink)}
+
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:34px;margin-top:34px}
+  @media (max-width:900px){.compare{grid-template-columns:1fr;gap:44px}}
+  .col{min-width:0}
+  .dirtag{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:5px 11px;border-radius:999px;color:#fff}
+  .dirname{font-size:23px;font-weight:800;letter-spacing:-.01em;margin:12px 0 3px}
+  .dirvibe{color:var(--pg-ink2);font-size:14px;margin:0 0 18px;line-height:1.5}
+
+  .stagebox{display:flex;justify-content:center;padding:26px 10px;border-radius:28px;overflow:hidden}
+
+  /* ---------- Shared phone components (driven by per-direction vars) ---------- */
+  .phone{width:302px;max-width:100%;border-radius:44px;padding:11px;position:relative;
+    background:var(--frame);box-shadow:var(--phone-shadow)}
+  .screen{border-radius:34px;overflow:hidden;height:634px;display:flex;flex-direction:column;
+    background:var(--bg);color:var(--ink);font-family:var(--font)}
+  .notch{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:104px;height:22px;background:#000;border-radius:999px;z-index:5;opacity:.85}
+  .scr{flex:1;overflow-y:auto;padding:16px 15px 18px;scrollbar-width:none}
+  .scr::-webkit-scrollbar{display:none}
+
+  .hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:15px}
+  .hd .g{font-size:12px;color:var(--ink-3)}
+  .hd .n{font-size:20px;font-weight:800;letter-spacing:-.01em}
+  .av{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;font-weight:800;color:#fff;background:var(--accent-grad)}
+
+  .card{background:var(--surface);border:1px solid var(--surface-brd);border-radius:var(--radius);padding:15px;box-shadow:var(--card-shadow)}
+  .stack{display:flex;flex-direction:column;gap:12px}
+  .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .sect{font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);margin:17px 3px 9px}
+
+  /* AI tip banner (KI & Personalisierung) */
+  .ai{display:flex;gap:11px;align-items:center;border-radius:var(--radius);padding:13px 14px;background:var(--ai-bg);border:1px solid var(--ai-brd)}
+  .ai .sp{width:30px;height:30px;border-radius:10px;flex:none;display:grid;place-items:center;background:var(--accent-grad);color:#fff;font-size:15px}
+  .ai .tt{font-size:12.5px;line-height:1.4}
+  .ai .tt b{font-weight:800}
+
+  /* Hero score */
+  .hero{border-radius:var(--radius);padding:16px;position:relative;overflow:hidden;background:var(--hero-bg);color:var(--hero-ink);border:1px solid var(--hero-brd)}
+  .hero .row{display:flex;align-items:center;gap:15px;position:relative;z-index:2}
+  .ring{width:84px;height:84px;flex:none}
+  .ring .track{stroke:var(--ring-track);fill:none;stroke-width:9}
+  .ring .arc{stroke:var(--accent);fill:none;stroke-width:9;stroke-linecap:round}
+  .ring text{fill:var(--hero-ink)}
+  .hero .big{font-size:22px;font-weight:800;line-height:1}
+  .hero .sub{font-size:12px;opacity:.8;margin-top:3px}
+  .hero .tag{display:inline-block;margin-top:8px;font-size:11px;font-weight:800;padding:4px 10px;border-radius:999px;background:var(--tag-bg);color:var(--tag-ink)}
+  .hero .glow{position:absolute;inset:0;z-index:1;background:radial-gradient(150px 120px at 85% -10%,var(--glow),transparent 70%)}
+
+  /* Vital tiles */
+  .vt .lab{font-size:11px;color:var(--ink-3);font-weight:700;display:flex;align-items:center;gap:6px}
+  .vt .num{font-size:21px;font-weight:800;margin-top:6px;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+  .vt .num small{font-size:11px;font-weight:600;color:var(--ink-3)}
+  .ic{width:20px;height:20px;border-radius:7px;display:grid;place-items:center;font-size:11px}
+
+  /* rows */
+  .row2{display:flex;align-items:center;gap:11px;padding:9px 2px}
+  .row2+.row2{border-top:1px solid var(--surface-brd)}
+  .row2 .ri{width:34px;height:34px;border-radius:11px;flex:none;display:grid;place-items:center;font-size:16px;background:var(--chip)}
+  .row2 .rm{flex:1;min-width:0}
+  .row2 .rt{font-weight:700;font-size:13.5px}
+  .row2 .rs{font-size:11.5px;color:var(--ink-3);margin-top:1px}
+  .pill{font-size:10.5px;font-weight:800;padding:3px 9px;border-radius:999px}
+  .pill.warn{background:var(--warn-bg);color:var(--warn)}
+  .pill.good{background:var(--good-bg);color:var(--good)}
+
+  /* handmade accent (dir-b) */
+  .doodle{display:none}
+  .dir-b .doodle{display:block;position:absolute;left:-4px;bottom:-9px;width:104px;height:12px;color:var(--accent);z-index:3}
+  .dir-b .hd .n{position:relative;display:inline-block}
+
+  /* ---------- Direction A : NOCTURNE (dark, depth & motion) ---------- */
+  .dir-a{
+    --font:"SF Pro Display",Inter,ui-sans-serif,system-ui,sans-serif;
+    --frame:#050512; --phone-shadow:0 40px 90px -30px rgba(70,60,160,.7),0 6px 20px -8px rgba(0,0,0,.6);
+    --bg:linear-gradient(180deg,#12132f 0%,#191a3e 60%,#141530 100%);
+    --ink:#eef0ff; --ink-2:#c3c5ee; --ink-3:#8f92c6;
+    --surface:rgba(255,255,255,.055); --surface-brd:rgba(255,255,255,.12);
+    --card-shadow:0 10px 30px -18px rgba(0,0,0,.6);
+    --radius:20px;
+    --accent:#8a8dff; --accent-grad:linear-gradient(135deg,#8a8dff,#b57bff);
+    --warm:#ffb27a; --good:#39dcc7; --good-bg:rgba(57,220,199,.16); --warn:#ffcf6b; --warn-bg:rgba(255,207,107,.16);
+    --ai-bg:linear-gradient(120deg,rgba(138,141,255,.18),rgba(181,123,255,.12)); --ai-brd:rgba(138,141,255,.35);
+    --hero-bg:linear-gradient(135deg,#5a5cff,#9a5cff); --hero-ink:#f4f2ff; --hero-brd:transparent;
+    --ring-track:rgba(255,255,255,.22); --tag-bg:rgba(255,255,255,.18); --tag-ink:#fff; --glow:rgba(255,178,122,.5);
+    --chip:rgba(255,255,255,.09);
+  }
+  .dir-a .stagebox{background:radial-gradient(600px 300px at 50% 0%,#20204a,#0a0a1c)}
+  .dir-a .card{backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+  .dir-a .ai{backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+  .dir-a .float{animation:floaty 6s ease-in-out infinite}
+  .dir-a .hero .glow{animation:pulse 7s ease-in-out infinite}
+
+  /* ---------- Direction B : CORAL STUDIO (light, modular & handcrafted) ---------- */
+  .dir-b{
+    --font:ui-rounded,"SF Pro Rounded",Inter,system-ui,sans-serif;
+    --frame:#e8e2dc; --phone-shadow:0 40px 80px -34px rgba(120,60,60,.5),0 6px 18px -10px rgba(0,0,0,.25);
+    --bg:linear-gradient(180deg,#fbf6f2 0%,#fdf9f6 100%);
+    --ink:#231f2a; --ink-2:#645d68; --ink-3:#9a929c;
+    --surface:#ffffff; --surface-brd:#efe7e1;
+    --card-shadow:0 12px 26px -16px rgba(60,30,40,.22);
+    --radius:19px;
+    --accent:#ff5a5f; --accent-grad:linear-gradient(135deg,#ff5a5f,#ff8a5c);
+    --warm:#ffd166; --good:#12b3a6; --good-bg:rgba(18,179,166,.14); --warn:#f7a53b; --warn-bg:rgba(247,165,59,.16);
+    --ai-bg:linear-gradient(120deg,#fff2ec,#fdf0f6); --ai-brd:#ffd9cf;
+    --hero-bg:linear-gradient(135deg,#3d5afe,#6a5cff); --hero-ink:#f3f3ff; --hero-brd:transparent;
+    --ring-track:rgba(255,255,255,.28); --tag-bg:rgba(255,255,255,.22); --tag-ink:#fff; --glow:rgba(255,209,102,.6);
+    --chip:#f6f0ec;
+  }
+  .dir-b .stagebox{background:linear-gradient(135deg,#fbeee8,#eef0fb)}
+
+  /* palette + notes */
+  .meta{margin-top:22px}
+  .swatches{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+  .sw{display:flex;flex-direction:column;gap:6px;align-items:center;font-size:10px;color:var(--pg-ink3);font-weight:700}
+  .sw i{width:44px;height:44px;border-radius:12px;border:1px solid var(--pg-line);display:block}
+  .note h4{margin:0 0 8px;font-size:13px;letter-spacing:.05em;text-transform:uppercase;color:var(--pg-ink3)}
+  .why{list-style:none;margin:0 0 16px;padding:0;display:flex;flex-direction:column;gap:9px}
+  .why li{display:flex;gap:10px;font-size:13.5px;color:var(--pg-ink2);line-height:1.45}
+  .why li b{color:var(--pg-ink)}
+  .why .k{flex:none;width:20px;height:20px;border-radius:7px;display:grid;place-items:center;font-size:11px;color:#fff;margin-top:1px}
+  .typ{font-size:13px;color:var(--pg-ink2);background:var(--pg-surface);border:1px solid var(--pg-line);border-radius:12px;padding:12px 13px;line-height:1.5}
+  .typ b{color:var(--pg-ink)}
+
+  .foot{margin-top:44px;text-align:center;color:var(--pg-ink3);font-size:13px;line-height:1.6}
+
+  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+  @keyframes pulse{0%,100%{opacity:.7}50%{opacity:1}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="top">
+    <div>
+      <p class="eyebrow">VITARA · Design-Studie</p>
+      <h1>Zwei Design-Richtungen<br>zur Auswahl</h1>
+      <p class="lede">Beide bewusst weg vom Grün, in modernen Farben — und beide greifen deine vier Trends auf. Vergleiche sie am Beispiel deiner Startseite mit echten Daten. Sag mir danach, welche dir mehr liegt (oder was wir mischen).</p>
+    </div>
+    <button class="themebtn" id="themeToggle">◐ Hell / Dunkel</button>
+  </div>
+
+  <div class="trends">
+    <span class="trend">🤖 <b>KI & Personalisierung</b></span>
+    <span class="trend">🧩 <b>Modulare Karten</b></span>
+    <span class="trend">✏️ <b>Handgemachte Akzente</b></span>
+    <span class="trend">🌀 <b>Bewegung & Tiefe</b></span>
+  </div>
+
+  <div class="compare">
+
+    <!-- ============ DIRECTION A ============ -->
+    <div class="col">
+      <span class="dirtag" style="background:linear-gradient(135deg,#8a8dff,#b57bff)">Richtung A</span>
+      <div class="dirname">Nocturne</div>
+      <p class="dirvibe">Dunkel, ruhig, „Premium-Tech". Geschichtete Glas-Karten, sanftes Leuchten und dezente Bewegung — Periwinkle-Violett mit warmem Apricot.</p>
+
+      <div class="dir-a">
+        <div class="stagebox">
+          <div class="phone">
+            <div class="notch"></div>
+            <div class="screen">
+              <div class="scr">
+                <div class="hd">
+                  <div><div class="g">Sonntag, 3. August</div><div class="n">Moin, Oliver 👋</div></div>
+                  <div class="av">O</div>
+                </div>
+
+                <div class="ai float">
+                  <div class="sp">✦</div>
+                  <div class="tt"><b>KI-Tipp:</b> Deine Erholung ist top heute — ein guter Tag für dein Krafttraining 💪</div>
+                </div>
+
+                <div class="sect">Heute</div>
+                <div class="hero float">
+                  <div class="glow"></div>
+                  <div class="row">
+                    <svg class="ring" viewBox="0 0 100 100">
+                      <circle class="track" cx="50" cy="50" r="40"/>
+                      <circle class="arc" cx="50" cy="50" r="40" stroke-dasharray="251" stroke-dashoffset="53" transform="rotate(-90 50 50)"/>
+                      <text x="50" y="47" text-anchor="middle" font-size="20" font-weight="800">79</text>
+                      <text x="50" y="63" text-anchor="middle" font-size="8" opacity=".7">von 100</text>
+                    </svg>
+                    <div>
+                      <div class="big">Gut in Form</div>
+                      <div class="sub">Gesundheits-Score</div>
+                      <span class="tag">▲ 4 vs. gestern</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="sect">Vitalwerte</div>
+                <div class="g2">
+                  <div class="card vt"><div class="lab"><span class="ic" style="background:rgba(255,178,122,.2)">❤</span>Puls</div><div class="num">62 <small>bpm</small></div></div>
+                  <div class="card vt"><div class="lab"><span class="ic" style="background:rgba(138,141,255,.22)">🩸</span>Blutdruck</div><div class="num">124<small>/78</small></div></div>
+                  <div class="card vt"><div class="lab"><span class="ic" style="background:rgba(57,220,199,.2)">〰</span>HRV</div><div class="num">48 <small>ms</small></div></div>
+                  <div class="card vt"><div class="lab"><span class="ic" style="background:rgba(181,123,255,.22)">☾</span>Schlaf</div><div class="num">7:12 <small>h</small></div></div>
+                </div>
+
+                <div class="sect">Als Nächstes</div>
+                <div class="card">
+                  <div class="row2"><div class="ri">💪</div><div class="rm"><div class="rt">Krafttraining · 1 / 2</div><div class="rs">Heute · 4 Übungen</div></div><span class="pill warn">offen</span></div>
+                  <div class="row2"><div class="ri">🌙</div><div class="rm"><div class="rt">Magnesium · Verla N</div><div class="rs">Abends · vor dem Schlafen</div></div><span class="pill good">bereit</span></div>
+                  <div class="row2"><div class="ri">🔥</div><div class="rm"><div class="rt">Rechte Schulter</div><div class="rs">3/10 · Wärme tut gut</div></div><span class="pill warn">Blick drauf</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="meta">
+        <div class="swatches">
+          <div class="sw"><i style="background:#141530"></i>Nacht</div>
+          <div class="sw"><i style="background:#8a8dff"></i>Periwinkle</div>
+          <div class="sw"><i style="background:#b57bff"></i>Violett</div>
+          <div class="sw"><i style="background:#ffb27a"></i>Apricot</div>
+          <div class="sw"><i style="background:#39dcc7"></i>Teal</div>
+        </div>
+        <div class="note">
+          <ul class="why">
+            <li><span class="k" style="background:#8a8dff">🌀</span><span><b>Bewegung & Tiefe:</b> Glas-Karten mit Unschärfe, sanftes Leuchten hinterm Score, dezentes Schweben.</span></li>
+            <li><span class="k" style="background:#b57bff">🤖</span><span><b>KI & Personalisierung:</b> Der KI-Tipp sitzt ganz oben und spricht dich direkt an.</span></li>
+            <li><span class="k" style="background:#ffb27a">🧩</span><span><b>Modular:</b> Klare Kacheln schweben auf ruhigem, dunklem Grund.</span></li>
+          </ul>
+        </div>
+        <div class="typ"><b>Typo:</b> geometrische Display-Schrift, klare Zahlen. Wirkt technisch-edel, ruhig, hochwertig.</div>
+      </div>
+    </div>
+
+    <!-- ============ DIRECTION B ============ -->
+    <div class="col">
+      <span class="dirtag" style="background:linear-gradient(135deg,#ff5a5f,#ff8a5c)">Richtung B</span>
+      <div class="dirname">Coral Studio</div>
+      <p class="dirvibe">Hell, warm und lebendig. Klar getrennte Karten, freundliche Rundungen und kleine handgezeichnete Akzente — Koralle mit Indigo und einem Tupfer Gelb.</p>
+
+      <div class="dir-b">
+        <div class="stagebox">
+          <div class="phone">
+            <div class="notch"></div>
+            <div class="screen">
+              <div class="scr">
+                <div class="hd">
+                  <div><div class="g">Sonntag, 3. August</div><div class="n">Moin, Oliver 👋
+                    <svg class="doodle" viewBox="0 0 104 12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M2 8c18-6 46-7 100-4"/></svg>
+                  </div></div>
+                  <div class="av">O</div>
+                </div>
+
+                <div class="ai">
+                  <div class="sp">✦</div>
+                  <div class="tt"><b>KI-Tipp:</b> Deine Erholung ist top heute — ein guter Tag für dein Krafttraining 💪</div>
+                </div>
+
+                <div class="sect">Heute</div>
+                <div class="hero">
+                  <div class="glow"></div>
+                  <div class="row">
+                    <svg class="ring" viewBox="0 0 100 100">
+                      <circle class="track" cx="50" cy="50" r="40"/>
+                      <circle class="arc" cx="50" cy="50" r="40" stroke-dasharray="251" stroke-dashoffset="53" transform="rotate(-90 50 50)"/>
+                      <text x="50" y="47" text-anchor="middle" font-size="20" font-weight="800">79</text>
+                      <text x="50" y="63" text-anchor="middle" font-size="8" opacity=".7">von 100</text>
+                    </svg>
+                    <div>
+                      <div class="big">Gut in Form</div>
+                      <div class="sub">Gesundheits-Score</div>
+                      <span class="tag">▲ 4 vs. gestern</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="sect">Vitalwerte</div>
+                <div class="g2">
+                  <div class="card vt"><div class="lab"><span class="ic" style="background:rgba(255,90,95,.14)">❤</span>Puls</div><div class="num">62 <small>bpm</small></div></div>
+                  <div class="card vt"><div class="lab"><span class="ic" style="background:rgba(61,90,254,.14)">🩸</span>Blutdruck</div><div class="num">124<small>/78</small></div></div>
+                  <div class="card vt"><div class="lab"><span class="ic" style="background:rgba(18,179,166,.16)">〰</span>HRV</div><div class="num">48 <small>ms</small></div></div>
+                  <div class="card vt"><div class="lab"><span class="ic" style="background:rgba(255,209,102,.28)">☾</span>Schlaf</div><div class="num">7:12 <small>h</small></div></div>
+                </div>
+
+                <div class="sect">Als Nächstes</div>
+                <div class="card">
+                  <div class="row2"><div class="ri">💪</div><div class="rm"><div class="rt">Krafttraining · 1 / 2</div><div class="rs">Heute · 4 Übungen</div></div><span class="pill warn">offen</span></div>
+                  <div class="row2"><div class="ri">🌙</div><div class="rm"><div class="rt">Magnesium · Verla N</div><div class="rs">Abends · vor dem Schlafen</div></div><span class="pill good">bereit</span></div>
+                  <div class="row2"><div class="ri">🔥</div><div class="rm"><div class="rt">Rechte Schulter</div><div class="rs">3/10 · Wärme tut gut</div></div><span class="pill warn">Blick drauf</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="meta">
+        <div class="swatches">
+          <div class="sw"><i style="background:#fbf6f2"></i>Papier</div>
+          <div class="sw"><i style="background:#ff5a5f"></i>Koralle</div>
+          <div class="sw"><i style="background:#3d5afe"></i>Indigo</div>
+          <div class="sw"><i style="background:#ffd166"></i>Gelb</div>
+          <div class="sw"><i style="background:#12b3a6"></i>Petrol</div>
+        </div>
+        <div class="note">
+          <ul class="why">
+            <li><span class="k" style="background:#ff5a5f">✏️</span><span><b>Handgemachte Akzente:</b> die handgezeichnete Unterstreichung unterm Gruß — warmer Gegenpol zum Digitalen.</span></li>
+            <li><span class="k" style="background:#3d5afe">🧩</span><span><b>Modular:</b> helle, klar abgegrenzte Karten — luftig und übersichtlich.</span></li>
+            <li><span class="k" style="background:#ffd166;color:#231f2a">🤖</span><span><b>KI & Personalisierung:</b> freundlicher KI-Tipp, der zum warmen Ton passt.</span></li>
+          </ul>
+        </div>
+        <div class="typ"><b>Typo:</b> weiche, runde Schrift. Wirkt freundlich, nahbar, motivierend — gut für den Alltag.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="foot">Beides sind Design-Entwürfe derselben App — die Funktionen bleiben gleich, nur der „Anstrich" ändert sich.<br>Du kannst A, B oder eine Mischung wählen — z.B. Layout von A mit den Farben von B.</p>
+</div>
+
+<script>
+  var root=document.documentElement;
+  document.getElementById('themeToggle').addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    root.setAttribute('data-theme',cur==='dark'?'light':'dark');
+  });
+</script>
+</body>
+</html>
