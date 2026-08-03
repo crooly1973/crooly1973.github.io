@@ -108,3 +108,18 @@ Damit es keine Überraschungen gibt – hier die echten Rahmenbedingungen:
 ## Quellen (Stand August 2026)
 - Apple Developer Program – Kosten & Anforderungen: siehe App-Store-Guides 2026
 - Xcode/Mac-Anforderung für iOS-Einreichungen: Apple Developer Forum
+
+---
+
+## 🌐 Live-Adressen der App (Stand August 2026)
+
+Die App ist an **zwei** Adressen erreichbar – beide aktualisieren sich automatisch,
+sobald wir etwas auf `main` veröffentlichen:
+
+1. **GitHub Pages (Subdomain):** `https://gesundheit.oliver-rock.de/gesundheits-app/`
+   → aktualisiert sich automatisch bei jeder Veröffentlichung.
+2. **IONOS-Webspace (eigene Domain):** `https://oliver-rock.de/gesundheitsapp/`
+   → wird per GitHub-Action (SFTP) automatisch mit hochgeladen.
+
+**Automatischer IONOS-Upload:** `.github/workflows/deploy-ionos.yml`
+(Zugangsdaten liegen sicher in den GitHub-Secrets, neues SFTP-Konto `u72279346-github`).
