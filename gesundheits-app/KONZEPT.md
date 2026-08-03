@@ -76,26 +76,38 @@ Meine echten Präparate, sortiert nach Tageszeit:
 |---|---|---|---|---|
 | Vitamin D3 + K2 | natural elements (MK-7, Tabletten) | 1 Tablette | morgens | Knochen & Immunsystem |
 | Kreatin Monohydrat | WeightWorld (Tabletten) | 3000 mg pro Portion | morgens (zusammen mit D3) | Kraft & Sport |
-| Vitamin B12 | Cosphera (Spray) | Spray | morgens nach dem Zähneputzen | Nerven & Energie |
+| Vitamin B12 | Cosphera (Spray) | 1 Sprühstoß = 25 µg (Methylcobalamin) | morgens nach dem Zähneputzen | Nerven & Energie |
 
 **🌙 Abends**
 
 | Präparat | Marke / Form | Dosierung | Einnahme | Wofür (allgemein) |
 |---|---|---|---|---|
-| Magnesium | Verla N (Dragées) | lt. Packung | abends vor dem Schlafen | Muskeln & Entspannung |
+| Magnesium | Verla N (Dragées) | 40 mg Magnesium / Tablette (Citrat 205 mg + Glutamat 90 mg) | abends vor dem Schlafen | Muskeln & Entspannung |
 
 *Angaben laut Verpackung/deinen Fotos. „Wofür" ist allgemein beschrieben –
 keine Heilaussagen. Dosierung ggf. später präzisieren.*
 
 ### 3.3 Gelenke 🦵
 
-Welche Gelenke sind betroffen und wie?
+**Auffälliges Muster:** Fast alle Beschwerden sind auf der **rechten Körperseite**.
 
-| Gelenk / Bereich | Beschwerde | Seit wann | Was hilft bisher |
+| Gelenk / Bereich | Beschwerde | Seit wann | Was hilft |
 |---|---|---|---|
-| _z.B. rechtes Knie_ | _offen_ | _offen_ | _offen_ |
-| _HWS / Nacken_ | _offen_ | _offen_ | _offen_ |
-| | | | |
+| Rechte Hüfte | **Künstliches Hüftgelenk** (Hüft-OP) | Mai 2025 | Bewegung, Wärme |
+| Nacken / HWS | Wiederkehrende Schmerzen | fortlaufend | Bewegung, Sauna / Wärme |
+| Rechte Schulter | Schmerz, wechselnd (mal mehr, mal weniger) | fortlaufend | Bewegung, Wärme |
+| Rechtes Sprunggelenk | Schmerzen | fortlaufend | Bewegung, Wärme |
+
+**Beschwerdebild allgemein:**
+- Vor allem **Schmerzen** in Schulter, Hals/Nacken/HWS.
+- **Morgens leichte Steifigkeit**, aber gut im Griff.
+- **Was gut hilft:** Bewegung und **Sauna / Wärme** (Wärme tut besonders gut).
+
+**Ideen für die App (aus diesen Angaben abgeleitet):**
+- „Rechte Seite"-Ansicht in der Körperkarte hervorheben.
+- Schnell-Eintrag „Wärme/Sauna gemacht" + Wirkung dokumentieren.
+- Sanfte Beweglichkeits-/Mobilisationsübungen für Nacken, Schulter, Hüfte.
+- Rücksicht auf künstliche Hüfte: Übungen, die dafür geeignet sind (mit Physio/Arzt abstimmen).
 
 ### 3.4 Wissens-Themen 🔎
 
@@ -124,7 +136,8 @@ Themen, die mich besonders interessieren (für Forschung & Videos):
 - [x] Echte Vitalwerte + Quellen eintragen (Abschnitt 3.1) → Fitbit Charge 6 + manuell
 - [ ] Persönliche Zielbereiche (Blutdruck, Gewicht, Schlaf) mit Arzt abstimmen
 - [x] Echte Präparate-Liste aufnehmen (Abschnitt 3.2) → D3+K2, Kreatin, B12, Magnesium
-- [ ] Betroffene Gelenke konkretisieren (Abschnitt 3.3)
+- [x] Betroffene Gelenke konkretisieren (Abschnitt 3.3) → Hüfte re. (Prothese), HWS/Nacken, Schulter re., Sprunggelenk re.
+- [x] **Etappe 1 (Konzept & Inhalte) abgeschlossen! 🎉**
 - [ ] Entscheiden: Bleibt der Name „VITARA"?
 - [ ] Etappe 4: Fitbit-Daten anbinden (Web-API / Health Connect)
 - [ ] Später: Woher kommen die echten Forschungs-Artikel & Videos?
