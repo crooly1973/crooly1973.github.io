@@ -52,12 +52,12 @@ Blutdruck und Gewicht gebe ich manuell ein.
 | Aktivzonenminuten | ✅ ja | Fitbit | Ziel z.B. 150+ / Woche |
 | Blutdruck | ✅ ja | **manuell** | mit Arzt abstimmen (Orientierung < 130/80) |
 | Gewicht | ✅ ja | **manuell** | persönliches Ziel offen |
-| **Empfohlen, da Charge 6 misst:** | | | |
-| SpO₂ (Sauerstoffsättigung) | ⭐ Vorschlag | Fitbit | grob 95–100 % |
-| Hauttemperatur-Abweichung | ⭐ Vorschlag | Fitbit | Abweichung vom eigenen Mittel |
-| Schritte / Distanz | ⭐ Vorschlag | Fitbit | Ziel z.B. 8.000–10.000 Schritte |
-| Cardio-Fitness (VO₂max-Schätzung) | ⭐ Vorschlag | Fitbit | Trend nach oben |
-| Stress-Management-Score | ⭐ Vorschlag | Fitbit | höher = entspannter |
+| **Zusätzlich (Charge 6 misst sie ohnehin):** | | | |
+| SpO₂ (Sauerstoffsättigung) | ✅ ja | Fitbit | grob 95–100 % |
+| Hauttemperatur-Abweichung | ✅ ja | Fitbit | Abweichung vom eigenen Mittel |
+| Schritte / Distanz | ✅ ja | Fitbit | Ziel z.B. 8.000–10.000 Schritte |
+| Cardio-Fitness (VO₂max-Schätzung) | ✅ ja | Fitbit | Trend nach oben |
+| Stress-Management-Score | ✅ ja | Fitbit | höher = entspannter |
 
 *\*Orientierungswerte sind allgemein und ersetzen keine ärztliche Beurteilung.
 Deine persönlichen Zielbereiche stimmen wir/du mit dem Arzt ab.*
