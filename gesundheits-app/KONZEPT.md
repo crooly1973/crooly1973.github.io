@@ -39,19 +39,32 @@ Forschung und Übungsvideos.
 
 ### 3.1 Vitalwerte 📈  *(mein Fokus-Bereich)*
 
-Welche Werte möchte ich wirklich tracken und wie erfasse ich sie?
+**Mein Tracker:** Fitbit Charge 6 → Werte sollen von dort übernommen werden.
+Blutdruck und Gewicht gebe ich manuell ein.
 
-| Wert | Tracken? | Eingabe (manuell / Gerät) | Mein Zielbereich |
+| Wert | Tracken? | Quelle | Orientierung / Zielbereich* |
 |---|---|---|---|
-| Blutdruck | _offen_ | _offen_ | _offen_ |
-| Ruhepuls | _offen_ | _offen_ | _offen_ |
-| HRV | _offen_ | _offen_ | _offen_ |
-| Gewicht | _offen_ | _offen_ | _offen_ |
-| Schlaf | _offen_ | _offen_ | _offen_ |
-| SpO₂ (Sauerstoff) | _offen_ | _offen_ | _offen_ |
-| _weitere?_ | | | |
+| Herzfrequenz (Puls) | ✅ ja | Fitbit | Kontext-abhängig (Ruhe/Aktiv) |
+| Ruheherzfrequenz | ✅ ja | Fitbit | grob 50–70 bpm (individuell) |
+| Herzfrequenzvariabilität (HRV) | ✅ ja | Fitbit | eigener Basiswert, Trend zählt |
+| Atemfrequenz | ✅ ja | Fitbit | grob 12–20 / min in Ruhe |
+| Schlaf (Dauer, Phasen, Score) | ✅ ja | Fitbit | Ziel z.B. 7–8 h (persönlich) |
+| Aktivzonenminuten | ✅ ja | Fitbit | Ziel z.B. 150+ / Woche |
+| Blutdruck | ✅ ja | **manuell** | mit Arzt abstimmen (Orientierung < 130/80) |
+| Gewicht | ✅ ja | **manuell** | persönliches Ziel offen |
+| **Empfohlen, da Charge 6 misst:** | | | |
+| SpO₂ (Sauerstoffsättigung) | ⭐ Vorschlag | Fitbit | grob 95–100 % |
+| Hauttemperatur-Abweichung | ⭐ Vorschlag | Fitbit | Abweichung vom eigenen Mittel |
+| Schritte / Distanz | ⭐ Vorschlag | Fitbit | Ziel z.B. 8.000–10.000 Schritte |
+| Cardio-Fitness (VO₂max-Schätzung) | ⭐ Vorschlag | Fitbit | Trend nach oben |
+| Stress-Management-Score | ⭐ Vorschlag | Fitbit | höher = entspannter |
 
-- Nutze ich eine Smartwatch / ein Messgerät? → _offen (welche Marke?)_
+*\*Orientierungswerte sind allgemein und ersetzen keine ärztliche Beurteilung.
+Deine persönlichen Zielbereiche stimmen wir/du mit dem Arzt ab.*
+
+**Technische Notiz (für später):** Fitbit-Daten holen wir über die offizielle
+Fitbit-Schnittstelle (Web-API) bzw. auf Android über „Health Connect". Das ist
+ein eigener Lernschritt in **Etappe 4** – jetzt nur vormerken, noch nichts tun.
 
 ### 3.2 Nahrungsergänzung 💊
 
@@ -96,11 +109,12 @@ Themen, die mich besonders interessieren (für Forschung & Videos):
 
 ## 5. Offene Fragen / nächste Schritte
 
-- [ ] Echte Vitalwerte + Zielbereiche eintragen (Abschnitt 3.1)
+- [x] Echte Vitalwerte + Quellen eintragen (Abschnitt 3.1) → Fitbit Charge 6 + manuell
+- [ ] Persönliche Zielbereiche (Blutdruck, Gewicht, Schlaf) mit Arzt abstimmen
 - [ ] Echte Präparate-Liste aufnehmen (Abschnitt 3.2)
 - [ ] Betroffene Gelenke konkretisieren (Abschnitt 3.3)
 - [ ] Entscheiden: Bleibt der Name „VITARA"?
-- [ ] Später: technische Umsetzung als echte Handy-App klären
+- [ ] Etappe 4: Fitbit-Daten anbinden (Web-API / Health Connect)
 - [ ] Später: Woher kommen die echten Forschungs-Artikel & Videos?
 
 ---
