@@ -1,0 +1,40 @@
+# Automatischer Upload der App zu IONOS (Webspace) per FTPS.
+# Läuft bei jeder Änderung im Ordner gesundheits-app/ auf dem main-Branch
+# und kann auch von Hand über den Actions-Tab gestartet werden.
+# Die Zugangsdaten liegen sicher in den GitHub-Secrets (nicht im Code).
+
+name: App zu IONOS hochladen
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'gesundheits-app/**'
+      - '.github/workflows/deploy-ionos.yml'
+  workflow_dispatch:        # erlaubt manuelles Starten per Knopfdruck
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code aus dem Repository holen
+        uses: actions/checkout@v4
+
+      - name: Dateien per FTPS zu IONOS hochladen
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server:   ${{ secrets.IONOS_FTP_SERVER }}
+          username: ${{ secrets.IONOS_FTP_USER }}
+          password: ${{ secrets.IONOS_FTP_PASSWORD }}
+          protocol: ftps          # verschlüsselte Verbindung
+          port: 21
+          # Was hochgeladen wird (lokaler Ordner) ...
+          local-dir: ./gesundheits-app/
+          # ... und wohin auf dem Webspace (nur dieser Unterordner wird berührt):
+          server-dir: ./gesundheits-app/
+          # interne Notizen NICHT mit veröffentlichen:
+          exclude: |
+            **/*.md
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
