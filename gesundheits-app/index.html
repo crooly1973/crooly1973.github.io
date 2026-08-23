@@ -516,8 +516,8 @@
               <div style="font-size:12px;color:var(--ink-3)">Wie stark ist der Schmerz gerade?</div>
               <div class="painscale" id="painScale"></div>
               <div id="painInfo" style="font-size:12px;font-weight:700;color:var(--ink-3);margin-top:11px">Heute noch nichts eingetragen</div>
-              <div class="supp-row" style="padding-bottom:2px"><div class="supp-meta"><div class="t">Morgen-Steifigkeit</div><div class="s">Leicht · mit Bewegung gut im Griff</div></div><span class="pill good">▲ besser</span></div>
-              <div class="bar"><i style="width:72%;background:linear-gradient(90deg,var(--joint),var(--good))"></i></div>
+              <div class="supp-row" style="padding-bottom:2px"><div class="supp-meta"><div class="t">Trend · letzte 7 Tage</div><div class="s" id="trendInfo">wird berechnet …</div></div><span class="pill" id="trendPill" style="display:none"></span></div>
+              <div class="bar"><i id="trendBar" style="width:0%;background:linear-gradient(90deg,var(--good),var(--joint))"></i></div>
             </div>
 
             <div class="sec-title">🔥 Was mir hilft</div>
@@ -738,6 +738,35 @@
       if(wert !== null){ var b = scale.querySelector('[data-v="'+wert+'"]'); if(b){ b.classList.add('sel'); b.style.background = schmerzFarbe(+wert); } }
     }
     if(painInfo){ painInfo.textContent = wert !== null ? ('✓ Heute gespeichert: ' + wert + ' / 10') : 'Heute noch nichts eingetragen'; }
+    zeigeTrend();
+  }
+  // Trend der letzten 7 Tage für das gewählte Gelenk (Auswertung Stufe 1)
+  function datumMinus(n){ var d=new Date(); d.setDate(d.getDate()-n); return d.toISOString().slice(0,10); }
+  function zeigeTrend(){
+    var werte = [];                                        // chronologisch, älteste zuerst
+    for(var t=6; t>=0; t--){
+      var v = null; try { v = localStorage.getItem('vitara.' + datumMinus(t) + '.schmerz.' + aktuellesGelenk); } catch(e){}
+      if(v !== null) werte.push(+v);
+    }
+    var info = document.getElementById('trendInfo'), pill = document.getElementById('trendPill'), bar = document.getElementById('trendBar');
+    if(!werte.length){ if(info) info.textContent='Noch keine Einträge – trag ein paar Tage lang ein.'; if(pill) pill.style.display='none'; if(bar) bar.style.width='0%'; return; }
+    var schnitt = werte.reduce(function(a,b){return a+b;},0) / werte.length;
+    if(bar) bar.style.width = (schnitt/10*100) + '%';
+    var schnittText = (Math.round(schnitt*10)/10).toString().replace('.', ',');
+    if(werte.length < 3){                                   // zu wenige Tage für eine echte Tendenz
+      if(info) info.textContent = 'Ø ' + schnittText + ' · ' + werte.length + (werte.length>1?' Einträge':' Eintrag') + ' (mehr Tage = Trend)';
+      if(pill) pill.style.display='none'; return;
+    }
+    var mitte = Math.floor(werte.length/2);
+    var alt = werte.slice(0, mitte), neu = werte.slice(werte.length - mitte);
+    var mAlt = alt.reduce(function(a,b){return a+b;},0)/alt.length, mNeu = neu.reduce(function(a,b){return a+b;},0)/neu.length;
+    var diff = mNeu - mAlt;                                 // <0 = wird besser
+    if(info) info.textContent = 'Ø ' + schnittText + ' · ' + werte.length + ' Einträge';
+    if(pill){ pill.style.display='';
+      if(diff <= -0.5){ pill.className='pill good'; pill.textContent='▼ besser'; }
+      else if(diff >= 0.5){ pill.className='pill crit'; pill.textContent='▲ mehr Schmerz'; }
+      else { pill.className='pill warn'; pill.textContent='→ stabil'; }
+    }
   }
   if(scale){
     for(var i=0;i<=10;i+=2){ var btn=document.createElement('button'); btn.textContent=i; btn.dataset.v=i; scale.appendChild(btn); }
