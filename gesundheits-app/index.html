@@ -254,12 +254,14 @@
   .wkout .exziel { font-size: 15px; opacity: .9; max-width: 24ch; }
   .wkout .done { width: 100%; border: none; border-radius: 16px; padding: 16px; font: inherit; font-weight: 800; font-size: 16px; background: #fff; color: var(--pine-deep); cursor: pointer; }
   .wkout .skip { background: none; border: none; color: rgba(255,255,255,.85); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; margin-top: 12px; text-decoration: underline; }
-  .wkreps { display: flex; align-items: center; justify-content: center; gap: 18px; margin: 4px 0 14px; }
-  .wkreps .rbtn { width: 46px; height: 46px; border-radius: 50%; border: 2px solid rgba(255,255,255,.5); background: rgba(255,255,255,.12); color: #fff; font-size: 24px; font-weight: 700; line-height: 1; cursor: pointer; }
-  .wkreps .rbtn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
-  .wkreps .rval { min-width: 78px; text-align: center; }
-  .wkreps .rval span { font-size: 36px; font-weight: 800; font-variant-numeric: tabular-nums; }
-  .wkreps .rval small { display: block; font-size: 12px; opacity: .85; }
+  .wkout .rbtn { width: 40px; height: 40px; border-radius: 50%; border: 2px solid rgba(255,255,255,.5); background: rgba(255,255,255,.12); color: #fff; font-size: 22px; font-weight: 700; line-height: 1; cursor: pointer; }
+  .wkout .rbtn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+  .wksets { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 300px; margin: 2px auto 8px; }
+  .wkgrp { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .wkgrp .wklab { font-size: 14px; font-weight: 700; opacity: .92; }
+  .wkstep { display: flex; align-items: center; gap: 14px; }
+  .wkstep .val { font-size: 26px; font-weight: 800; font-variant-numeric: tabular-nums; min-width: 44px; text-align: center; }
+  .wktotal { font-size: 15px; font-weight: 800; opacity: .95; margin-bottom: 12px; }
 
   /* Sanfte Bewegung */
   .floaty { animation: floaty 6s ease-in-out infinite; }
@@ -587,7 +589,13 @@
 
             <div style="margin-top:14px"><button class="btnp" id="startWorkout"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> Workout starten</button></div>
 
-            <div class="sec-title">Fortschritt · Liegestütz</div>
+            <div class="sec-title">Fortschritt · <span id="exTitle">Liegestütz</span></div>
+            <div class="chips" id="exChips">
+              <button class="chip on" data-ex="exercise-liegestuetz">Liegestütz</button>
+              <button class="chip" data-ex="exercise-kniebeugen">Kniebeugen</button>
+              <button class="chip" data-ex="exercise-bizeps">Bizeps</button>
+              <button class="chip" data-ex="exercise-schulter">Schulter</button>
+            </div>
             <div class="card"><canvas id="exChart" width="640" height="240" style="width:100%;height:120px"></canvas>
               <div class="legend2"><span id="exLegend" style="color:var(--ink-3)">Noch keine Daten – trag im Workout deine Wiederholungen ein.</span></div>
             </div>
@@ -693,11 +701,13 @@
               <div class="exname" id="wkName">Übung</div>
               <div class="exziel" id="wkZiel">Ziel</div>
             </div>
-            <div class="wkreps" id="wkReps">
-              <button class="rbtn" id="wkMinus" aria-label="weniger Wiederholungen">−</button>
-              <div class="rval"><span id="wkRepVal">0</span><small>geschafft</small></div>
-              <button class="rbtn" id="wkPlus" aria-label="mehr Wiederholungen">+</button>
+            <div class="wksets" id="wkReps">
+              <div class="wkgrp"><span class="wklab">Sätze</span>
+                <span class="wkstep"><button class="rbtn" id="wkSetMinus" aria-label="weniger Sätze">−</button><span class="val" id="wkSetVal">3</span><button class="rbtn" id="wkSetPlus" aria-label="mehr Sätze">+</button></span></div>
+              <div class="wkgrp"><span class="wklab">Wdh pro Satz</span>
+                <span class="wkstep"><button class="rbtn" id="wkRepMinus" aria-label="weniger Wiederholungen">−</button><span class="val" id="wkRepVal">50</span><button class="rbtn" id="wkRepPlus" aria-label="mehr Wiederholungen">+</button></span></div>
             </div>
+            <div class="wktotal" id="wkTotal">3 × 50 = 150 gesamt</div>
             <button class="done" id="wkDone">Erledigt ✓</button>
             <button class="skip" id="wkSkip">Diese Übung überspringen</button>
           </div>
@@ -736,6 +746,16 @@
   var chips = document.getElementById('topicChips');
   if(chips){ chips.querySelectorAll('.chip').forEach(function(c){ c.addEventListener('click', function(){
     chips.querySelectorAll('.chip').forEach(function(x){ x.classList.remove('on'); }); c.classList.add('on');
+  }); }); }
+
+  // Übungs-Auswahl im Trainings-Diagramm
+  var exChips = document.getElementById('exChips');
+  var exNamen = { 'exercise-liegestuetz':'Liegestütz', 'exercise-kniebeugen':'Kniebeugen', 'exercise-bizeps':'Bizeps', 'exercise-schulter':'Schulter' };
+  if(exChips){ exChips.querySelectorAll('.chip').forEach(function(c){ c.addEventListener('click', function(){
+    exChips.querySelectorAll('.chip').forEach(function(x){ x.classList.remove('on'); }); c.classList.add('on');
+    chartEx = c.dataset.ex;
+    var t=document.getElementById('exTitle'); if(t) t.textContent = exNamen[chartEx] || 'Übung';
+    drawEx();
   }); }); }
 
   // --- Daten lokal auf dem Gerät speichern (localStorage) ---
@@ -864,9 +884,11 @@
   document.getElementById('fab').addEventListener('click', function(){ this.animate([{transform:'scale(1)'},{transform:'scale(.88)'},{transform:'scale(1)'}],{duration:220}); });
   // --- Geführter Workout-Modus: Übung für Übung durchführen ---
   var overlay = document.getElementById('workoutOverlay');
-  var wkSteps = [], wkIdx = 0, wkRepVal = 0;
-  function letzteReps(key){ for(var t=0;t<60;t++){ var v=null; try{ v=localStorage.getItem('vitara.'+datumMinus(t)+'.reps.'+key); }catch(e){} if(v!==null) return +v; } return null; }
-  function standardReps(s){ var last=letzteReps(s.key); if(last!==null) return last; var m=s.ziel.match(/×\s*(\d+)/); return m?+m[1]:10; }
+  var wkSteps = [], wkIdx = 0, wkRepVal = 0, wkSetVal = 0;
+  function letzteWert(feld, key){ for(var t=0;t<60;t++){ var v=null; try{ v=localStorage.getItem('vitara.'+datumMinus(t)+'.'+feld+'.'+key); }catch(e){} if(v!==null) return +v; } return null; }
+  function standardReps(s){ var last=letzteWert('reps', s.key); if(last!==null) return last; var m=s.ziel.match(/×\s*(\d+)/); return m?+m[1]:10; }
+  function standardSets(s){ var last=letzteWert('sets', s.key); if(last!==null) return last; var m=s.ziel.match(/(\d+)\s*Sätze/); return m?+m[1]:3; }
+  function wkTotalShow(){ var el=document.getElementById('wkTotal'); if(el) el.textContent = wkSetVal + ' × ' + wkRepVal + ' = ' + (wkSetVal*wkRepVal) + ' gesamt'; }
   function sammleUebungen(){
     var arr = [];
     document.querySelectorAll('#v-training .check[data-key^="exercise-"]').forEach(function(chk){
@@ -888,9 +910,12 @@
     document.getElementById('wkEmoji').textContent = s.icon;
     document.getElementById('wkName').textContent = s.name;
     document.getElementById('wkZiel').textContent = s.ziel;
-    wkRepVal = standardReps(s);
+    wkSetVal = standardSets(s); wkRepVal = standardReps(s);
+    document.getElementById('wkSetVal').textContent = wkSetVal;
     document.getElementById('wkRepVal').textContent = wkRepVal;
+    wkTotalShow();
     document.getElementById('wkReps').style.display = 'flex';
+    var tot=document.getElementById('wkTotal'); if(tot) tot.style.display = '';
     document.getElementById('wkDone').textContent = (wkIdx === wkSteps.length-1) ? 'Training abschließen ✓' : 'Erledigt ✓';
     document.getElementById('wkSkip').style.display = '';
   }
@@ -901,11 +926,12 @@
     document.getElementById('wkDone').textContent = 'Schließen';
     document.getElementById('wkSkip').style.display = 'none';
     document.getElementById('wkReps').style.display = 'none';
+    var tot=document.getElementById('wkTotal'); if(tot) tot.style.display = 'none';
     wkIdx = -1;                                   // -1 = fertig: nächster Klick schließt
   }
   function wkWeiter(markiere){
     var s = wkSteps[wkIdx];
-    if(markiere && s){ s.check.classList.add('on'); if(s.key){ speichereStand(s.key, true); speichereWert('reps.'+s.key, wkRepVal); } drawEx(); }
+    if(markiere && s){ s.check.classList.add('on'); if(s.key){ speichereStand(s.key, true); speichereWert('reps.'+s.key, wkRepVal); speichereWert('sets.'+s.key, wkSetVal); } drawEx(); }
     updateSupp(); updateTraining();
     wkIdx++;
     if(wkIdx >= wkSteps.length) wkFinish(); else wkRender();
@@ -927,10 +953,11 @@
   if(wkSkipBtn){ wkSkipBtn.addEventListener('click', function(){ wkWeiter(false); }); }
   var wkCloseBtn = document.getElementById('wkClose');
   if(wkCloseBtn){ wkCloseBtn.addEventListener('click', wkClose); }
-  var wkPlusBtn = document.getElementById('wkPlus');
-  if(wkPlusBtn){ wkPlusBtn.addEventListener('click', function(){ wkRepVal++; document.getElementById('wkRepVal').textContent = wkRepVal; }); }
-  var wkMinusBtn = document.getElementById('wkMinus');
-  if(wkMinusBtn){ wkMinusBtn.addEventListener('click', function(){ if(wkRepVal > 0){ wkRepVal--; document.getElementById('wkRepVal').textContent = wkRepVal; } }); }
+  function bindStep(id, fn){ var el=document.getElementById(id); if(el) el.addEventListener('click', fn); }
+  bindStep('wkRepPlus', function(){ wkRepVal++; document.getElementById('wkRepVal').textContent = wkRepVal; wkTotalShow(); });
+  bindStep('wkRepMinus', function(){ if(wkRepVal > 0){ wkRepVal--; document.getElementById('wkRepVal').textContent = wkRepVal; wkTotalShow(); } });
+  bindStep('wkSetPlus', function(){ wkSetVal++; document.getElementById('wkSetVal').textContent = wkSetVal; wkTotalShow(); });
+  bindStep('wkSetMinus', function(){ if(wkSetVal > 0){ wkSetVal--; document.getElementById('wkSetVal').textContent = wkSetVal; wkTotalShow(); } });
 
   // ---- Charts ----
   function css(n){ return getComputedStyle(root).getPropertyValue(n).trim(); }
@@ -959,14 +986,17 @@
   }
   function drawMinis(){ document.querySelectorAll('.mini').forEach(function(c){ var ctx=c.getContext('2d'); var w=c.width,h=c.height; ctx.clearRect(0,0,w,h);
     var v=series(+c.dataset.seed,12,50,20); line(ctx, mapPts(v,w,h,10), css('--pine'), 'color-mix(in srgb,'+css('--pine')+' 20%, transparent)'); }); }
+  var chartEx = 'exercise-liegestuetz';                        // welche Übung im Diagramm gezeigt wird
   function drawEx(){ var c=document.getElementById('exChart'); if(!c) return; var ctx=c.getContext('2d'); var w=c.width,h=c.height; ctx.clearRect(0,0,w,h);
     var legende=document.getElementById('exLegend');
-    var v=[];                                                   // echte Wiederholungen der letzten Tage (älteste zuerst)
-    for(var t=59;t>=0;t--){ var val=null; try{ val=localStorage.getItem('vitara.'+datumMinus(t)+'.reps.exercise-liegestuetz'); }catch(e){} if(val!==null) v.push(+val); }
-    if(v.length < 2){ if(legende) legende.textContent='Noch zu wenig Daten – trag im Workout deine Wiederholungen ein, dann erscheint hier dein Verlauf.'; return; }
+    var v=[];                                                   // Gesamt (Sätze×Wdh) je Tag, älteste zuerst
+    for(var t=59;t>=0;t--){ var d='vitara.'+datumMinus(t)+'.'; var r=null, st=null;
+      try{ r=localStorage.getItem(d+'reps.'+chartEx); st=localStorage.getItem(d+'sets.'+chartEx); }catch(e){}
+      if(r!==null){ v.push( (st!==null?+st:1) * (+r) ); } }
+    if(v.length < 2){ if(legende) legende.textContent='Noch zu wenig Daten – trag ein paar Workouts ein, dann erscheint hier dein Verlauf.'; return; }
     line(ctx, mapPts(v,w,h,18), css('--pine'), 'color-mix(in srgb,'+css('--pine')+' 22%, transparent)');
     var pp=mapPts(v,w,h,18), last=pp[pp.length-1]; ctx.beginPath(); ctx.arc(last[0],last[1],5,0,7); ctx.fillStyle=css('--pine'); ctx.fill(); ctx.strokeStyle=css('--surface'); ctx.lineWidth=2.5; ctx.stroke();
-    if(legende){ var letzter=v[v.length-1], diff=v[v.length-1]-v[0]; legende.textContent='Deine Liegestütz · '+v.length+' Einträge · zuletzt '+letzter+' Wdh ('+(diff>0?'▲ +'+diff:diff<0?'▼ '+diff:'±0')+')'; } }
+    if(legende){ var letzter=v[v.length-1], diff=letzter-v[0]; legende.textContent='Gesamt (Sätze×Wdh) · '+v.length+' Einträge · zuletzt '+letzter+' ('+(diff>0?'▲ +'+diff:diff<0?'▼ '+diff:'±0')+')'; } }
   function drawAll(){ drawBP(); drawJoint(); drawMinis(); drawEx(); }
   drawAll();
   window.addEventListener('resize', function(){ setTimeout(drawAll,60); });
