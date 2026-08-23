@@ -238,6 +238,23 @@
   /* Handgezeichneter Akzent */
   .doodle { display: block; width: 118px; height: 11px; color: var(--pine); margin-top: 3px; }
 
+  /* Geführter Workout-Modus */
+  .wkout { position: absolute; inset: 0; z-index: 40; background: linear-gradient(160deg, var(--pine), var(--pine-deep)); color: #fff;
+    display: flex; flex-direction: column; padding: 20px 20px calc(20px + env(safe-area-inset-bottom)); }
+  .wkout[hidden] { display: none; }
+  .wkout .top { display: flex; justify-content: space-between; align-items: center; }
+  .wkout .prog { font-size: 13px; font-weight: 800; opacity: .92; }
+  .wkout .cls { width: 34px; height: 34px; border-radius: 50%; border: none; background: rgba(255,255,255,.18); color: #fff; font-size: 15px; cursor: pointer; }
+  .wkout .cls:focus-visible, .wkout .done:focus-visible, .wkout .skip:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+  .wkout .progbar { height: 6px; border-radius: 999px; background: rgba(255,255,255,.25); margin-top: 12px; overflow: hidden; }
+  .wkout .progbar > i { display: block; height: 100%; background: #fff; border-radius: 999px; transition: width .25s; }
+  .wkout .mid { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 12px; padding: 10px; }
+  .wkout .em { font-size: 64px; line-height: 1; }
+  .wkout .exname { font-size: 25px; font-weight: 800; letter-spacing: -.01em; text-wrap: balance; }
+  .wkout .exziel { font-size: 15px; opacity: .9; max-width: 24ch; }
+  .wkout .done { width: 100%; border: none; border-radius: 16px; padding: 16px; font: inherit; font-weight: 800; font-size: 16px; background: #fff; color: var(--pine-deep); cursor: pointer; }
+  .wkout .skip { background: none; border: none; color: rgba(255,255,255,.85); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; margin-top: 12px; text-decoration: underline; }
+
   /* Sanfte Bewegung */
   .floaty { animation: floaty 6s ease-in-out infinite; }
   @keyframes floaty { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
@@ -657,6 +674,22 @@
             <button class="tab" data-view="training" role="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9v6M7 7v10M17 7v10M20 9v6M7 12h10"/></svg>Training</button>
             <button class="tab" data-view="wissen" role="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5a2 2 0 0 1 2-2h6v16H6a2 2 0 0 0-2 2z"/><path d="M20 5a2 2 0 0 0-2-2h-6v16h6a2 2 0 0 1 2 2z"/></svg>Wissen</button>
           </nav>
+
+          <!-- Geführter Workout-Modus -->
+          <div class="wkout" id="workoutOverlay" hidden>
+            <div class="top">
+              <div class="prog" id="wkProg">Übung 1 von 4</div>
+              <button class="cls" id="wkClose" aria-label="Workout schließen">✕</button>
+            </div>
+            <div class="progbar"><i id="wkBar" style="width:0%"></i></div>
+            <div class="mid" id="wkMid">
+              <div class="em" id="wkEmoji">💪</div>
+              <div class="exname" id="wkName">Übung</div>
+              <div class="exziel" id="wkZiel">Ziel</div>
+            </div>
+            <button class="done" id="wkDone">Erledigt ✓</button>
+            <button class="skip" id="wkSkip">Diese Übung überspringen</button>
+          </div>
         </div>
       </div>
     </div>
@@ -818,10 +851,65 @@
   }); }); }
 
   document.getElementById('fab').addEventListener('click', function(){ this.animate([{transform:'scale(1)'},{transform:'scale(.88)'},{transform:'scale(1)'}],{duration:220}); });
+  // --- Geführter Workout-Modus: Übung für Übung durchführen ---
+  var overlay = document.getElementById('workoutOverlay');
+  var wkSteps = [], wkIdx = 0;
+  function sammleUebungen(){
+    var arr = [];
+    document.querySelectorAll('#v-training .check[data-key^="exercise-"]').forEach(function(chk){
+      var row = chk.closest('.supp-row');
+      arr.push({
+        key: chk.dataset.key,
+        name: row.querySelector('.t') ? row.querySelector('.t').textContent : 'Übung',
+        ziel: row.querySelector('.ex-set') ? row.querySelector('.ex-set').textContent : '',
+        icon: row.querySelector('.supp-ico') ? row.querySelector('.supp-ico').textContent : '💪',
+        check: chk
+      });
+    });
+    return arr;
+  }
+  function wkRender(){
+    var s = wkSteps[wkIdx];
+    document.getElementById('wkProg').textContent = 'Übung ' + (wkIdx+1) + ' von ' + wkSteps.length;
+    document.getElementById('wkBar').style.width = (wkIdx / wkSteps.length * 100) + '%';
+    document.getElementById('wkEmoji').textContent = s.icon;
+    document.getElementById('wkName').textContent = s.name;
+    document.getElementById('wkZiel').textContent = s.ziel;
+    document.getElementById('wkDone').textContent = (wkIdx === wkSteps.length-1) ? 'Training abschließen ✓' : 'Erledigt ✓';
+    document.getElementById('wkSkip').style.display = '';
+  }
+  function wkFinish(){
+    document.getElementById('wkMid').innerHTML = '<div class="em">🎉</div><div class="exname">Geschafft!</div><div class="exziel">Training komplett – stark gemacht 💪</div>';
+    document.getElementById('wkProg').textContent = 'Fertig';
+    document.getElementById('wkBar').style.width = '100%';
+    document.getElementById('wkDone').textContent = 'Schließen';
+    document.getElementById('wkSkip').style.display = 'none';
+    wkIdx = -1;                                   // -1 = fertig: nächster Klick schließt
+  }
+  function wkWeiter(markiere){
+    var s = wkSteps[wkIdx];
+    if(markiere && s){ s.check.classList.add('on'); if(s.key) speichereStand(s.key, true); }
+    updateSupp(); updateTraining();
+    wkIdx++;
+    if(wkIdx >= wkSteps.length) wkFinish(); else wkRender();
+  }
+  function wkOpen(){
+    wkSteps = sammleUebungen();
+    if(!wkSteps.length) return;
+    wkIdx = 0;
+    document.getElementById('wkMid').innerHTML = '<div class="em" id="wkEmoji"></div><div class="exname" id="wkName"></div><div class="exziel" id="wkZiel"></div>';
+    wkRender();
+    overlay.hidden = false;
+  }
+  function wkClose(){ overlay.hidden = true; }
   var sw = document.getElementById('startWorkout');
-  if(sw){ sw.addEventListener('click', function(){ this.animate([{transform:'scale(1)'},{transform:'scale(.97)'},{transform:'scale(1)'}],{duration:180});
-    var i=0, checks=sw.closest('.view').querySelectorAll('.check');
-    checks.forEach(function(ch){ setTimeout(function(){ ch.classList.add('on'); if(ch.dataset.key){ speichereStand(ch.dataset.key, true); } updateTraining(); }, 120*(++i)); }); }); }
+  if(sw){ sw.addEventListener('click', wkOpen); }
+  var wkDoneBtn = document.getElementById('wkDone');
+  if(wkDoneBtn){ wkDoneBtn.addEventListener('click', function(){ if(wkIdx < 0){ wkClose(); } else { wkWeiter(true); } }); }
+  var wkSkipBtn = document.getElementById('wkSkip');
+  if(wkSkipBtn){ wkSkipBtn.addEventListener('click', function(){ wkWeiter(false); }); }
+  var wkCloseBtn = document.getElementById('wkClose');
+  if(wkCloseBtn){ wkCloseBtn.addEventListener('click', wkClose); }
 
   // ---- Charts ----
   function css(n){ return getComputedStyle(root).getPropertyValue(n).trim(); }
