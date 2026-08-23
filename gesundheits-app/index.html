@@ -515,14 +515,15 @@
             <div class="card">
               <div style="font-size:12px;color:var(--ink-3)">Wie stark ist der Schmerz gerade?</div>
               <div class="painscale" id="painScale"></div>
+              <div id="painInfo" style="font-size:12px;font-weight:700;color:var(--ink-3);margin-top:11px">Heute noch nichts eingetragen</div>
               <div class="supp-row" style="padding-bottom:2px"><div class="supp-meta"><div class="t">Morgen-Steifigkeit</div><div class="s">Leicht · mit Bewegung gut im Griff</div></div><span class="pill good">▲ besser</span></div>
               <div class="bar"><i style="width:72%;background:linear-gradient(90deg,var(--joint),var(--good))"></i></div>
             </div>
 
             <div class="sec-title">🔥 Was mir hilft</div>
             <div class="card">
-              <div class="supp-row" style="padding-top:2px"><div class="supp-ico" style="background:color-mix(in srgb,var(--joint) 14%,transparent)">🔥</div><div class="supp-meta"><div class="t">Wärme / Sauna gemacht</div><div class="s">Heute eintragen · tut den Gelenken gut</div></div><button class="check" aria-label="Wärme/Sauna eintragen"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button></div>
-              <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--pine) 14%,transparent)">🚶</div><div class="supp-meta"><div class="t">Bewegung gemacht</div><div class="s">Lockert Nacken, Schulter & Hüfte</div></div><button class="check" aria-label="Bewegung eintragen"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button></div>
+              <div class="supp-row" style="padding-top:2px"><div class="supp-ico" style="background:color-mix(in srgb,var(--joint) 14%,transparent)">🔥</div><div class="supp-meta"><div class="t">Wärme / Sauna gemacht</div><div class="s">Heute eintragen · tut den Gelenken gut</div></div><button class="check" data-key="joint-waerme" aria-label="Wärme/Sauna eintragen"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button></div>
+              <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--pine) 14%,transparent)">🚶</div><div class="supp-meta"><div class="t">Bewegung gemacht</div><div class="s">Lockert Nacken, Schulter & Hüfte</div></div><button class="check" data-key="joint-bewegung" aria-label="Bewegung eintragen"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button></div>
             </div>
 
             <div class="disc" style="margin-top:14px">🦴 <b>Rechte Hüfte = künstliches Gelenk (seit Mai 2025).</b> Übungen bitte hüft-schonend und mit Physio/Arzt abgestimmt wählen. Die App dokumentiert nur — sie gibt keine medizinischen Anweisungen.</div>
@@ -699,6 +700,9 @@
   function keyFuer(name){ return 'vitara.' + heute() + '.' + name; }
   function ladeStand(name){ try { return localStorage.getItem(keyFuer(name)) === '1'; } catch(e){ return false; } }
   function speichereStand(name, an){ try { localStorage.setItem(keyFuer(name), an ? '1' : '0'); } catch(e){} }
+  // Für echte Werte (z.B. Schmerz 0–10) statt nur Ja/Nein:
+  function ladeWert(name){ try { return localStorage.getItem(keyFuer(name)); } catch(e){ return null; } }
+  function speichereWert(name, wert){ try { localStorage.setItem(keyFuer(name), wert); } catch(e){} }
 
   // Zählt die genommenen Präparate und aktualisiert Zahl + Balken
   function updateSupp(){
@@ -723,23 +727,35 @@
   // Knöpfe OHNE Namensschild: verhalten sich wie bisher (nur optisch)
   document.querySelectorAll('.check:not([data-key])').forEach(function(c){ c.addEventListener('click', function(){ c.classList.toggle('on'); }); });
 
-  // Pain scale
+  // --- Gelenk-Schmerz: pro Gelenk & Tag als Wert speichern ---
+  var aktuellesGelenk = 'Rechte Schulter';               // welches Gelenk gerade gewählt ist
   var scale = document.getElementById('painScale');
-  if(scale){ for(var i=0;i<=10;i+=2){ var b=document.createElement('button'); b.textContent=i; b.dataset.v=i; scale.appendChild(b); }
+  var painInfo = document.getElementById('painInfo');
+  function schmerzFarbe(v){ return v>=6 ? 'var(--crit)' : v>=3 ? 'var(--warn)' : 'var(--good)'; }
+  function zeigeSchmerz(){                                 // gespeicherten Wert des Gelenks anzeigen
+    var wert = ladeWert('schmerz.' + aktuellesGelenk);
+    if(scale){ scale.querySelectorAll('button').forEach(function(x){ x.classList.remove('sel'); x.style.background=''; });
+      if(wert !== null){ var b = scale.querySelector('[data-v="'+wert+'"]'); if(b){ b.classList.add('sel'); b.style.background = schmerzFarbe(+wert); } }
+    }
+    if(painInfo){ painInfo.textContent = wert !== null ? ('✓ Heute gespeichert: ' + wert + ' / 10') : 'Heute noch nichts eingetragen'; }
+  }
+  if(scale){
+    for(var i=0;i<=10;i+=2){ var btn=document.createElement('button'); btn.textContent=i; btn.dataset.v=i; scale.appendChild(btn); }
     scale.querySelectorAll('button').forEach(function(b){ b.addEventListener('click', function(){
-      scale.querySelectorAll('button').forEach(function(x){ x.classList.remove('sel'); x.style.background=''; });
-      b.classList.add('sel');
-      var v=+b.dataset.v; b.style.background = v>=6?'var(--crit)': v>=3?'var(--warn)':'var(--good)';
+      speichereWert('schmerz.' + aktuellesGelenk, b.dataset.v);   // Wert merken
+      zeigeSchmerz();
     }); });
-    var mid = scale.querySelector('[data-v="4"]'); if(mid){ mid.classList.add('sel'); mid.style.background='var(--warn)'; }
   }
 
-  // Body pins
+  // Körperkarte: Gelenk antippen → auswählen und dessen gespeicherten Wert zeigen
   document.querySelectorAll('.bpin').forEach(function(p){ p.addEventListener('click', function(){
     document.querySelectorAll('.bpin').forEach(function(x){ x.setAttribute('stroke','none'); });
     p.setAttribute('stroke','var(--ink)'); p.setAttribute('stroke-width','2.5');
+    aktuellesGelenk = p.dataset.j;
     var t=document.getElementById('painTitle'); if(t){ t.firstChild.nodeValue = p.dataset.j + ' · Schmerz eintragen'; }
+    zeigeSchmerz();
   }); });
+  zeigeSchmerz();
 
   // Range segments
   var seg = document.getElementById('rangeSeg');
