@@ -254,6 +254,12 @@
   .wkout .exziel { font-size: 15px; opacity: .9; max-width: 24ch; }
   .wkout .done { width: 100%; border: none; border-radius: 16px; padding: 16px; font: inherit; font-weight: 800; font-size: 16px; background: #fff; color: var(--pine-deep); cursor: pointer; }
   .wkout .skip { background: none; border: none; color: rgba(255,255,255,.85); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; margin-top: 12px; text-decoration: underline; }
+  .wkreps { display: flex; align-items: center; justify-content: center; gap: 18px; margin: 4px 0 14px; }
+  .wkreps .rbtn { width: 46px; height: 46px; border-radius: 50%; border: 2px solid rgba(255,255,255,.5); background: rgba(255,255,255,.12); color: #fff; font-size: 24px; font-weight: 700; line-height: 1; cursor: pointer; }
+  .wkreps .rbtn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+  .wkreps .rval { min-width: 78px; text-align: center; }
+  .wkreps .rval span { font-size: 36px; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .wkreps .rval small { display: block; font-size: 12px; opacity: .85; }
 
   /* Sanfte Bewegung */
   .floaty { animation: floaty 6s ease-in-out infinite; }
@@ -583,7 +589,7 @@
 
             <div class="sec-title">Fortschritt · Liegestütz</div>
             <div class="card"><canvas id="exChart" width="640" height="240" style="width:100%;height:120px"></canvas>
-              <div class="legend2"><span style="color:var(--ink-3)">Max. Wiederholungen pro Satz · letzte Wochen — Trend steigend 📈</span></div>
+              <div class="legend2"><span id="exLegend" style="color:var(--ink-3)">Noch keine Daten – trag im Workout deine Wiederholungen ein.</span></div>
             </div>
 
             <div class="disc" style="margin-top:14px">💡 Auf dich abgestimmt: <b>Schulterdrücken</b> ist wegen deiner rechten Schulter als „schulterschonend" markiert (leichteres Gewicht, saubere Ausführung). Bei <b>Kniebeugen</b> auf die Hüftprothese achten. Übungen bei Bedarf mit Physio/Arzt abstimmen — die App dokumentiert nur.</div>
@@ -686,6 +692,11 @@
               <div class="em" id="wkEmoji">💪</div>
               <div class="exname" id="wkName">Übung</div>
               <div class="exziel" id="wkZiel">Ziel</div>
+            </div>
+            <div class="wkreps" id="wkReps">
+              <button class="rbtn" id="wkMinus" aria-label="weniger Wiederholungen">−</button>
+              <div class="rval"><span id="wkRepVal">0</span><small>geschafft</small></div>
+              <button class="rbtn" id="wkPlus" aria-label="mehr Wiederholungen">+</button>
             </div>
             <button class="done" id="wkDone">Erledigt ✓</button>
             <button class="skip" id="wkSkip">Diese Übung überspringen</button>
@@ -853,7 +864,9 @@
   document.getElementById('fab').addEventListener('click', function(){ this.animate([{transform:'scale(1)'},{transform:'scale(.88)'},{transform:'scale(1)'}],{duration:220}); });
   // --- Geführter Workout-Modus: Übung für Übung durchführen ---
   var overlay = document.getElementById('workoutOverlay');
-  var wkSteps = [], wkIdx = 0;
+  var wkSteps = [], wkIdx = 0, wkRepVal = 0;
+  function letzteReps(key){ for(var t=0;t<60;t++){ var v=null; try{ v=localStorage.getItem('vitara.'+datumMinus(t)+'.reps.'+key); }catch(e){} if(v!==null) return +v; } return null; }
+  function standardReps(s){ var last=letzteReps(s.key); if(last!==null) return last; var m=s.ziel.match(/×\s*(\d+)/); return m?+m[1]:10; }
   function sammleUebungen(){
     var arr = [];
     document.querySelectorAll('#v-training .check[data-key^="exercise-"]').forEach(function(chk){
@@ -875,6 +888,9 @@
     document.getElementById('wkEmoji').textContent = s.icon;
     document.getElementById('wkName').textContent = s.name;
     document.getElementById('wkZiel').textContent = s.ziel;
+    wkRepVal = standardReps(s);
+    document.getElementById('wkRepVal').textContent = wkRepVal;
+    document.getElementById('wkReps').style.display = 'flex';
     document.getElementById('wkDone').textContent = (wkIdx === wkSteps.length-1) ? 'Training abschließen ✓' : 'Erledigt ✓';
     document.getElementById('wkSkip').style.display = '';
   }
@@ -884,11 +900,12 @@
     document.getElementById('wkBar').style.width = '100%';
     document.getElementById('wkDone').textContent = 'Schließen';
     document.getElementById('wkSkip').style.display = 'none';
+    document.getElementById('wkReps').style.display = 'none';
     wkIdx = -1;                                   // -1 = fertig: nächster Klick schließt
   }
   function wkWeiter(markiere){
     var s = wkSteps[wkIdx];
-    if(markiere && s){ s.check.classList.add('on'); if(s.key) speichereStand(s.key, true); }
+    if(markiere && s){ s.check.classList.add('on'); if(s.key){ speichereStand(s.key, true); speichereWert('reps.'+s.key, wkRepVal); } drawEx(); }
     updateSupp(); updateTraining();
     wkIdx++;
     if(wkIdx >= wkSteps.length) wkFinish(); else wkRender();
@@ -910,6 +927,10 @@
   if(wkSkipBtn){ wkSkipBtn.addEventListener('click', function(){ wkWeiter(false); }); }
   var wkCloseBtn = document.getElementById('wkClose');
   if(wkCloseBtn){ wkCloseBtn.addEventListener('click', wkClose); }
+  var wkPlusBtn = document.getElementById('wkPlus');
+  if(wkPlusBtn){ wkPlusBtn.addEventListener('click', function(){ wkRepVal++; document.getElementById('wkRepVal').textContent = wkRepVal; }); }
+  var wkMinusBtn = document.getElementById('wkMinus');
+  if(wkMinusBtn){ wkMinusBtn.addEventListener('click', function(){ if(wkRepVal > 0){ wkRepVal--; document.getElementById('wkRepVal').textContent = wkRepVal; } }); }
 
   // ---- Charts ----
   function css(n){ return getComputedStyle(root).getPropertyValue(n).trim(); }
@@ -939,9 +960,13 @@
   function drawMinis(){ document.querySelectorAll('.mini').forEach(function(c){ var ctx=c.getContext('2d'); var w=c.width,h=c.height; ctx.clearRect(0,0,w,h);
     var v=series(+c.dataset.seed,12,50,20); line(ctx, mapPts(v,w,h,10), css('--pine'), 'color-mix(in srgb,'+css('--pine')+' 20%, transparent)'); }); }
   function drawEx(){ var c=document.getElementById('exChart'); if(!c) return; var ctx=c.getContext('2d'); var w=c.width,h=c.height; ctx.clearRect(0,0,w,h);
-    var v=[]; for(var i=0;i<10;i++){ v.push(8 + i*0.6 + Math.sin(i)*0.5); }
+    var legende=document.getElementById('exLegend');
+    var v=[];                                                   // echte Wiederholungen der letzten Tage (älteste zuerst)
+    for(var t=59;t>=0;t--){ var val=null; try{ val=localStorage.getItem('vitara.'+datumMinus(t)+'.reps.exercise-liegestuetz'); }catch(e){} if(val!==null) v.push(+val); }
+    if(v.length < 2){ if(legende) legende.textContent='Noch zu wenig Daten – trag im Workout deine Wiederholungen ein, dann erscheint hier dein Verlauf.'; return; }
     line(ctx, mapPts(v,w,h,18), css('--pine'), 'color-mix(in srgb,'+css('--pine')+' 22%, transparent)');
-    var pp=mapPts(v,w,h,18), last=pp[pp.length-1]; ctx.beginPath(); ctx.arc(last[0],last[1],5,0,7); ctx.fillStyle=css('--pine'); ctx.fill(); ctx.strokeStyle=css('--surface'); ctx.lineWidth=2.5; ctx.stroke(); }
+    var pp=mapPts(v,w,h,18), last=pp[pp.length-1]; ctx.beginPath(); ctx.arc(last[0],last[1],5,0,7); ctx.fillStyle=css('--pine'); ctx.fill(); ctx.strokeStyle=css('--surface'); ctx.lineWidth=2.5; ctx.stroke();
+    if(legende){ var letzter=v[v.length-1], diff=v[v.length-1]-v[0]; legende.textContent='Deine Liegestütz · '+v.length+' Einträge · zuletzt '+letzter+' Wdh ('+(diff>0?'▲ +'+diff:diff<0?'▼ '+diff:'±0')+')'; } }
   function drawAll(){ drawBP(); drawJoint(); drawMinis(); drawEx(); }
   drawAll();
   window.addEventListener('resize', function(){ setTimeout(drawAll,60); });
