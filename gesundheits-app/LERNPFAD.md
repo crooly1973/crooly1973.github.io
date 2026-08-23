@@ -42,7 +42,9 @@ Weg C heben wir uns auf, falls wir später sehr tiefe Funktionen brauchen.
 - [x] **Erstes echtes Feature:** Nahrungsergänzung wird lokal gespeichert (localStorage)
       + Tageszähler zählt live mit → die App „merkt" sich jetzt Eingaben ✅
 - [x] **Gelenke echt:** Schmerzwert (0–10) pro Gelenk speichern + Wärme/Sauna & Bewegung ✅
-- [ ] Weitere Features speicherbar machen (Training, Vitalwerte)
+- [x] **Training echt:** Übungen speichern + Wochenzählung (2×/Woche, Mo–So-Streifen) ✅
+- [x] **Erste Auswertung (Stufe 1):** 7-Tage-Schmerztrend pro Gelenk ✅
+- [ ] Weitere Features speicherbar machen (Vitalwerte)
 - [ ] Eigenes Datenmodell / Struktur der gespeicherten Daten sauber aufsetzen
 - **Was du hier lernst:** Wie eine App „von innen" funktioniert und Daten behält.
 
