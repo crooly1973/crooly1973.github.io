@@ -41,7 +41,8 @@ Weg C heben wir uns auf, falls wir später sehr tiefe Funktionen brauchen.
 - [x] **Lektion 1:** Die 3 Bausteine verstehen (HTML, CSS, JavaScript) → `lernen/lektion-1.html`
 - [x] **Erstes echtes Feature:** Nahrungsergänzung wird lokal gespeichert (localStorage)
       + Tageszähler zählt live mit → die App „merkt" sich jetzt Eingaben ✅
-- [ ] Weitere Features speicherbar machen (Training, Gelenk-Schmerz, Vitalwerte)
+- [x] **Gelenke echt:** Schmerzwert (0–10) pro Gelenk speichern + Wärme/Sauna & Bewegung ✅
+- [ ] Weitere Features speicherbar machen (Training, Vitalwerte)
 - [ ] Eigenes Datenmodell / Struktur der gespeicherten Daten sauber aufsetzen
 - **Was du hier lernst:** Wie eine App „von innen" funktioniert und Daten behält.
 
