@@ -1,0 +1,14 @@
+{
+  "name": "VITARA – Gesundheit & Sport",
+  "short_name": "VITARA",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#eef4f7",
+  "theme_color": "#06c2cf",
+  "lang": "de",
+  "icons": [
+    { "src": "icon-192.png", "type": "image/png", "sizes": "192x192" },
+    { "src": "icon-512.png", "type": "image/png", "sizes": "512x512" }
+  ]
+}
