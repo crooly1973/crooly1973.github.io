@@ -364,8 +364,8 @@
             <div class="card">
               <div class="supp-row" style="padding-top:2px">
                 <div class="supp-ico" style="background:color-mix(in srgb,var(--pine) 14%,transparent)">💪</div>
-                <div class="supp-meta"><div class="t">Krafttraining · 1 / 2</div><div class="s">Nächste Einheit heute · 4 Übungen</div></div>
-                <span class="pill warn">1 offen</span>
+                <div class="supp-meta"><div class="t">Krafttraining · <span id="homeWeekCount">0 / 2</span></div><div class="s">Diese Woche · 4 Übungen pro Einheit</div></div>
+                <span class="pill warn" id="homeWeekPill">2 offen</span>
               </div>
             </div>
 
@@ -541,13 +541,13 @@
             <div class="card">
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
                 <div><div style="font-weight:800;font-size:15px">Diese Woche</div><div style="font-size:12px;color:var(--ink-3)">Ziel: 2 Einheiten</div></div>
-                <span class="pill warn">1 / 2 geschafft</span>
+                <span class="pill warn" id="weekPill">0 / 2 geschafft</span>
               </div>
-              <div class="weekstrip">
-                <div class="d done"><span>Mo</span><i>✓</i></div>
+              <div class="weekstrip" id="weekStrip">
+                <div class="d"><span>Mo</span><i></i></div>
                 <div class="d"><span>Di</span><i></i></div>
                 <div class="d"><span>Mi</span><i></i></div>
-                <div class="d today"><span>Do</span><i>•</i></div>
+                <div class="d"><span>Do</span><i></i></div>
                 <div class="d"><span>Fr</span><i></i></div>
                 <div class="d"><span>Sa</span><i></i></div>
                 <div class="d"><span>So</span><i></i></div>
@@ -556,10 +556,10 @@
 
             <div class="sec-title">Mein Programm <a href="#" onclick="return false">4 Übungen</a></div>
             <div class="card">
-              <div class="supp-row" style="padding-top:2px"><div class="supp-ico" style="background:color-mix(in srgb,var(--pine) 14%,transparent)">🤸</div><div class="supp-meta"><div class="t">Liegestütz</div><div class="s ex-set">3 Sätze × 50 · an der Badewannenkante (gelenkschonend)</div></div><button class="check" aria-label="erledigt"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button></div>
-              <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--pine) 14%,transparent)">🦵</div><div class="supp-meta"><div class="t">Kniebeugen</div><div class="s ex-set">3 Sätze × 15 · eigenes Körpergewicht</div></div><button class="check" aria-label="erledigt"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button></div>
-              <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--supp) 16%,transparent)">🏋️</div><div class="supp-meta"><div class="t">Bizeps-Curls · Hanteln</div><div class="s ex-set">3 Sätze × 12 · 2×5 kg</div></div><button class="check" aria-label="erledigt"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button></div>
-              <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--joint) 14%,transparent)">💪</div><div class="supp-meta"><div class="t">Schulterdrücken · Hanteln</div><div class="s ex-set">3 Sätze × 10 · <span style="color:var(--joint);font-weight:700">schulterschonend</span></div></div><button class="check" aria-label="erledigt"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button></div>
+              <div class="supp-row" style="padding-top:2px"><div class="supp-ico" style="background:color-mix(in srgb,var(--pine) 14%,transparent)">🤸</div><div class="supp-meta"><div class="t">Liegestütz</div><div class="s ex-set">3 Sätze × 50 · an der Badewannenkante (gelenkschonend)</div></div><button class="check" data-key="exercise-liegestuetz" aria-label="erledigt"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button></div>
+              <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--pine) 14%,transparent)">🦵</div><div class="supp-meta"><div class="t">Kniebeugen</div><div class="s ex-set">3 Sätze × 15 · eigenes Körpergewicht</div></div><button class="check" data-key="exercise-kniebeugen" aria-label="erledigt"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button></div>
+              <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--supp) 16%,transparent)">🏋️</div><div class="supp-meta"><div class="t">Bizeps-Curls · Hanteln</div><div class="s ex-set">3 Sätze × 12 · 2×5 kg</div></div><button class="check" data-key="exercise-bizeps" aria-label="erledigt"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button></div>
+              <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--joint) 14%,transparent)">💪</div><div class="supp-meta"><div class="t">Schulterdrücken · Hanteln</div><div class="s ex-set">3 Sätze × 10 · <span style="color:var(--joint);font-weight:700">schulterschonend</span></div></div><button class="check" data-key="exercise-schulter" aria-label="erledigt"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button></div>
             </div>
 
             <div style="margin-top:14px"><button class="btnp" id="startWorkout"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg> Workout starten</button></div>
@@ -712,6 +712,28 @@
     var bar = document.getElementById('suppBar'); if(bar) bar.style.width = (checks.length ? genommen/checks.length*100 : 0) + '%';
   }
 
+  // Trainings-Woche: zählt Tage (Mo–So), an denen ALLE 4 Übungen erledigt sind
+  function tagStr(offsetVonMontag){ var d=new Date(); var dow=(d.getUTCDay()+6)%7; d.setUTCDate(d.getUTCDate()-dow+offsetVonMontag); return d.toISOString().slice(0,10); }
+  function updateTraining(){
+    var strip = document.querySelectorAll('#weekStrip .d');
+    if(!strip.length) return;
+    var exKeys = ['exercise-liegestuetz','exercise-kniebeugen','exercise-bizeps','exercise-schulter'];
+    var heuteIdx = (new Date().getUTCDay()+6)%7;      // 0=Montag … 6=Sonntag
+    var done = 0;
+    for(var k=0;k<7;k++){
+      var datum = tagStr(k);
+      var komplett = exKeys.every(function(name){ try { return localStorage.getItem('vitara.'+datum+'.'+name)==='1'; } catch(e){ return false; } });
+      var cell = strip[k], marker = cell.querySelector('i');
+      cell.classList.remove('done','today');
+      if(komplett){ cell.classList.add('done'); if(marker) marker.textContent='✓'; done++; }
+      else if(marker){ marker.textContent = (k===heuteIdx) ? '•' : ''; }
+      if(k===heuteIdx) cell.classList.add('today');
+    }
+    var pill=document.getElementById('weekPill'); if(pill){ pill.textContent=done+' / 2 geschafft'; pill.className='pill '+(done>=2?'good':'warn'); }
+    var hc=document.getElementById('homeWeekCount'); if(hc) hc.textContent=done+' / 2';
+    var hp=document.getElementById('homeWeekPill'); if(hp){ var offen=Math.max(0,2-done); hp.textContent=offen===0?'geschafft':(offen+' offen'); hp.className='pill '+(offen===0?'good':'warn'); }
+  }
+
   // Knöpfe MIT Namensschild (data-key): merken sich ihren Stand
   document.querySelectorAll('.check[data-key]').forEach(function(c){
     var name = c.dataset.key;
@@ -720,9 +742,11 @@
       c.classList.toggle('on');
       speichereStand(name, c.classList.contains('on'));   // beim Tippen: neuen Stand merken
       updateSupp();
+      updateTraining();
     });
   });
   updateSupp();
+  updateTraining();
 
   // Knöpfe OHNE Namensschild: verhalten sich wie bisher (nur optisch)
   document.querySelectorAll('.check:not([data-key])').forEach(function(c){ c.addEventListener('click', function(){ c.classList.toggle('on'); }); });
@@ -797,7 +821,7 @@
   var sw = document.getElementById('startWorkout');
   if(sw){ sw.addEventListener('click', function(){ this.animate([{transform:'scale(1)'},{transform:'scale(.97)'},{transform:'scale(1)'}],{duration:180});
     var i=0, checks=sw.closest('.view').querySelectorAll('.check');
-    checks.forEach(function(ch){ setTimeout(function(){ ch.classList.add('on'); }, 120*(++i)); }); }); }
+    checks.forEach(function(ch){ setTimeout(function(){ ch.classList.add('on'); if(ch.dataset.key){ speichereStand(ch.dataset.key, true); } updateTraining(); }, 120*(++i)); }); }); }
 
   // ---- Charts ----
   function css(n){ return getComputedStyle(root).getPropertyValue(n).trim(); }
