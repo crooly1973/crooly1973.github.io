@@ -167,7 +167,29 @@ Themen, die mich besonders interessieren (für Forschung & Videos):
 
 ---
 
-## 6. Ideen-Parkplatz 💡
+## 6. Geplant: KI-Auswertung & Zusammenhänge 🤖
+
+**Olivers Wunsch:** Die App soll aus den gespeicherten Daten regelmäßig eine
+**Auswertung** liefern und **mögliche Zusammenhänge** aufzeigen – auch per KI.
+
+**Stand:** Noch nicht gebaut. Das „KI-Tipp"-Banner auf der Startseite ist bisher
+nur ein Platzhalter (fester Beispieltext).
+
+**Geplanter Weg in zwei Stufen:**
+- **Stufe 1 – lokale Muster (offline, privat):** Die App rechnet einfache
+  Zusammenhänge selbst aus, z.B. „Schmerz Ø an Sauna-Tagen vs. ohne". Keine
+  Daten verlassen das Gerät.
+- **Stufe 2 – echte KI (z.B. Claude):** Eine KI fasst zusammengefasste Werte in
+  verständliche Hinweise. Voraussetzung: Datenschutz sauber klären (welche Daten,
+  Zustimmung), Kosten/Technik. Immer mit Hinweis: mögliche Zusammenhänge, **keine
+  Diagnose**, Korrelation ≠ Ursache.
+
+**Voraussetzung:** Erst genug Daten sammeln (Gelenke, Training, Vitalwerte),
+dann auswerten.
+
+---
+
+## 7. Ideen-Parkplatz 💡
 
 Platz für spontane Einfälle, die uns unterwegs kommen:
 
