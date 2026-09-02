@@ -1009,11 +1009,6 @@
   function drawAll(){ drawBP(); drawJoint(); drawMinis(); drawEx(); }
   drawAll();
   window.addEventListener('resize', function(){ setTimeout(drawAll,60); });
-
-  // Service Worker registrieren → macht die App offline-fähig
-  if('serviceWorker' in navigator){
-    window.addEventListener('load', function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); });
-  }
 })();
 </script>
 
