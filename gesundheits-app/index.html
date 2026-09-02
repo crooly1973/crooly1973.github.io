@@ -562,9 +562,9 @@
 
             <div class="disc" style="margin-top:14px">🦴 <b>Rechte Hüfte = künstliches Gelenk (seit Mai 2025).</b> Übungen bitte hüft-schonend und mit Physio/Arzt abgestimmt wählen. Die App dokumentiert nur — sie gibt keine medizinischen Anweisungen.</div>
 
-            <div class="sec-title">Verlauf · rechte Schulter</div>
+            <div class="sec-title">Verlauf · <span id="jointVerlaufTitle">Rechte Schulter</span></div>
             <div class="card"><canvas id="jointChart" width="640" height="240" style="width:100%;height:120px"></canvas>
-              <div class="legend2"><span style="color:var(--ink-3)">Schmerz 0–10 · letzte 30 Tage — besser an Tagen mit Wärme/Sauna 🔥</span></div>
+              <div class="legend2"><span id="jointLegend" style="color:var(--ink-3)">Schmerz 0–10 · letzte 30 Tage</span></div>
             </div>
           </section>
 
@@ -836,6 +836,7 @@
     }
     if(painInfo){ painInfo.textContent = wert !== null ? ('✓ Heute gespeichert: ' + wert + ' / 10') : 'Heute noch nichts eingetragen'; }
     zeigeTrend();
+    drawJoint();                                            // Verlaufs-Kurve unten aktualisieren
   }
   // Trend der letzten 7 Tage für das gewählte Gelenk (Auswertung Stufe 1)
   function datumMinus(n){ var d=new Date(); d.setDate(d.getDate()-n); return d.toISOString().slice(0,10); }
@@ -990,8 +991,14 @@
     [mapPts(sys,w,h,26),mapPts(dia,w,h,26)].forEach(function(pp,idx){ var last=pp[pp.length-1]; ctx.beginPath(); ctx.arc(last[0],last[1],5,0,7); ctx.fillStyle=idx?css('--pine'):css('--joint'); ctx.fill(); ctx.strokeStyle=css('--surface'); ctx.lineWidth=2.5; ctx.stroke(); });
   }
   function drawJoint(){ var c=document.getElementById('jointChart'); if(!c) return; var ctx=c.getContext('2d'); var w=c.width,h=c.height; ctx.clearRect(0,0,w,h);
-    var v=[]; for(var i=0;i<30;i++){ v.push(Math.max(0, 7 - i*0.16 + Math.sin(i)*0.8)); }
+    var legende=document.getElementById('jointLegend');
+    var titel=document.getElementById('jointVerlaufTitle'); if(titel) titel.textContent = aktuellesGelenk;   // Titel folgt dem gewählten Gelenk
+    var v=[];                                                    // echte Schmerzwerte der letzten 30 Tage (älteste zuerst)
+    for(var t=29;t>=0;t--){ var val=null; try{ val=localStorage.getItem('vitara.'+datumMinus(t)+'.schmerz.'+aktuellesGelenk); }catch(e){} if(val!==null) v.push(+val); }
+    if(v.length < 2){ if(legende) legende.textContent='Noch zu wenig Daten – trag den Schmerz an ein paar Tagen ein, dann erscheint hier dein Verlauf.'; return; }
     line(ctx, mapPts(v,w,h,18), css('--joint'), 'color-mix(in srgb,'+css('--joint')+' 22%, transparent)');
+    var pp=mapPts(v,w,h,18), last=pp[pp.length-1]; ctx.beginPath(); ctx.arc(last[0],last[1],5,0,7); ctx.fillStyle=css('--joint'); ctx.fill(); ctx.strokeStyle=css('--surface'); ctx.lineWidth=2.5; ctx.stroke();
+    if(legende){ var diff=v[v.length-1]-v[0]; legende.textContent='Schmerz 0–10 · '+v.length+' Einträge · '+(diff<0?('▼ besser ('+diff+')'):diff>0?('▲ mehr (+'+diff+')'):'→ stabil'); }
   }
   function drawMinis(){ document.querySelectorAll('.mini').forEach(function(c){ var ctx=c.getContext('2d'); var w=c.width,h=c.height; ctx.clearRect(0,0,w,h);
     var v=series(+c.dataset.seed,12,50,20); line(ctx, mapPts(v,w,h,10), css('--pine'), 'color-mix(in srgb,'+css('--pine')+' 20%, transparent)'); }); }
