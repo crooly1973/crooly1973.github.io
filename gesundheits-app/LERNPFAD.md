@@ -54,9 +54,9 @@ Weg C heben wir uns auf, falls wir später sehr tiefe Funktionen brauchen.
 - [ ] Werte abholen und lokal speichern
 - ⚠️ **Wichtig:** Alte Fitbit-Web-API wird Sept. 2026 abgeschaltet → neue **Google-Health-API** nutzen.
 
-### ⚪ Etappe 3 – PWA: installierbar machen
-- [ ] „Manifest" + „Service Worker" hinzufügen (macht die Web-App installierbar & offline-fähig)
-- [ ] Auf dem eigenen Handy testen (Icon auf den Homescreen legen)
+### 🟢 Etappe 3 – PWA: installierbar & offline  *(erledigt)*
+- [x] Manifest + eigenes App-Icon → auf dem iPhone-Home-Bildschirm getestet ✅
+- [x] Service Worker hinzugefügt → App startet & läuft **offline** (`sw.js`) ✅
 - **Was du hier lernst:** Was eine Web-App von einer „App" unterscheidet.
 
 ### ⚪ Etappe 4 – In eine echte App verpacken (Capacitor)
