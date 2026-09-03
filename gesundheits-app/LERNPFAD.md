@@ -44,15 +44,27 @@ Weg C heben wir uns auf, falls wir später sehr tiefe Funktionen brauchen.
 - [x] **Gelenke echt:** Schmerzwert (0–10) pro Gelenk speichern + Wärme/Sauna & Bewegung ✅
 - [x] **Training echt:** Übungen speichern + Wochenzählung (2×/Woche, Mo–So-Streifen) ✅
 - [x] **Erste Auswertung (Stufe 1):** 7-Tage-Schmerztrend pro Gelenk ✅
-- [ ] Weitere Features speicherbar machen (Vitalwerte)
+- [x] **Wissen echt & filterbar:** kuratierte Links aus `wissen.json`, Suche/Themen/Archiv,
+      Favoriten (max. 5 Videos + 5 Artikel), monatliche Auto-Aktualisierung ✅
+- [x] **Vitalwerte echt:** Blutdruck, Ruhepuls & Gewicht selbst eintragen + 30-Tage-Verlauf
+      (Blutdruck/Ruhepuls/Gewicht umschaltbar) — dieselbe Anzeige, in die später Fitbit einfließt ✅
 - [ ] Eigenes Datenmodell / Struktur der gespeicherten Daten sauber aufsetzen
 - **Was du hier lernst:** Wie eine App „von innen" funktioniert und Daten behält.
 
 ### ⚪ Fitbit-Anbindung (eigener Meilenstein, nach dem Fundament)
-- [ ] Entwickler-App bei Fitbit/Google registrieren (Client-ID) — **nur Oliver kann das**
-- [ ] Anmelde-/Erlaubnis-Ablauf (OAuth) einbauen
-- [ ] Werte abholen und lokal speichern
-- ⚠️ **Wichtig:** Alte Fitbit-Web-API wird Sept. 2026 abgeschaltet → neue **Google-Health-API** nutzen.
+- [ ] **Google-Cloud-Projekt** anlegen + OAuth-Zugangsdaten (Client-ID) — **nur Oliver kann das**
+- [ ] Anmelde-/Erlaubnis-Ablauf (Google OAuth 2.0) einbauen
+- [ ] Werte abholen und in denselben `vital.*`-Speicher wie die manuelle Eingabe schreiben
+- [ ] Kleiner Server-Baustein prüfen (unsere App ist rein statisch; Google-Token-Tausch braucht meist ein Backend)
+
+**Stand der Technik (recherchiert am 3. Sept. 2026):**
+- ⚠️ Die **alte Fitbit-Web-API wird zum 30. September 2026 abgeschaltet.** Neu-Anbindungen
+  müssen die **Google Health API** (Google-Login, Google OAuth 2.0) nutzen; alte Tokens gelten
+  nicht weiter, jede Nutzerin/jeder Nutzer muss neu zustimmen.
+- ⚠️ **„Live/Echtzeit" gibt es bei Fitbit nicht.** Die Uhr synchronisiert periodisch (Minuten
+  bis Stunden); die API liefert immer nur die **zuletzt synchronisierten** Werte.
+- 🩺 Für Gesundheitsdaten prüft Google die App strenger — das kann dauern.
+- Quellen: developers.google.com/health/migration · community.fitbit.com (Web-API-Phase-out).
 
 ### 🟢 Etappe 3 – PWA: installierbar & offline  *(erledigt)*
 - [x] Manifest + eigenes App-Icon → auf dem iPhone-Home-Bildschirm getestet ✅
