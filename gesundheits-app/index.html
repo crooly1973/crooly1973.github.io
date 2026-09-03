@@ -231,11 +231,21 @@
   .artcard .d { font-size: 12.5px; color: var(--ink-2); line-height: 1.5; }
   .vidcard { display: flex; gap: 12px; align-items: center; text-decoration: none; color: inherit; }
   .thumb { width: 108px; height: 66px; border-radius: 12px; flex: none; position: relative; overflow: hidden; display: grid; place-items: center; background: linear-gradient(135deg, var(--pine-deep), var(--joint)); }
-  .thumb .play { width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,.9); display: grid; place-items: center; }
+  .thumb .play { position: relative; z-index: 1; width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,.95); display: grid; place-items: center; box-shadow: 0 2px 8px rgba(0,0,0,.28); }
   .thumb .play svg { fill: var(--pine-deep); margin-left: 2px; }
   .thumb .dur { position: absolute; right: 5px; bottom: 5px; background: rgba(0,0,0,.72); color: #fff; font-size: 10px; font-weight: 700; padding: 1px 5px; border-radius: 5px; }
   .vidmeta .vt { font-weight: 700; font-size: 13.5px; line-height: 1.3; text-wrap: balance; }
   .vidmeta .vc { font-size: 12px; color: var(--ink-3); margin-top: 4px; display: flex; align-items: center; gap: 6px; }
+  .thumb .cover { position: absolute; inset: 0; background-size: cover; background-position: center; }
+  /* Favoriten-Stern auf den Karten */
+  .wcard { position: relative; }
+  .wcard > a { padding-right: 46px; }
+  .favbtn { position: absolute; top: 9px; right: 9px; width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); color: var(--ink-3); font-size: 15px; line-height: 1; cursor: pointer; display: grid; place-items: center; box-shadow: var(--shadow); z-index: 2; padding: 0; transition: transform .12s; }
+  .favbtn:hover { transform: scale(1.08); }
+  .favbtn.on { color: #f6a01a; border-color: transparent; background: color-mix(in srgb, #f6a01a 16%, var(--surface)); }
+  .favbtn:focus-visible { outline: 2px solid var(--pine); outline-offset: 2px; }
+  .toast { position: fixed; left: 50%; bottom: 92px; transform: translateX(-50%) translateY(12px); background: var(--ink); color: var(--surface); padding: 11px 16px; border-radius: 12px; font-size: 12.5px; font-weight: 600; box-shadow: 0 12px 34px rgba(0,0,0,.32); opacity: 0; transition: opacity .25s, transform .25s; z-index: 60; max-width: 86%; text-align: center; pointer-events: none; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   .disc { font-size: 11.5px; color: var(--ink-3); background: var(--surface-2); border: 1px dashed var(--line); border-radius: 12px; padding: 10px 12px; line-height: 1.5; }
   .clickable { cursor: pointer; }
 
@@ -632,6 +642,9 @@
               <button class="chip" data-thema="ruecken">Rücken</button>
             </div>
 
+            <div class="sec-title" style="margin-top:14px"><span>⭐ Favoriten <span id="favCount" style="font-weight:600;text-transform:none;letter-spacing:0;font-size:11.5px;color:var(--ink-3)"></span></span><a href="#" id="favToggle">anzeigen ›</a></div>
+            <div class="stack" id="favListe" hidden></div>
+
             <div class="sec-title">Aktuelle Auswahl <span id="wissenStand" style="font-weight:600;text-transform:none;letter-spacing:0;font-size:12px;color:var(--ink-3)"></span></div>
             <div class="stack" id="wissenListe"></div>
 
@@ -720,7 +733,7 @@
   document.querySelectorAll('.apphead .avatar').forEach(function(a){ a.style.cursor='pointer'; a.addEventListener('click', function(){ show('profile'); }); });
 
   // Topic chips (Wissen)
-  // --- Wissen: echte Inhalte aus wissen.json, filterbar, mit Archiv ---
+  // --- Wissen: echte Inhalte aus wissen.json, filterbar, mit Archiv & Favoriten ---
   (function(){
     var chipsEl = document.getElementById('topicChips');
     var listeEl = document.getElementById('wissenListe');
@@ -728,9 +741,42 @@
     var sucheEl = document.getElementById('wissenSuche');
     var standEl = document.getElementById('wissenStand');
     var archivToggle = document.getElementById('archivToggle');
+    var favEl = document.getElementById('favListe');
+    var favToggle = document.getElementById('favToggle');
+    var favCountEl = document.getElementById('favCount');
     if(!listeEl) return;
     var grads = ['#10bccb,#1766d4','#1766d4,#5fd6dd','#1e7fe0,#10bccb','#06c2cf,#1596c9'];
     var aktThema = 'alle';
+    var MAX_FAV = 5;
+
+    // --- Favoriten (dauerhaft im Browser gespeichert, ohne Datum) ---
+    function favKey(typ){ return 'vitara.fav.' + (typ === 'video' ? 'videos' : 'artikel'); }
+    function ladeFav(typ){ try { return JSON.parse(localStorage.getItem(favKey(typ)) || '[]'); } catch(e){ return []; } }
+    function speichereFav(typ, arr){ try { localStorage.setItem(favKey(typ), JSON.stringify(arr)); } catch(e){} }
+    function favIndex(arr, url){ for(var k=0;k<arr.length;k++){ if(arr[k].url === url) return k; } return -1; }
+    function istFavorit(item){ return favIndex(ladeFav(item.typ), item.url) >= 0; }
+    function toast(msg){
+      var t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
+      document.body.appendChild(t);
+      requestAnimationFrame(function(){ t.classList.add('show'); });
+      setTimeout(function(){ t.classList.remove('show'); setTimeout(function(){ if(t.parentNode) t.parentNode.removeChild(t); }, 320); }, 3400);
+    }
+    function toggleFav(item){
+      var arr = ladeFav(item.typ);
+      var i = favIndex(arr, item.url);
+      if(i >= 0){ arr.splice(i, 1); speichereFav(item.typ, arr); }
+      else {
+        if(arr.length >= MAX_FAV){
+          toast(item.typ === 'video'
+            ? 'Du hast schon 5 Video-Favoriten. Bitte entferne zuerst einen (★ antippen).'
+            : 'Du hast schon 5 Artikel-Favoriten. Bitte entferne zuerst einen (★ antippen).');
+          return;
+        }
+        arr.push({ typ:item.typ, thema:item.thema, titel:item.titel, quelle:item.quelle, sprache:item.sprache, url:item.url, zusammenfassung:item.zusammenfassung || '' });
+        speichereFav(item.typ, arr);
+      }
+      render();
+    }
     // Notfall-Inhalt, falls wissen.json (z.B. in der Vorschau) nicht geladen werden kann:
     var fallback = { aktualisiert: '', aktuell: [
       {typ:'video',thema:'hws',titel:'HWS-Syndrom: Diese Übungen können sofort helfen',quelle:'YouTube',sprache:'de',url:'https://www.youtube.com/watch?v=B2BnsckPmFA'},
@@ -745,19 +791,36 @@
     var daten = fallback;
 
     function esc(s){ return (s||'').replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+    function ytId(url){
+      var m = (url||'').match(/[?&]v=([\w-]{11})/) || (url||'').match(/youtu\.be\/([\w-]{11})/) || (url||'').match(/embed\/([\w-]{11})/);
+      return m ? m[1] : '';
+    }
     function karte(item, i){
+      var wrap = document.createElement('div');
+      wrap.className = 'wcard';
       var a = document.createElement('a');
       a.className = 'card ' + (item.typ === 'video' ? 'vidcard' : 'artcard');
       a.href = item.url; a.target = '_blank'; a.rel = 'noopener noreferrer';
       var en = item.sprache === 'en' ? ' · 🇬🇧 EN' : '';
       if(item.typ === 'video'){
-        a.innerHTML = '<div class="thumb" style="background:linear-gradient(135deg,'+grads[i%grads.length]+')"><div class="play"><svg width="12" height="12" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>'
+        var vid = ytId(item.url);
+        var cover = vid ? '<div class="cover" style="background-image:url(https://i.ytimg.com/vi/'+vid+'/mqdefault.jpg)"></div>' : '';
+        a.innerHTML = '<div class="thumb" style="background:linear-gradient(135deg,'+grads[i%grads.length]+')">'+cover+'<div class="play"><svg width="12" height="12" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>'
           + '<div class="vidmeta"><div class="vt">'+esc(item.titel)+'</div><div class="vc">▶ '+esc(item.quelle||'YouTube')+en+'</div></div>';
       } else {
         a.innerHTML = '<div class="src">'+esc(item.quelle||'Artikel')+en+'</div><div class="h">'+esc(item.titel)+'</div>'
           + (item.zusammenfassung ? '<div class="d">'+esc(item.zusammenfassung)+'</div>' : '');
       }
-      return a;
+      var fav = document.createElement('button');
+      fav.type = 'button';
+      var an = istFavorit(item);
+      fav.className = 'favbtn' + (an ? ' on' : '');
+      fav.textContent = an ? '★' : '☆';
+      fav.setAttribute('aria-label', an ? 'Favorit entfernen' : 'Als Favorit merken');
+      fav.setAttribute('aria-pressed', an ? 'true' : 'false');
+      fav.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); toggleFav(item); });
+      wrap.appendChild(a); wrap.appendChild(fav);
+      return wrap;
     }
     function passt(item){
       if(aktThema !== 'alle' && item.thema !== aktThema) return false;
@@ -769,7 +832,16 @@
       if(!m.length){ el.innerHTML = '<div class="disc">Keine Treffer für diese Auswahl.</div>'; return; }
       m.forEach(function(it,i){ el.appendChild(karte(it,i)); });
     }
-    function render(){ fuelle(listeEl, daten.aktuell || []); if(!archivEl.hidden) fuelle(archivEl, daten.archiv || []); }
+    function renderFav(){
+      var v = ladeFav('video'), ar = ladeFav('artikel');
+      if(favCountEl) favCountEl.textContent = '· ' + v.length + '/5 Videos · ' + ar.length + '/5 Artikel';
+      if(!favEl || favEl.hidden) return;
+      favEl.innerHTML = '';
+      var alle = v.concat(ar);
+      if(!alle.length){ favEl.innerHTML = '<div class="disc">Noch keine Favoriten. Tippe bei einem Beitrag oben rechts auf ☆, um ihn hier zu sammeln – bis zu 5 Videos und 5 Artikel.</div>'; return; }
+      alle.forEach(function(it, i){ favEl.appendChild(karte(it, i)); });
+    }
+    function render(){ renderFav(); fuelle(listeEl, daten.aktuell || []); if(!archivEl.hidden) fuelle(archivEl, daten.archiv || []); }
 
     if(chipsEl){ chipsEl.querySelectorAll('.chip').forEach(function(c){ c.addEventListener('click', function(){
       chipsEl.querySelectorAll('.chip').forEach(function(x){ x.classList.remove('on'); }); c.classList.add('on');
@@ -779,6 +851,11 @@
     if(archivToggle){ archivToggle.addEventListener('click', function(e){ e.preventDefault();
       archivEl.hidden = !archivEl.hidden; archivToggle.textContent = archivEl.hidden ? 'anzeigen ›' : 'ausblenden ▾'; render();
     }); }
+    if(favToggle){ favToggle.addEventListener('click', function(e){ e.preventDefault();
+      favEl.hidden = !favEl.hidden; favToggle.textContent = favEl.hidden ? 'anzeigen ›' : 'ausblenden ▾'; render();
+    }); }
+    // Favoriten-Bereich beim Start automatisch öffnen, wenn schon welche gespeichert sind
+    if(favEl && (ladeFav('video').length || ladeFav('artikel').length)){ favEl.hidden = false; if(favToggle) favToggle.textContent = 'ausblenden ▾'; }
 
     render();  // sofort mit Fallback zeigen
     fetch('wissen.json', { cache: 'no-store' }).then(function(r){ return r.json(); }).then(function(d){
