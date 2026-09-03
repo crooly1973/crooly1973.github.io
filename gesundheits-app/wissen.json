@@ -1,0 +1,18 @@
+{
+  "aktualisiert": "2026-09-03",
+  "aktuell": [
+    { "typ": "video", "thema": "hws", "titel": "HWS-Syndrom: Diese Übungen können sofort helfen", "quelle": "YouTube", "sprache": "de", "url": "https://www.youtube.com/watch?v=B2BnsckPmFA" },
+    { "typ": "video", "thema": "schulter", "titel": "10 Übungen gegen Schulterschmerzen", "quelle": "YouTube", "sprache": "de", "url": "https://www.youtube.com/watch?v=bl21CHnJ31s" },
+    { "typ": "video", "thema": "huefte", "titel": "7 schnelle Übungen gegen Hüftarthrose", "quelle": "YouTube", "sprache": "de", "url": "https://www.youtube.com/watch?v=DWWH5MJUBtU" },
+    { "typ": "video", "thema": "knie", "titel": "3 effektive Übungen bei Kniearthrose (für zuhause)", "quelle": "YouTube", "sprache": "de", "url": "https://www.youtube.com/watch?v=XJLk-rvUBow" },
+    { "typ": "video", "thema": "sprunggelenk", "titel": "Sprunggelenk stabilisieren: 3 Übungen für mehr Stabilität", "quelle": "YouTube", "sprache": "de", "url": "https://www.youtube.com/watch?v=0KOPRAQOZEs" },
+    { "typ": "video", "thema": "ruecken", "titel": "7 Übungen bei Schmerzen im oberen Rücken", "quelle": "YouTube", "sprache": "de", "url": "https://www.youtube.com/watch?v=Z-u9_p3JWjc" },
+    { "typ": "artikel", "thema": "arthrose", "titel": "Ernährung bei Arthrose: 8 Experten-Tipps", "quelle": "Gelenk-Klinik.de", "sprache": "de", "url": "https://gelenk-klinik.de/gelenke/ernaehrung-bei-arthrose.html", "zusammenfassung": "Wie eine entzündungsarme Ernährung und weniger Gewicht den Gelenkverschleiß bremsen können." },
+    { "typ": "artikel", "thema": "knie", "titel": "Kniearthrose: Welche Übungen helfen?", "quelle": "Gelenk-Klinik.de", "sprache": "de", "url": "https://gelenk-klinik.de/kniegelenk/kniearthrose-arthrose-und-knieuebungen.html", "zusammenfassung": "Kräftigung und Beweglichkeit fürs Knie – mit Übungsbeispielen." },
+    { "typ": "artikel", "thema": "ruecken", "titel": "Rückenübungen für zu Hause", "quelle": "Gelenk-Klinik.de", "sprache": "de", "url": "https://gelenk-klinik.de/wirbelsaeule/rueckenuebungen-fuer-zuhause.html", "zusammenfassung": "Übungen für oberen, mittleren und unteren Rücken." },
+    { "typ": "artikel", "thema": "sprunggelenk", "titel": "Fußgelenk stärken: Übungen fürs Sprunggelenk", "quelle": "Bauerfeind", "sprache": "de", "url": "https://www.bauerfeind.de/de/gesundheit/sprunggelenk/sprunggelenk-uebungen", "zusammenfassung": "Tägliche Übungen für ein stabiles, bewegliches Sprunggelenk." },
+    { "typ": "artikel", "thema": "hws", "titel": "Übungen bei HWS-Syndrom", "quelle": "fuessiotherapie.de", "sprache": "de", "url": "https://fuessiotherapie.de/uebungen-hws-syndrom/", "zusammenfassung": "Mobilisation & Stabilisation der Halswirbelsäule." },
+    { "typ": "artikel", "thema": "schulter", "titel": "Physiotherapie für die Schulter: 10 effektive Übungen", "quelle": "fuessiotherapie.de", "sprache": "de", "url": "https://fuessiotherapie.de/symptome/schulterschmerzen/", "zusammenfassung": "Übungen bei Schulterschmerzen zum Nachmachen." }
+  ],
+  "archiv": []
+}

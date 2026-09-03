@@ -216,6 +216,9 @@
 
   /* Knowledge / Wissen */
   .searchbar { display: flex; align-items: center; gap: 9px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 11px 14px; color: var(--ink-3); font-size: 13.5px; box-shadow: var(--shadow); }
+  input.searchbar { width: 100%; font: inherit; font-size: 13.5px; color: var(--ink); -webkit-appearance: none; appearance: none; }
+  input.searchbar:focus { outline: none; border-color: var(--pine); }
+  input.searchbar::placeholder { color: var(--ink-3); }
   .chips { display: flex; gap: 8px; overflow-x: auto; padding: 12px 2px 4px; scrollbar-width: none; }
   .chips::-webkit-scrollbar { display: none; }
   .chip { flex: none; border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); border-radius: 999px; padding: 7px 13px; font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer; white-space: nowrap; }
@@ -310,7 +313,7 @@
       <div class="pillar"><h3><span class="dot" style="background:var(--supp)"></span>Nahrungsergänzung</h3><p>Einnahme-Plan, Abhaken pro Tageszeit und Vorrats-Warnung, wenn etwas knapp wird.</p></div>
       <div class="pillar"><h3><span class="dot" style="background:var(--joint)"></span>Gelenke</h3><p>Antippbare Körperkarte, Schmerz-Tagebuch (0–10) und Beweglichkeit über Zeit.</p></div>
       <div class="pillar"><h3><span class="dot" style="background:var(--pine)"></span>Training</h3><p>Krafttraining 2× pro Woche mit deinen Übungen (Liegestütz, Kniebeugen, Hanteln) — schulter- & hüftschonend, mit Wochenziel und Fortschritt.</p></div>
-      <div class="pillar"><h3><span class="dot" style="background:var(--pine)"></span>Wissen</h3><p>Neueste Forschung zu Arthrose & HWS-Syndrom plus Top-YouTube-Übungen für Schulter, Nacken, HWS & Hüfte — nach deinen Themen gefiltert.</p></div>
+      <div class="pillar"><h3><span class="dot" style="background:var(--pine)"></span>Wissen</h3><p>Kuratierte, echte Artikel & YouTube-Übungen zu Arthrose, HWS/Nacken, Schulter, Hüfte, Knie, Sprunggelenk & Rücken — filterbar, mit Archiv, monatlich automatisch aktualisiert.</p></div>
       <p class="hint">Das ist ein unverbindliches Design-Mockup. Noch keine echten Daten, keine Medizin­funktion — wir stimmen erst Inhalte & Optik ab.</p>
     </aside>
 
@@ -616,61 +619,26 @@
           <section class="view" id="v-wissen" hidden>
             <div class="apphead"><div><div class="greet">Forschung & Übungen</div><div class="name">Wissen</div></div><div class="avatar clickable" data-goto="profile" style="background:linear-gradient(135deg,var(--pine),var(--pine-deep))">🔎</div></div>
 
-            <div class="searchbar clickable">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>
-              Arthrose, HWS, Nacken, Hüfte durchsuchen …
-            </div>
+            <input class="searchbar" id="wissenSuche" type="search" placeholder="Suchen … (z.B. Nacken, Hüfte, Übungen)" aria-label="Wissen durchsuchen">
 
             <div class="chips" id="topicChips">
-              <button class="chip on">Alle</button>
-              <button class="chip">Arthrose</button>
-              <button class="chip">HWS-Syndrom</button>
-              <button class="chip">Schulter</button>
-              <button class="chip">Nacken</button>
-              <button class="chip">Hüfte</button>
-              <button class="chip">Knie</button>
+              <button class="chip on" data-thema="alle">Alle</button>
+              <button class="chip" data-thema="arthrose">Arthrose</button>
+              <button class="chip" data-thema="hws">HWS / Nacken</button>
+              <button class="chip" data-thema="schulter">Schulter</button>
+              <button class="chip" data-thema="huefte">Hüfte</button>
+              <button class="chip" data-thema="knie">Knie</button>
+              <button class="chip" data-thema="sprunggelenk">Sprunggelenk</button>
+              <button class="chip" data-thema="ruecken">Rücken</button>
             </div>
 
-            <div class="sec-title">Neueste Forschung <a href="#" onclick="return false">Alle ›</a></div>
-            <div class="stack">
-              <a class="card artcard clickable" href="#" onclick="return false">
-                <div class="src">Übersichtsarbeit <span class="date">· aktualisiert Juli 2026</span></div>
-                <div class="h">Bewegung & Krafttraining bei Kniearthrose: was aktuelle Leitlinien empfehlen</div>
-                <div class="d">Zusammenfassung des Forschungsstands zu gelenkschonendem Training, Gewichtsmanagement und wann Nahrungsergänzung sinnvoll sein kann.</div>
-              </a>
-              <a class="card artcard clickable" href="#" onclick="return false">
-                <div class="src">HWS-Syndrom <span class="date">· Juni 2026</span></div>
-                <div class="h">Nackenschmerz & Halswirbelsäule: Haltung, Mobilisation und Faktoren im Alltag</div>
-                <div class="d">Überblick zu konservativen Ansätzen bei HWS-Beschwerden und welche Übungen in Studien untersucht wurden.</div>
-              </a>
-              <a class="card artcard clickable" href="#" onclick="return false">
-                <div class="src">Nährstoffe <span class="date">· Mai 2026</span></div>
-                <div class="h">Omega-3, Kurkuma & Glucosamin bei Gelenkbeschwerden — Studienlage im Überblick</div>
-                <div class="d">Was die Forschung zu häufig genutzten Nahrungsergänzungsmitteln sagt, inklusive offener Fragen.</div>
-              </a>
-            </div>
+            <div class="sec-title">Aktuelle Auswahl <span id="wissenStand" style="font-weight:600;text-transform:none;letter-spacing:0;font-size:12px;color:var(--ink-3)"></span></div>
+            <div class="stack" id="wissenListe"></div>
 
-            <div class="sec-title">Top-Videos für deine Gelenke</div>
-            <div class="stack">
-              <a class="card vidcard clickable" href="#" onclick="return false">
-                <div class="thumb" style="background:linear-gradient(135deg,#10bccb,#1766d4)"><div class="play"><svg width="12" height="12" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><span class="dur">11:24</span></div>
-                <div class="vidmeta"><div class="vt">Schulterschmerzen: 5 sanfte Übungen für zuhause</div><div class="vc">▶ YouTube · Physio-Kanal</div></div>
-              </a>
-              <a class="card vidcard clickable" href="#" onclick="return false">
-                <div class="thumb" style="background:linear-gradient(135deg,#1766d4,#5fd6dd)"><div class="play"><svg width="12" height="12" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><span class="dur">8:03</span></div>
-                <div class="vidmeta"><div class="vt">HWS-Syndrom & Nackenschmerz: Mobilisation Schritt für Schritt</div><div class="vc">▶ YouTube · Reha-Kanal</div></div>
-              </a>
-              <a class="card vidcard clickable" href="#" onclick="return false">
-                <div class="thumb" style="background:linear-gradient(135deg,#1e7fe0,#10bccb)"><div class="play"><svg width="12" height="12" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><span class="dur">14:47</span></div>
-                <div class="vidmeta"><div class="vt">Hüftschmerzen lindern: Dehnung & Kräftigung</div><div class="vc">▶ YouTube · Sportmedizin</div></div>
-              </a>
-              <a class="card vidcard clickable" href="#" onclick="return false">
-                <div class="thumb" style="background:linear-gradient(135deg,#10bccb,#1766d4)"><div class="play"><svg width="12" height="12" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div><span class="dur">6:58</span></div>
-                <div class="vidmeta"><div class="vt">Nackenverspannung lösen: kurze Routine für den Alltag</div><div class="vc">▶ YouTube · Faszien & Beweglichkeit</div></div>
-              </a>
-            </div>
+            <div class="sec-title" style="margin-top:22px">Archiv <a href="#" id="archivToggle">anzeigen ›</a></div>
+            <div class="stack" id="wissenArchiv" hidden></div>
 
-            <div class="disc" style="margin-top:18px">Beispiel-Inhalte fürs Mockup. In der echten App werden hier tagesaktuelle Artikel und Videos aus vertrauenswürdigen Quellen geladen und nach deinen Themen (Arthrose, HWS, Schulter, Hüfte …) gefiltert. Ersetzt keine ärztliche oder physiotherapeutische Beratung.</div>
+            <div class="disc" style="margin-top:18px">Kuratierte, echte Links (Deutsch) – wird <b>einmal im Monat</b> automatisch aktualisiert; ältere Beiträge wandern ins Archiv. Reine Info & Übungen zum Anschauen – <b>ersetzt keine ärztliche oder physiotherapeutische Beratung</b>, keine Diagnosen. Bei künstlicher Hüfte Übungen bitte mit Physio/Arzt abstimmen.</div>
           </section>
 
           <!-- PROFILE -->
@@ -752,10 +720,71 @@
   document.querySelectorAll('.apphead .avatar').forEach(function(a){ a.style.cursor='pointer'; a.addEventListener('click', function(){ show('profile'); }); });
 
   // Topic chips (Wissen)
-  var chips = document.getElementById('topicChips');
-  if(chips){ chips.querySelectorAll('.chip').forEach(function(c){ c.addEventListener('click', function(){
-    chips.querySelectorAll('.chip').forEach(function(x){ x.classList.remove('on'); }); c.classList.add('on');
-  }); }); }
+  // --- Wissen: echte Inhalte aus wissen.json, filterbar, mit Archiv ---
+  (function(){
+    var chipsEl = document.getElementById('topicChips');
+    var listeEl = document.getElementById('wissenListe');
+    var archivEl = document.getElementById('wissenArchiv');
+    var sucheEl = document.getElementById('wissenSuche');
+    var standEl = document.getElementById('wissenStand');
+    var archivToggle = document.getElementById('archivToggle');
+    if(!listeEl) return;
+    var grads = ['#10bccb,#1766d4','#1766d4,#5fd6dd','#1e7fe0,#10bccb','#06c2cf,#1596c9'];
+    var aktThema = 'alle';
+    // Notfall-Inhalt, falls wissen.json (z.B. in der Vorschau) nicht geladen werden kann:
+    var fallback = { aktualisiert: '', aktuell: [
+      {typ:'video',thema:'hws',titel:'HWS-Syndrom: Diese Übungen können sofort helfen',quelle:'YouTube',sprache:'de',url:'https://www.youtube.com/watch?v=B2BnsckPmFA'},
+      {typ:'video',thema:'schulter',titel:'10 Übungen gegen Schulterschmerzen',quelle:'YouTube',sprache:'de',url:'https://www.youtube.com/watch?v=bl21CHnJ31s'},
+      {typ:'video',thema:'huefte',titel:'7 schnelle Übungen gegen Hüftarthrose',quelle:'YouTube',sprache:'de',url:'https://www.youtube.com/watch?v=DWWH5MJUBtU'},
+      {typ:'video',thema:'knie',titel:'3 effektive Übungen bei Kniearthrose (für zuhause)',quelle:'YouTube',sprache:'de',url:'https://www.youtube.com/watch?v=XJLk-rvUBow'},
+      {typ:'video',thema:'sprunggelenk',titel:'Sprunggelenk stabilisieren: 3 Übungen',quelle:'YouTube',sprache:'de',url:'https://www.youtube.com/watch?v=0KOPRAQOZEs'},
+      {typ:'video',thema:'ruecken',titel:'7 Übungen bei Schmerzen im oberen Rücken',quelle:'YouTube',sprache:'de',url:'https://www.youtube.com/watch?v=Z-u9_p3JWjc'},
+      {typ:'artikel',thema:'arthrose',titel:'Ernährung bei Arthrose: 8 Experten-Tipps',quelle:'Gelenk-Klinik.de',sprache:'de',url:'https://gelenk-klinik.de/gelenke/ernaehrung-bei-arthrose.html',zusammenfassung:'Wie entzündungsarme Ernährung und weniger Gewicht den Gelenkverschleiß bremsen können.'},
+      {typ:'artikel',thema:'sprunggelenk',titel:'Fußgelenk stärken: Übungen fürs Sprunggelenk',quelle:'Bauerfeind',sprache:'de',url:'https://www.bauerfeind.de/de/gesundheit/sprunggelenk/sprunggelenk-uebungen',zusammenfassung:'Tägliche Übungen für ein stabiles, bewegliches Sprunggelenk.'}
+    ], archiv: [] };
+    var daten = fallback;
+
+    function esc(s){ return (s||'').replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+    function karte(item, i){
+      var a = document.createElement('a');
+      a.className = 'card ' + (item.typ === 'video' ? 'vidcard' : 'artcard');
+      a.href = item.url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+      var en = item.sprache === 'en' ? ' · 🇬🇧 EN' : '';
+      if(item.typ === 'video'){
+        a.innerHTML = '<div class="thumb" style="background:linear-gradient(135deg,'+grads[i%grads.length]+')"><div class="play"><svg width="12" height="12" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>'
+          + '<div class="vidmeta"><div class="vt">'+esc(item.titel)+'</div><div class="vc">▶ '+esc(item.quelle||'YouTube')+en+'</div></div>';
+      } else {
+        a.innerHTML = '<div class="src">'+esc(item.quelle||'Artikel')+en+'</div><div class="h">'+esc(item.titel)+'</div>'
+          + (item.zusammenfassung ? '<div class="d">'+esc(item.zusammenfassung)+'</div>' : '');
+      }
+      return a;
+    }
+    function passt(item){
+      if(aktThema !== 'alle' && item.thema !== aktThema) return false;
+      var q = (sucheEl && sucheEl.value || '').trim().toLowerCase();
+      if(q){ var hay = (item.titel+' '+(item.quelle||'')+' '+(item.thema||'')+' '+(item.zusammenfassung||'')).toLowerCase(); if(hay.indexOf(q) < 0) return false; }
+      return true;
+    }
+    function fuelle(el, items){ el.innerHTML=''; var m = items.filter(passt);
+      if(!m.length){ el.innerHTML = '<div class="disc">Keine Treffer für diese Auswahl.</div>'; return; }
+      m.forEach(function(it,i){ el.appendChild(karte(it,i)); });
+    }
+    function render(){ fuelle(listeEl, daten.aktuell || []); if(!archivEl.hidden) fuelle(archivEl, daten.archiv || []); }
+
+    if(chipsEl){ chipsEl.querySelectorAll('.chip').forEach(function(c){ c.addEventListener('click', function(){
+      chipsEl.querySelectorAll('.chip').forEach(function(x){ x.classList.remove('on'); }); c.classList.add('on');
+      aktThema = c.dataset.thema || 'alle'; render();
+    }); }); }
+    if(sucheEl){ sucheEl.addEventListener('input', render); }
+    if(archivToggle){ archivToggle.addEventListener('click', function(e){ e.preventDefault();
+      archivEl.hidden = !archivEl.hidden; archivToggle.textContent = archivEl.hidden ? 'anzeigen ›' : 'ausblenden ▾'; render();
+    }); }
+
+    render();  // sofort mit Fallback zeigen
+    fetch('wissen.json', { cache: 'no-store' }).then(function(r){ return r.json(); }).then(function(d){
+      daten = d; if(standEl && d.aktualisiert) standEl.textContent = 'Stand ' + d.aktualisiert; render();
+    }).catch(function(){ /* Fallback bleibt sichtbar */ });
+  })();
 
   // Übungs-Auswahl im Trainings-Diagramm
   var exChips = document.getElementById('exChips');
