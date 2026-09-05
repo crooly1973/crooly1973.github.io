@@ -23,7 +23,7 @@ setcookie('vitara_state', $state, array(
     'samesite' => 'Lax',
 ));
 
-$params = http_build_query(array(
+$p = array(
     'client_id'              => $cfg['client_id'],
     'redirect_uri'           => $cfg['redirect_uri'],
     'response_type'          => 'code',
@@ -32,6 +32,9 @@ $params = http_build_query(array(
     'include_granted_scopes' => 'true',
     'prompt'                 => 'select_account consent',   // Kontoauswahl erzwingen (richtiges Fitbit-Konto wählen)
     'state'                  => $state,
-));
+);
+// Optional: ?email=... gibt das gewünschte Google-Konto vor
+if (!empty($_GET['email'])) $p['login_hint'] = $_GET['email'];
+$params = http_build_query($p);
 
 header('Location: https://accounts.google.com/o/oauth2/v2/auth?' . $params);

@@ -451,6 +451,7 @@
                 <div style="flex:1"><div style="font-weight:800;font-size:14px">Fitbit Charge 6 verbinden</div><div style="font-size:12px;color:var(--ink-3);line-height:1.45;margin-top:2px">Damit Schritte, Schlaf, Ruhepuls & HRV automatisch erscheinen.</div></div>
                 <span class="pill warn" id="fitbitStatus">in Vorbereitung</span>
               </div>
+              <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--line);font-size:12px"><a href="#" id="fitbitReconnect" style="color:var(--pine);text-decoration:none;font-weight:700">Konto wechseln / neu verbinden ›</a></div>
             </div>
 
             <!-- Heute -->
@@ -1340,6 +1341,9 @@
       }).catch(function(){ if(goConnect){ window.location.href='health-connect.php'; } });
     }
     var fc=el('fitbitConnect'); if(fc){ fc.addEventListener('click', function(){ fitbitSync(true); }); }
+    var frc=el('fitbitReconnect'); if(frc){ frc.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation();
+      if(istServer){ window.location.href='health-connect.php'; } else { alert('Nur auf oliver-rock.de/gesundheitsapp/ möglich – dort läuft der Server-Teil.'); }
+    }); }
     if(location.search.indexOf('fitbit=verbunden')>=0){ var fs=el('fitbitStatus'); if(fs){ fs.textContent='verbunden ✓'; fs.className='pill good'; } }
     prefill();
     fitbitSync(false);   // beim Öffnen still aktualisieren, falls schon verbunden
