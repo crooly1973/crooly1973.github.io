@@ -58,15 +58,41 @@ $sfilter = 'sleep.interval.end_time >= "' . $startUTC7 . '" AND sleep.interval.e
 $rs = vitara_health_get_raw($access, 'sleep', $sfilter, 50);
 if ($debug) $dbg['sleep'] = array('code' => $rs['code'], 'body' => substr((string)$rs['body'], 0, 1800));
 
-// ---- Ruhepuls (Tages-Typ): über :dailyRollUp ----
-$rhr = null;
-$rrhr = vitara_daily_rollup($access, 'daily-resting-heart-rate', $startLocal7, $endLocal);
-if ($debug) $dbg['rhr'] = array('code' => $rrhr['code'], 'body' => substr((string)$rrhr['body'], 0, 1800));
+// Tageswerte per list + .date-Filter; nimmt den jüngsten Datenpunkt und dessen Zahl.
+$d1 = $startLocal7->format('Y-m-d');
+$d2 = $endLocal->format('Y-m-d');
+function vitara_daily_value($access, $dataType, $d1, $d2, &$raw) {
+    $filter = $dataType . '.date >= "' . $d1 . '" AND ' . $dataType . '.date <= "' . $d2 . '"';
+    $r = vitara_health_get_raw($access, $dataType, $filter, 30);
+    $raw = array('code' => $r['code'], 'body' => substr((string)$r['body'], 0, 1800));
+    if ($r['code'] !== 200) return null;
+    $j = json_decode($r['body'], true);
+    if (empty($j['dataPoints'])) return null;
+    $dp = end($j['dataPoints']);                       // jüngster Punkt
+    return vitara_first_number($dp);
+}
+// Findet die erste sinnvolle Zahl in der typ-spezifischen Nutzlast eines Datenpunkts.
+function vitara_first_number($node, $depth = 0) {
+    if ($depth > 6) return null;
+    if (is_numeric($node)) return $node + 0;
+    if (is_array($node)) {
+        foreach ($node as $k => $v) {
+            if (in_array($k, array('dataSource', 'interval', 'dataType', 'date', 'startUtcOffset', 'endUtcOffset', 'civilStartTime', 'civilEndTime', 'year', 'month', 'day', 'hours', 'minutes', 'seconds', 'nanos'), true)) continue;
+            $n = vitara_first_number($v, $depth + 1);
+            if ($n !== null) return $n;
+        }
+    }
+    return null;
+}
 
-// ---- HRV (Tages-Typ): über :dailyRollUp ----
-$hrv = null;
-$rhrv = vitara_daily_rollup($access, 'daily-heart-rate-variability', $startLocal7, $endLocal);
-if ($debug) $dbg['hrv'] = array('code' => $rhrv['code'], 'body' => substr((string)$rhrv['body'], 0, 1800));
+$rhr = vitara_daily_value($access, 'daily-resting-heart-rate', $d1, $d2, $rawR);
+if ($debug) $dbg['rhr'] = $rawR;
+
+$hrv = vitara_daily_value($access, 'daily-heart-rate-variability', $d1, $d2, $rawH);
+if ($debug) $dbg['hrv'] = $rawH;
+
+if ($rhr !== null) $rhr = (int)round($rhr);
+if ($hrv !== null) $hrv = (int)round($hrv);
 
 $out['ok'] = true;
 $out['schritte'] = $schritte;
