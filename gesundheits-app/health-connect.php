@@ -30,7 +30,7 @@ $params = http_build_query(array(
     'scope'                  => implode(' ', vitara_scopes()),
     'access_type'            => 'offline',       // damit wir ein Refresh-Token bekommen
     'include_granted_scopes' => 'true',
-    'prompt'                 => 'consent',
+    'prompt'                 => 'select_account consent',   // Kontoauswahl erzwingen (richtiges Fitbit-Konto wählen)
     'state'                  => $state,
 ));
 
