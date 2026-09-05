@@ -353,7 +353,7 @@
           <!-- HOME -->
           <section class="view" id="v-home">
             <div class="apphead">
-              <div><div class="greet">Sonntag, 3. August</div><div class="name">Moin, Oliver 👋</div>
+              <div><div class="greet" id="homeGreet">Startseite</div><div class="name">Moin, Oliver 👋</div>
                 <svg class="doodle" viewBox="0 0 118 11" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M2 7c22-6 62-7 114-3"/></svg>
               </div>
               <div class="avatar">O</div>
@@ -361,65 +361,65 @@
 
             <div class="aitip">
               <div class="sp">✦</div>
-              <div class="tt"><b>KI-Tipp:</b> Deine Erholung ist heute top — ein guter Tag für dein Krafttraining 💪</div>
+              <div class="tt" id="homeTipp"><b>Tipp für heute:</b> Schön, dass du da bist – trag deine ersten Werte ein, dann werden die Tipps persönlicher.</div>
             </div>
 
-            <div class="card hero floaty">
+            <div class="card hero floaty clickable" data-goto="supp">
               <div class="row">
                 <svg class="ring" viewBox="0 0 100 100">
                   <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="9"/>
-                  <circle cx="50" cy="50" r="40" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-dasharray="251.3" stroke-dashoffset="52" transform="rotate(-90 50 50)"/>
-                  <text x="50" y="47" text-anchor="middle" font-size="21" font-weight="800" fill="#fff" font-family="var(--font)">79</text>
-                  <text x="50" y="63" text-anchor="middle" font-size="9" fill="rgba(255,255,255,.8)">von 100</text>
+                  <circle id="heroRing" cx="50" cy="50" r="40" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-dasharray="251.3" stroke-dashoffset="251.3" transform="rotate(-90 50 50)"/>
+                  <text id="heroNum" x="50" y="47" text-anchor="middle" font-size="22" font-weight="800" fill="#fff" font-family="var(--font)">0</text>
+                  <text id="heroDen" x="50" y="63" text-anchor="middle" font-size="9" fill="rgba(255,255,255,.8)">von 4</text>
                 </svg>
                 <div>
-                  <div class="big">Gut in Form</div>
-                  <div class="sub">Dein Gesundheits-Score heute</div>
-                  <span class="tag">▲ 4 Punkte vs. gestern</span>
+                  <div class="big" id="heroBig">Heute noch offen</div>
+                  <div class="sub">Nahrungsergänzung heute</div>
+                  <span class="tag" id="heroTag">0 von 4 genommen</span>
                 </div>
               </div>
             </div>
 
             <div class="sec-title">Vitalwerte heute <a href="#" data-goto="vitals">Alle ›</a></div>
             <div class="grid2">
-              <div class="card metric">
-                <div class="lab"><span class="icoq" style="background:color-mix(in srgb,var(--joint) 16%,transparent);color:var(--joint)">❤</span>Puls</div>
-                <div class="val">62 <small>bpm</small></div>
-                <div class="foot flat">Ruhe · normal</div>
+              <div class="card metric clickable" data-goto="vitals">
+                <div class="lab"><span class="icoq" style="background:color-mix(in srgb,var(--joint) 16%,transparent);color:var(--joint)">❤</span>Ruhepuls</div>
+                <div class="val" id="hvPuls">—</div>
+                <div class="foot flat" id="hvPulsFoot">noch nicht eingetragen</div>
               </div>
-              <div class="card metric">
-                <div class="lab"><span class="icoq" style="background:color-mix(in srgb,var(--vital) 16%,transparent);color:var(--vital)">🩸</span>Blutdruck</div>
-                <div class="val">124<small>/78</small></div>
-                <div class="foot up">▲ leicht erhöht</div>
+              <div class="card metric clickable" data-goto="vitals">
+                <div class="lab"><span class="icoq" style="background:color-mix(in srgb,var(--pine) 16%,transparent);color:var(--pine)">⚖</span>Gewicht</div>
+                <div class="val" id="hvGew">—</div>
+                <div class="foot flat" id="hvGewFoot">noch nicht eingetragen</div>
               </div>
               <div class="card metric">
                 <div class="lab"><span class="icoq" style="background:color-mix(in srgb,var(--mint) 22%,transparent);color:var(--pine)">〰</span>HRV</div>
-                <div class="val">48 <small>ms</small></div>
-                <div class="foot up">▲ gute Erholung</div>
+                <div class="val">—</div>
+                <div class="foot flat">via Fitbit · bald</div>
               </div>
               <div class="card metric">
                 <div class="lab"><span class="icoq" style="background:color-mix(in srgb,var(--supp) 18%,transparent);color:var(--supp)">☾</span>Schlaf</div>
-                <div class="val">7:12 <small>h</small></div>
-                <div class="foot up">▲ +40 Min</div>
+                <div class="val">—</div>
+                <div class="foot flat">via Fitbit · bald</div>
               </div>
             </div>
 
-            <div class="sec-title">Als Nächstes fällig</div>
-            <div class="card">
-              <div class="supp-row">
-                <div class="supp-ico" style="background:color-mix(in srgb,var(--supp) 16%,transparent)">🌙</div>
-                <div class="supp-meta"><div class="t">Magnesium · Verla N</div><div class="s">Abends · vor dem Schlafen</div></div>
-                <button class="check" aria-label="Als eingenommen markieren"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button>
+            <div class="sec-title">Gut für die Gelenke heute <a href="#" data-goto="joints">Eintragen ›</a></div>
+            <div class="card clickable" data-goto="joints">
+              <div class="supp-row" style="padding-top:2px">
+                <div class="supp-ico" style="background:color-mix(in srgb,var(--joint) 14%,transparent)">🔥</div>
+                <div class="supp-meta"><div class="t">Wärme / Sauna</div><div class="s">Tut Nacken, Schulter & Hüfte gut</div></div>
+                <span class="pill warn" id="homeWaerme">offen</span>
               </div>
               <div class="supp-row">
-                <div class="supp-ico" style="background:color-mix(in srgb,var(--joint) 14%,transparent)">🔥</div>
-                <div class="supp-meta"><div class="t">Wärme / Sauna heute?</div><div class="s">Tut deinen Gelenken gut</div></div>
-                <button class="check" aria-label="Als erledigt markieren"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button>
+                <div class="supp-ico" style="background:color-mix(in srgb,var(--pine) 14%,transparent)">🚶</div>
+                <div class="supp-meta"><div class="t">Bewegung</div><div class="s">Lockert & hält beweglich</div></div>
+                <span class="pill warn" id="homeBewegung">offen</span>
               </div>
             </div>
 
             <div class="sec-title">Training diese Woche <a href="#" data-goto="training">Öffnen ›</a></div>
-            <div class="card">
+            <div class="card clickable" data-goto="training">
               <div class="supp-row" style="padding-top:2px">
                 <div class="supp-ico" style="background:color-mix(in srgb,var(--pine) 14%,transparent)">💪</div>
                 <div class="supp-meta"><div class="t">Krafttraining · <span id="homeWeekCount">0 / 2</span></div><div class="s">Diese Woche · 4 Übungen pro Einheit</div></div>
@@ -428,17 +428,8 @@
             </div>
 
             <div class="sec-title">Gelenk-Status <a href="#" data-goto="joints">Karte ›</a></div>
-            <div class="card">
-              <div class="supp-row" style="padding-top:2px">
-                <div class="supp-ico" style="background:color-mix(in srgb,var(--warn) 16%,transparent)">💪</div>
-                <div class="supp-meta"><div class="t">Rechte Schulter</div><div class="s">Heute 3/10 · wechselnd</div></div>
-                <span class="pill warn">Beobachten</span>
-              </div>
-              <div class="supp-row">
-                <div class="supp-ico" style="background:color-mix(in srgb,var(--joint) 14%,transparent)">🦴</div>
-                <div class="supp-meta"><div class="t">Nacken / HWS</div><div class="s">Heute 2/10 · morgens etwas steif</div></div>
-                <span class="pill good">Stabil</span>
-              </div>
+            <div class="card clickable" id="homeJoints" data-goto="joints">
+              <div class="supp-row" style="padding-top:2px"><div class="supp-meta"><div class="s">wird geladen …</div></div></div>
             </div>
           </section>
 
@@ -911,6 +902,73 @@
     var hp=document.getElementById('homeWeekPill'); if(hp){ var offen=Math.max(0,2-done); hp.textContent=offen===0?'geschafft':(offen+' offen'); hp.className='pill '+(offen===0?'good':'warn'); }
   }
 
+  // --- Startseite: echte Übersicht aus den gespeicherten Daten ---
+  function setHomePill(id,on){ var p=document.getElementById(id); if(!p) return; p.textContent=on?'erledigt':'offen'; p.className='pill '+(on?'good':'warn'); }
+  function homeTipp(taken,total){
+    var el=document.getElementById('homeTipp'); if(!el) return;
+    var maxJoint=null,maxV=-1;
+    document.querySelectorAll('#bodySvg .bpin').forEach(function(p){ var n=p.dataset.j; var v=ladeWert('schmerz.'+n); if(v!==null && +v>maxV){ maxV=+v; maxJoint=n; } });
+    var exKeys=['exercise-liegestuetz','exercise-kniebeugen','exercise-bizeps','exercise-schulter'];
+    var done=0; for(var k=0;k<7;k++){ var datum=tagStr(k); if(exKeys.every(function(name){ try{return localStorage.getItem('vitara.'+datum+'.'+name)==='1';}catch(e){return false;} })) done++; }
+    var vitalsHeute = ladeWert('vital.puls')!==null || ladeWert('vital.gewicht')!==null || ladeWert('vital.sys')!==null;
+    var msg;
+    if(maxV>=6) msg='Deine '+maxJoint+' meldet heute '+maxV+'/10. Wärme & sanfte Bewegung haben dir bisher geholfen. 🔥';
+    else if(taken<total) msg='Noch '+(total-taken)+' Präparat'+((total-taken)===1?'':'e')+' für heute offen – kurz abhaken nicht vergessen. 💊';
+    else if(done<2) msg='Diese Woche noch '+(2-done)+' Krafteinheit'+((2-done)===1?'':'en')+' – heute wäre ein guter Tag dafür. 💪';
+    else if(!vitalsHeute) msg='Trag heute kurz Ruhepuls oder Gewicht ein, dann wächst dein Verlauf. 📈';
+    else msg='Stark – heute schon alles im Blick: Präparate, Training und Werte. Weiter so! 🌊';
+    el.innerHTML='<b>Tipp für heute:</b> '+msg;
+  }
+  function homeUpdate(){
+    var greet=document.getElementById('homeGreet');
+    if(greet){ try{ greet.textContent = new Date().toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long'}); }catch(e){} }
+
+    // Nahrungsergänzung heute -> Hero-Ring
+    var checks=document.querySelectorAll('.check[data-key^="supp-"]');
+    var total=checks.length||4;
+    var taken=[].filter.call(checks,function(c){return c.classList.contains('on');}).length;
+    var C=251.3, ring=document.getElementById('heroRing');
+    if(ring) ring.setAttribute('stroke-dashoffset', String(Math.round((C-C*(total?taken/total:0))*10)/10));
+    var hn=document.getElementById('heroNum'); if(hn) hn.textContent=taken;
+    var hd=document.getElementById('heroDen'); if(hd) hd.textContent='von '+total;
+    var hb=document.getElementById('heroBig'); if(hb) hb.textContent = taken>=total ? 'Alles genommen ✓' : 'Heute noch offen';
+    var hg=document.getElementById('heroTag'); if(hg) hg.textContent = taken+' von '+total+' genommen';
+
+    // Vitalwerte heute (Blutdruck bewusst nicht auf der Startseite)
+    var puls=ladeWert('vital.puls'), gew=ladeWert('vital.gewicht');
+    var pv=document.getElementById('hvPuls'), pf=document.getElementById('hvPulsFoot');
+    if(pv) pv.innerHTML = puls!==null ? (puls+' <small>bpm</small>') : '—';
+    if(pf) pf.textContent = puls!==null ? 'heute · Ruhe' : 'noch nicht eingetragen';
+    var gv=document.getElementById('hvGew'), gf=document.getElementById('hvGewFoot');
+    if(gv) gv.innerHTML = gew!==null ? (String(gew).replace('.',',')+' <small>kg</small>') : '—';
+    if(gf) gf.textContent = gew!==null ? 'heute' : 'noch nicht eingetragen';
+
+    // Gut für die Gelenke heute
+    setHomePill('homeWaerme', ladeStand('joint-waerme'));
+    setHomePill('homeBewegung', ladeStand('joint-bewegung'));
+
+    // Gelenk-Status: heutige Schmerzwerte
+    var box=document.getElementById('homeJoints');
+    if(box){
+      var eintraege=[];
+      document.querySelectorAll('#bodySvg .bpin').forEach(function(p){ var name=p.dataset.j; var v=ladeWert('schmerz.'+name); if(v!==null && name.indexOf('Prothese')<0) eintraege.push({name:name,v:+v}); });
+      eintraege.sort(function(a,b){ return b.v-a.v; });
+      var html='';
+      if(eintraege.length){
+        eintraege.slice(0,3).forEach(function(e){
+          var cls=e.v>=6?'crit':e.v>=3?'warn':'good', wort=e.v>=6?'stark':e.v>=3?'beobachten':'ok';
+          html+='<div class="supp-row" style="padding-top:2px"><div class="supp-ico" style="background:color-mix(in srgb,var(--joint) 14%,transparent)">🦴</div><div class="supp-meta"><div class="t">'+e.name+'</div><div class="s">Heute '+e.v+'/10</div></div><span class="pill '+cls+'">'+wort+'</span></div>';
+        });
+      } else {
+        html='<div class="supp-row" style="padding-top:2px"><div class="supp-ico" style="background:color-mix(in srgb,var(--joint) 14%,transparent)">🦴</div><div class="supp-meta"><div class="t">Heute noch nichts eingetragen</div><div class="s">Tippe hier, um Schmerz pro Gelenk zu erfassen</div></div><span class="pill">öffnen</span></div>';
+      }
+      html+='<div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--vital) 14%,transparent)">🦿</div><div class="supp-meta"><div class="t">Rechte Hüfte · Prothese</div><div class="s">seit Mai 2025 · hüftschonend bleiben</div></div><span class="pill" style="background:color-mix(in srgb,var(--vital) 16%,transparent);color:var(--vital)">Info</span></div>';
+      box.innerHTML=html;
+    }
+
+    homeTipp(taken,total);
+  }
+
   // Knöpfe MIT Namensschild (data-key): merken sich ihren Stand
   document.querySelectorAll('.check[data-key]').forEach(function(c){
     var name = c.dataset.key;
@@ -920,10 +978,12 @@
       speichereStand(name, c.classList.contains('on'));   // beim Tippen: neuen Stand merken
       updateSupp();
       updateTraining();
+      homeUpdate();
     });
   });
   updateSupp();
   updateTraining();
+  homeUpdate();
 
   // Knöpfe OHNE Namensschild: verhalten sich wie bisher (nur optisch)
   document.querySelectorAll('.check:not([data-key])').forEach(function(c){ c.addEventListener('click', function(){ c.classList.toggle('on'); }); });
@@ -975,6 +1035,7 @@
     scale.querySelectorAll('button').forEach(function(b){ b.addEventListener('click', function(){
       speichereWert('schmerz.' + aktuellesGelenk, b.dataset.v);   // Wert merken
       zeigeSchmerz();
+      homeUpdate();
     }); });
   }
 
@@ -1124,7 +1185,7 @@
     saveBtn.addEventListener('click', function(){
       setOrClear('vital.sys', intVal(inSys)); setOrClear('vital.dia', intVal(inDia));
       setOrClear('vital.puls', intVal(inPuls)); setOrClear('vital.gewicht', floatVal(inGew));
-      status(); drawVit();
+      status(); drawVit(); homeUpdate();
       saveBtn.textContent='✓ Gespeichert'; setTimeout(function(){ saveBtn.textContent='Speichern'; }, 1600);
     });
     if(chips){ chips.querySelectorAll('.chip').forEach(function(c){ c.addEventListener('click', function(){
