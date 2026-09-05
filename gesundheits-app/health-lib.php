@@ -96,6 +96,17 @@ function vitara_health_get_raw($access, $dataType, $filter = null, $pageSize = 1
 
 /** Ruft einen Datentyp für einen Zeitraum ab. Filter-Anfang ist der Datentyp-Name. */
 function vitara_health_get($access, $dataType, $start, $end) {
-    $filter = $dataType . '.interval.start_time >= "' . $start . '" AND ' . $dataType . '.interval.start_time <= "' . $end . '"';
+    $filter = $dataType . '.interval.start_time >= "' . $start . '" AND ' . $dataType . '.interval.start_time < "' . $end . '"';
     return vitara_health_get_raw($access, $dataType, $filter, 100);
+}
+
+/** Tages-Zusammenfassung (für Tages-Typen wie daily-resting-heart-rate). Exploratives Format. */
+function vitara_daily_rollup($access, $dataType, $startUTC, $endUTC) {
+    $url = 'https://health.googleapis.com/v4/users/me/dataTypes/' . rawurlencode($dataType) . '/dataPoints:dailyRollUp';
+    $body = json_encode(array('start_time' => $startUTC, 'end_time' => $endUTC));
+    return vitara_http($url, array(
+        CURLOPT_POST => true,
+        CURLOPT_POSTFIELDS => $body,
+        CURLOPT_HTTPHEADER => array('Authorization: Bearer ' . $access, 'Content-Type: application/json'),
+    ));
 }

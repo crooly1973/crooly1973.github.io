@@ -1320,12 +1320,29 @@
     if(manToggle && manBody){ manToggle.addEventListener('click', function(e){ e.preventDefault();
       manBody.hidden=!manBody.hidden; manToggle.textContent=manBody.hidden?'anzeigen ›':'ausblenden ▾';
     }); }
-    var fc=el('fitbitConnect'); if(fc){ fc.addEventListener('click', function(){
-      if(location.hostname.indexOf('oliver-rock.de')>=0){ window.location.href='health-connect.php'; }
-      else { alert('Die Fitbit-Verbindung funktioniert nur auf der echten Adresse oliver-rock.de/gesundheitsapp/ – dort läuft der Server-Teil. In dieser Vorschau kannst du unten „Selbst eintragen" nutzen.'); if(manBody){ manBody.hidden=false; if(manToggle) manToggle.textContent='ausblenden ▾'; } }
-    }); }
+    var istServer = (location.hostname === 'oliver-rock.de' || location.hostname === 'www.oliver-rock.de');
+    function applyFitbit(d){
+      if(d.schritte!=null) localStorage.setItem(keyFuer('vital.schritte'), String(d.schritte));
+      if(d.rhr!=null) localStorage.setItem(keyFuer('vital.puls'), String(d.rhr));
+      if(d.hrv!=null) localStorage.setItem(keyFuer('vital.hrv'), String(d.hrv));
+      if(d.schlafMin!=null) localStorage.setItem(keyFuer('vital.schlafMin'), String(d.schlafMin));
+      if(d.schlaf){ var m={tief:'vital.schlafTief',leicht:'vital.schlafLeicht',rem:'vital.schlafRem',wach:'vital.schlafWach'};
+        Object.keys(m).forEach(function(k){ if(d.schlaf[k]!=null) localStorage.setItem(keyFuer(m[k]), String(d.schlaf[k])); }); }
+      var fs=el('fitbitStatus'); if(fs){ fs.textContent='verbunden ✓'; fs.className='pill good'; }
+      prefill(); vitOverview(); drawVit(); homeUpdate();
+    }
+    function fitbitSync(goConnect){
+      if(!istServer){ if(goConnect){ alert('Die Fitbit-Verbindung funktioniert nur auf der echten Adresse oliver-rock.de/gesundheitsapp/ – dort läuft der Server-Teil. In dieser Vorschau kannst du unten „Selbst eintragen" nutzen.'); if(manBody){ manBody.hidden=false; if(manToggle) manToggle.textContent='ausblenden ▾'; } } return; }
+      var fs=el('fitbitStatus'); if(fs && goConnect){ fs.textContent='lädt …'; }
+      fetch('health-data.php',{cache:'no-store'}).then(function(r){ return r.json(); }).then(function(d){
+        if(d && d.ok){ applyFitbit(d); }
+        else if(goConnect){ window.location.href='health-connect.php'; }
+      }).catch(function(){ if(goConnect){ window.location.href='health-connect.php'; } });
+    }
+    var fc=el('fitbitConnect'); if(fc){ fc.addEventListener('click', function(){ fitbitSync(true); }); }
     if(location.search.indexOf('fitbit=verbunden')>=0){ var fs=el('fitbitStatus'); if(fs){ fs.textContent='verbunden ✓'; fs.className='pill good'; } }
     prefill();
+    fitbitSync(false);   // beim Öffnen still aktualisieren, falls schon verbunden
   })();
   function drawJoint(){ var c=document.getElementById('jointChart'); if(!c) return; var ctx=c.getContext('2d'); var w=c.width,h=c.height; ctx.clearRect(0,0,w,h);
     var legende=document.getElementById('jointLegend');
