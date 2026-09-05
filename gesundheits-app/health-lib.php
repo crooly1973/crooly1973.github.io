@@ -100,10 +100,20 @@ function vitara_health_get($access, $dataType, $start, $end) {
     return vitara_health_get_raw($access, $dataType, $filter, 100);
 }
 
-/** Tages-Zusammenfassung (für Tages-Typen wie daily-resting-heart-rate). Exploratives Format. */
-function vitara_daily_rollup($access, $dataType, $startUTC, $endUTC) {
+/** Tages-Zusammenfassung (für Tages-Typen wie daily-resting-heart-rate).
+ *  range = CivilTimeInterval (zivile Datumsangaben, an Mitternacht ausgerichtet). */
+function vitara_daily_rollup($access, $dataType, $startLocal, $endLocal) {
+    $civ = function ($d) {
+        return array(
+            'date' => array('year' => (int)$d->format('Y'), 'month' => (int)$d->format('n'), 'day' => (int)$d->format('j')),
+            'time' => array('hours' => 0, 'minutes' => 0),
+        );
+    };
+    $body = json_encode(array(
+        'range' => array('startTime' => $civ($startLocal), 'endTime' => $civ($endLocal)),
+        'windowSizeDays' => 1,
+    ));
     $url = 'https://health.googleapis.com/v4/users/me/dataTypes/' . rawurlencode($dataType) . '/dataPoints:dailyRollUp';
-    $body = json_encode(array('start_time' => $startUTC, 'end_time' => $endUTC));
     return vitara_http($url, array(
         CURLOPT_POST => true,
         CURLOPT_POSTFIELDS => $body,

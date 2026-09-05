@@ -26,8 +26,8 @@ $endLocal   = new DateTime('tomorrow 00:00:00', $tz);
 $startUTC = (clone $startLocal)->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
 $endUTC   = (clone $endLocal)->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
 // Für Tageswerte (Ruhepuls/HRV/Schlaf) etwas Puffer nach hinten
-$startLocal3 = (clone $startLocal)->modify('-2 days');
-$startUTC3 = (clone $startLocal3)->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
+$startLocal7 = (clone $startLocal)->modify('-6 days');
+$startUTC7 = (clone $startLocal7)->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
 
 $dbg = array();
 
@@ -52,21 +52,21 @@ do {
 } while ($pageToken && $pages < 20);
 if ($gotAny) $schritte = $total;
 
-// ---- Schlaf (Sitzungs-Typ): Filter über interval.end_time ----
+// ---- Schlaf (Sitzungs-Typ): Filter über interval.end_time (7-Tage-Fenster) ----
 $schlafMin = null; $schlaf = null;
-$sfilter = 'sleep.interval.end_time >= "' . $startUTC3 . '" AND sleep.interval.end_time < "' . $endUTC . '"';
+$sfilter = 'sleep.interval.end_time >= "' . $startUTC7 . '" AND sleep.interval.end_time < "' . $endUTC . '"';
 $rs = vitara_health_get_raw($access, 'sleep', $sfilter, 50);
-if ($debug) $dbg['sleep'] = array('code' => $rs['code'], 'body' => substr((string)$rs['body'], 0, 1500));
+if ($debug) $dbg['sleep'] = array('code' => $rs['code'], 'body' => substr((string)$rs['body'], 0, 1800));
 
 // ---- Ruhepuls (Tages-Typ): über :dailyRollUp ----
 $rhr = null;
-$rrhr = vitara_daily_rollup($access, 'daily-resting-heart-rate', $startUTC3, $endUTC);
-if ($debug) $dbg['rhr'] = array('code' => $rrhr['code'], 'body' => substr((string)$rrhr['body'], 0, 1200));
+$rrhr = vitara_daily_rollup($access, 'daily-resting-heart-rate', $startLocal7, $endLocal);
+if ($debug) $dbg['rhr'] = array('code' => $rrhr['code'], 'body' => substr((string)$rrhr['body'], 0, 1800));
 
 // ---- HRV (Tages-Typ): über :dailyRollUp ----
 $hrv = null;
-$rhrv = vitara_daily_rollup($access, 'daily-heart-rate-variability', $startUTC3, $endUTC);
-if ($debug) $dbg['hrv'] = array('code' => $rhrv['code'], 'body' => substr((string)$rhrv['body'], 0, 1200));
+$rhrv = vitara_daily_rollup($access, 'daily-heart-rate-variability', $startLocal7, $endLocal);
+if ($debug) $dbg['hrv'] = array('code' => $rhrv['code'], 'body' => substr((string)$rhrv['body'], 0, 1800));
 
 $out['ok'] = true;
 $out['schritte'] = $schritte;
