@@ -86,10 +86,16 @@ function vitara_access_token($cfg, &$err) {
     return $tok['access_token'];
 }
 
-/** Ruft einen Google-Health-Datentyp für heute ab. Gibt code/body zurück. */
-function vitara_health_get($access, $dataType, $start, $end) {
-    $filter = 'data_type.interval.start_time >= "' . $start . '" AND data_type.interval.start_time <= "' . $end . '"';
+/** Roh-Abruf eines Datentyps. $filter = fertiger Filter-String oder null (ohne Filter). */
+function vitara_health_get_raw($access, $dataType, $filter = null, $pageSize = 100) {
     $url = 'https://health.googleapis.com/v4/users/me/dataTypes/' . rawurlencode($dataType)
-         . '/dataPoints?page_size=100&filter=' . rawurlencode($filter);
+         . '/dataPoints?page_size=' . intval($pageSize);
+    if ($filter) $url .= '&filter=' . rawurlencode($filter);
     return vitara_http($url, array(CURLOPT_HTTPHEADER => array('Authorization: Bearer ' . $access)));
+}
+
+/** Ruft einen Datentyp für einen Zeitraum ab. Filter-Anfang ist der Datentyp-Name. */
+function vitara_health_get($access, $dataType, $start, $end) {
+    $filter = $dataType . '.interval.start_time >= "' . $start . '" AND ' . $dataType . '.interval.start_time <= "' . $end . '"';
+    return vitara_health_get_raw($access, $dataType, $filter, 100);
 }
