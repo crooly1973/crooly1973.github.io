@@ -257,6 +257,13 @@
   .vitunit { font-size: 12px; color: var(--ink-3); min-width: 32px; }
   .btn-save { width: 100%; border: none; border-radius: 12px; padding: 12px; font: inherit; font-weight: 800; font-size: 14px; color: #fff; background: linear-gradient(135deg, var(--pine), var(--pine-deep)); cursor: pointer; margin-top: 2px; }
   .btn-save:active { transform: translateY(1px); }
+  /* Schlafindex-Balken */
+  .sleepbar { display: flex; height: 16px; border-radius: 8px; overflow: hidden; gap: 2px; background: var(--surface-2); }
+  .sleepbar > span { display: block; min-width: 2px; }
+  .sleeplegend { display: flex; flex-wrap: wrap; gap: 9px 16px; margin-top: 12px; font-size: 12px; color: var(--ink-2); }
+  .sleeplegend .sl { display: flex; align-items: center; gap: 6px; }
+  .sleeplegend .sl i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; flex: none; }
+  .sleeplegend .sl b { font-variant-numeric: tabular-nums; font-weight: 800; }
   .disc { font-size: 11.5px; color: var(--ink-3); background: var(--surface-2); border: 1px dashed var(--line); border-radius: 12px; padding: 10px 12px; line-height: 1.5; }
   .clickable { cursor: pointer; }
 
@@ -435,52 +442,79 @@
 
           <!-- VITALS -->
           <section class="view" id="v-vitals" hidden>
-            <div class="apphead"><div><div class="greet">Selbst eintragen & Verlauf</div><div class="name">Vitalwerte</div></div><div class="avatar" style="background:linear-gradient(135deg,var(--joint),#b8492f)">❤</div></div>
+            <div class="apphead"><div><div class="greet">Deine Werte im Überblick</div><div class="name">Vitalwerte</div></div><div class="avatar" style="background:linear-gradient(135deg,var(--joint),#b8492f)">❤</div></div>
 
-            <!-- Eingabe -->
-            <div class="sec-title">Werte für heute <span id="vitStatus" style="font-weight:600;text-transform:none;letter-spacing:0;font-size:12px;color:var(--ink-3)"></span></div>
-            <div class="card">
-              <div class="vitform">
-                <div class="vitrow">
-                  <div class="vlab"><span class="icoq" style="background:color-mix(in srgb,var(--joint) 16%,transparent);color:var(--joint)">❤</span>Blutdruck</div>
-                  <div class="vin"><input class="vitin" id="vSys" type="text" inputmode="numeric" maxlength="3" placeholder="120" aria-label="Blutdruck systolisch"><span class="vitsep">/</span><input class="vitin" id="vDia" type="text" inputmode="numeric" maxlength="3" placeholder="80" aria-label="Blutdruck diastolisch"><span class="vitunit">mmHg</span></div>
-                </div>
-                <div class="vitrow">
-                  <div class="vlab"><span class="icoq" style="background:color-mix(in srgb,var(--joint) 16%,transparent);color:var(--joint)">🫀</span>Ruhepuls</div>
-                  <div class="vin"><input class="vitin" id="vPuls" type="text" inputmode="numeric" maxlength="3" placeholder="60" aria-label="Ruhepuls"><span class="vitunit">bpm</span></div>
-                </div>
-                <div class="vitrow">
-                  <div class="vlab"><span class="icoq" style="background:color-mix(in srgb,var(--pine) 16%,transparent);color:var(--pine)">⚖</span>Gewicht</div>
-                  <div class="vin"><input class="vitin" id="vGew" type="text" inputmode="decimal" maxlength="5" placeholder="84,0" aria-label="Gewicht"><span class="vitunit">kg</span></div>
-                </div>
-                <button class="btn-save" id="vitSave" type="button">Speichern</button>
+            <!-- Fitbit-Verbindung -->
+            <div class="card clickable" id="fitbitConnect" style="background:linear-gradient(135deg,color-mix(in srgb,var(--pine) 15%,var(--surface)),color-mix(in srgb,var(--vital) 12%,var(--surface)));border:1px solid color-mix(in srgb,var(--pine) 30%,transparent)">
+              <div style="display:flex;align-items:center;gap:12px">
+                <div style="font-size:26px">⌚</div>
+                <div style="flex:1"><div style="font-weight:800;font-size:14px">Fitbit Charge 6 verbinden</div><div style="font-size:12px;color:var(--ink-3);line-height:1.45;margin-top:2px">Damit Schritte, Schlaf, Ruhepuls & HRV automatisch erscheinen.</div></div>
+                <span class="pill warn" id="fitbitStatus">in Vorbereitung</span>
               </div>
+            </div>
+
+            <!-- Heute -->
+            <div class="sec-title" style="margin-top:18px">Heute <span id="vitHeuteDatum" style="font-weight:600;text-transform:none;letter-spacing:0;font-size:12px;color:var(--ink-3)"></span></div>
+            <div class="grid2">
+              <div class="card metric"><div class="lab"><span class="icoq" style="background:color-mix(in srgb,var(--pine) 16%,transparent);color:var(--pine)">👟</span>Schritte</div><div class="val" id="mSchritte">—</div><div class="foot flat" id="mSchritteFoot">von der Charge 6</div></div>
+              <div class="card metric"><div class="lab"><span class="icoq" style="background:color-mix(in srgb,var(--supp) 18%,transparent);color:var(--supp)">✦</span>Tagesform</div><div class="val" id="mTagesform">—</div><div class="foot flat" id="mTagesformFoot">aus deinen Werten</div></div>
+              <div class="card metric"><div class="lab"><span class="icoq" style="background:color-mix(in srgb,var(--joint) 16%,transparent);color:var(--joint)">❤</span>Ruhepuls</div><div class="val" id="mRhr">—</div><div class="foot flat" id="mRhrFoot">bpm</div></div>
+              <div class="card metric"><div class="lab"><span class="icoq" style="background:color-mix(in srgb,var(--mint) 22%,transparent);color:var(--pine)">〰</span>HRV</div><div class="val" id="mHrv">—</div><div class="foot flat" id="mHrvFoot">ms</div></div>
+            </div>
+
+            <!-- Schlafindex -->
+            <div class="sec-title" style="margin-top:20px">Schlafindex <span id="mSchlafTotal" style="font-weight:700;text-transform:none;letter-spacing:0;font-size:12.5px;color:var(--ink)"></span></div>
+            <div class="card">
+              <div id="schlafLeer" style="font-size:12px;color:var(--ink-3);line-height:1.5">Sobald die Charge 6 verbunden ist (oder du unten die Schlafdauer einträgst), siehst du hier deine Schlafqualität mit den Phasen <b>Tief, Leicht, REM & Wach</b>.</div>
+              <div id="schlafBody" hidden>
+                <div class="sleepbar" id="sleepBar"></div>
+                <div class="sleeplegend" id="sleepLegend"></div>
+              </div>
+            </div>
+
+            <!-- Schritte-Auswertung -->
+            <div class="sec-title" style="margin-top:20px">Schritte · Monat & Jahr</div>
+            <div class="card">
+              <div class="rangebox" style="margin:0;padding:0;border:none">
+                <div>Ø / Tag (30 T.)<b id="stepAvg30">—</b></div>
+                <div>Ø / Tag (Jahr)<b id="stepAvgYear">—</b></div>
+                <div>Summe Jahr<b id="stepSumYear">—</b></div>
+              </div>
+              <div style="font-size:11.5px;color:var(--ink-3);line-height:1.5;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)" id="stepEval">Sobald ein paar Tage erfasst sind, siehst du hier deinen Monats- und Jahresschnitt.</div>
             </div>
 
             <!-- Verlauf -->
-            <div class="sec-title" style="margin-top:20px">Verlauf · <span id="vitVerlaufTitle" style="text-transform:none;letter-spacing:0;color:var(--ink)">Blutdruck</span></div>
+            <div class="sec-title" style="margin-top:20px">Verlauf · <span id="vitVerlaufTitle" style="text-transform:none;letter-spacing:0;color:var(--ink)">Schritte</span></div>
             <div class="chips" id="vitChips">
-              <button class="chip on" data-metric="bp">Blutdruck</button>
+              <button class="chip on" data-metric="schritte">Schritte</button>
               <button class="chip" data-metric="puls">Ruhepuls</button>
+              <button class="chip" data-metric="hrv">HRV</button>
+              <button class="chip" data-metric="schlaf">Schlaf</button>
               <button class="chip" data-metric="gewicht">Gewicht</button>
+              <button class="chip" data-metric="bp">Blutdruck</button>
             </div>
             <div class="card chartcard">
               <canvas id="vitChart" width="640" height="300" style="width:100%;height:150px"></canvas>
-              <div class="legend2"><span id="vitLegend" style="color:var(--ink-3)">Noch zu wenig Daten – trag an ein paar Tagen Werte ein, dann erscheint hier dein Verlauf.</span></div>
+              <div class="legend2"><span id="vitLegend" style="color:var(--ink-3)">Noch zu wenig Daten – sobald Werte da sind, erscheint hier dein Verlauf.</span></div>
             </div>
 
-            <!-- Fitbit später -->
-            <div class="sec-title" style="margin-top:20px">Von der Charge 6</div>
-            <div class="card" style="background:color-mix(in srgb,var(--pine) 8%,var(--surface))">
-              <div style="display:flex;align-items:center;gap:12px">
-                <div style="font-size:22px">⌚</div>
-                <div style="flex:1"><div style="font-weight:800;font-size:14px">Automatische Übernahme</div><div style="font-size:12px;color:var(--ink-3);line-height:1.45;margin-top:2px">Ruhepuls, HRV, Atemfrequenz, Schlaf, Aktivzonenminuten & SpO₂ sollen später automatisch von deiner Fitbit kommen.</div></div>
-                <span class="pill warn">in Vorbereitung</span>
+            <!-- Selbst eintragen -->
+            <div class="sec-title" style="margin-top:20px">Selbst eintragen <a href="#" id="manToggle">anzeigen ›</a></div>
+            <div class="card" id="manBody" hidden>
+              <div class="vitform">
+                <div class="vitrow"><div class="vlab"><span class="icoq" style="background:color-mix(in srgb,var(--pine) 16%,transparent);color:var(--pine)">👟</span>Schritte</div><div class="vin"><input class="vitin" id="vSchritte" type="text" inputmode="numeric" maxlength="6" placeholder="8000" aria-label="Schritte" style="width:82px"><span class="vitunit"> </span></div></div>
+                <div class="vitrow"><div class="vlab"><span class="icoq" style="background:color-mix(in srgb,var(--joint) 16%,transparent);color:var(--joint)">❤</span>Ruhepuls</div><div class="vin"><input class="vitin" id="vPuls" type="text" inputmode="numeric" maxlength="3" placeholder="60" aria-label="Ruhepuls"><span class="vitunit">bpm</span></div></div>
+                <div class="vitrow"><div class="vlab"><span class="icoq" style="background:color-mix(in srgb,var(--mint) 22%,transparent);color:var(--pine)">〰</span>HRV</div><div class="vin"><input class="vitin" id="vHrv" type="text" inputmode="numeric" maxlength="3" placeholder="45" aria-label="HRV"><span class="vitunit">ms</span></div></div>
+                <div class="vitrow"><div class="vlab"><span class="icoq" style="background:color-mix(in srgb,var(--supp) 18%,transparent);color:var(--supp)">☾</span>Schlafdauer</div><div class="vin"><input class="vitin" id="vSchlaf" type="text" inputmode="decimal" maxlength="4" placeholder="7,5" aria-label="Schlafdauer in Stunden"><span class="vitunit">Std.</span></div></div>
+                <div class="vitrow"><div class="vlab"><span class="icoq" style="background:color-mix(in srgb,var(--vital) 16%,transparent);color:var(--vital)">🩸</span>Blutdruck</div><div class="vin"><input class="vitin" id="vSys" type="text" inputmode="numeric" maxlength="3" placeholder="120" aria-label="Blutdruck systolisch"><span class="vitsep">/</span><input class="vitin" id="vDia" type="text" inputmode="numeric" maxlength="3" placeholder="80" aria-label="Blutdruck diastolisch"><span class="vitunit">mmHg</span></div></div>
+                <div class="vitrow"><div class="vlab"><span class="icoq" style="background:color-mix(in srgb,var(--pine) 16%,transparent);color:var(--pine)">⚖</span>Gewicht</div><div class="vin"><input class="vitin" id="vGew" type="text" inputmode="decimal" maxlength="5" placeholder="84,0" aria-label="Gewicht"><span class="vitunit">kg</span></div></div>
+                <button class="btn-save" id="vitSave" type="button">Speichern</button>
+                <div id="vitStatus" style="font-size:11.5px;color:var(--ink-3);text-align:center"></div>
               </div>
-              <div style="font-size:11.5px;color:var(--ink-3);line-height:1.5;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)">Sobald die Anbindung steht, erscheinen diese Werte hier – im selben Verlauf wie oben. „Live" ist bei Fitbit technisch nicht möglich; es sind immer die <b>zuletzt synchronisierten</b> Werte.</div>
+              <div class="disc" style="margin-top:10px">Diese Felder füllt später die Charge 6 <b>automatisch</b>. Bis dahin kannst du Werte selbst eintragen (z.B. aus der Fitbit-App) – so siehst du die Übersicht schon in Aktion.</div>
             </div>
 
-            <div class="disc" style="margin-top:16px">Blutdruck, Ruhepuls & Gewicht trägst du selbst ein (z.B. vom Blutdruckmessgerät). Alles wird nur <b>lokal auf deinem Gerät</b> gespeichert. VITARA ersetzt keine ärztliche Beurteilung.</div>
+            <div class="disc" style="margin-top:16px">Die „Tagesform" berechnet VITARA aus <b>deinen</b> Werten (Ruhepuls, HRV, Schlaf) – Fitbit gibt seine eigene „Readiness"-Zahl nicht über die Schnittstelle heraus. „Live" gibt es bei Fitbit nicht; es sind die zuletzt synchronisierten Werte. Alles wird nur <b>lokal auf deinem Gerät</b> gespeichert. VITARA ersetzt keine ärztliche Beurteilung.</div>
           </section>
 
           <!-- SUPPLEMENTS -->
@@ -1137,63 +1171,156 @@
   }
   function mapPts(vals,w,h,pad){ var mn=Math.min.apply(0,vals),mx=Math.max.apply(0,vals),r=mx-mn||1; return vals.map(function(v,i){ return [pad+i/(vals.length-1)*(w-2*pad), h-pad-(v-mn)/r*(h-2*pad)]; }); }
 
-  // --- Vitalwerte: echter 30-Tage-Verlauf (Blutdruck / Ruhepuls / Gewicht) ---
-  var vitMetric = 'bp';
-  function vitHist(name){ var out=[]; for(var t=29;t>=0;t--){ var v=null; try{ v=localStorage.getItem('vitara.'+datumMinus(t)+'.'+name); }catch(e){} out.push(v!==null? +v : null); } return out; }
+  // --- Vitalwerte: Übersicht, Auswertung & Verlauf ---
+  var vitMetric = 'schritte';
+  function nfmt(n){ try{ return Number(n).toLocaleString('de-DE'); }catch(e){ return String(n); } }
+  function clamp(v,a,b){ return v<a?a:(v>b?b:v); }
+  function formatHM(min){ min=Math.round(min); var h=Math.floor(min/60), m=min%60; return h+' h '+(m<10?'0'+m:m)+' m'; }
+  function vitReihe(name,days){ var out=[]; for(var t=days-1;t>=0;t--){ var v=null; try{ v=localStorage.getItem('vitara.'+datumMinus(t)+'.'+name); }catch(e){} out.push(v!==null? +v : null); } return out; }
+  function vitHist(name){ return vitReihe(name,30); }
+  function mittel(arr){ var f=arr.filter(function(v){return v!==null;}); if(!f.length) return null; return f.reduce(function(a,b){return a+b;},0)/f.length; }
   function mapMM(vals,w,h,pad,mn,mx){ var r=(mx-mn)||1; return vals.map(function(v,i){ return [pad + (vals.length<2?0.5:i/(vals.length-1))*(w-2*pad), h-pad-(v-mn)/r*(h-2*pad)]; }); }
   function punkt(ctx,pp,color){ var last=pp[pp.length-1]; ctx.beginPath(); ctx.arc(last[0],last[1],5,0,7); ctx.fillStyle=color; ctx.fill(); ctx.strokeStyle=css('--surface'); ctx.lineWidth=2.5; ctx.stroke(); }
+  var vitMeta = {
+    schritte:{label:'Schritte', key:'vital.schritte', farbe:'--pine', einheit:'Schritte', dec:false},
+    puls:    {label:'Ruhepuls', key:'vital.puls',     farbe:'--joint',einheit:'bpm',      dec:false},
+    hrv:     {label:'HRV',      key:'vital.hrv',      farbe:'--pine', einheit:'ms',       dec:false},
+    schlaf:  {label:'Schlaf',   key:'vital.schlafMin',farbe:'--supp', einheit:'Std.',     dec:true, teilen:60},
+    gewicht: {label:'Gewicht',  key:'vital.gewicht',  farbe:'--pine', einheit:'kg',       dec:true},
+    bp:      {label:'Blutdruck'}
+  };
   function drawVit(){ var c=document.getElementById('vitChart'); if(!c) return; var ctx=c.getContext('2d'); var w=c.width,h=c.height; ctx.clearRect(0,0,w,h);
     var leg=document.getElementById('vitLegend');
     ctx.strokeStyle=css('--line'); ctx.lineWidth=1; for(var g=1;g<4;g++){ var y=h/4*g; ctx.beginPath(); ctx.moveTo(20,y); ctx.lineTo(w-10,y); ctx.stroke(); }
     if(vitMetric==='bp'){
       var s=vitHist('vital.sys'), d=vitHist('vital.dia'), sysV=[], diaV=[];
       for(var i=0;i<s.length;i++){ if(s[i]!==null && d[i]!==null){ sysV.push(s[i]); diaV.push(d[i]); } }
-      if(sysV.length<2){ if(leg) leg.textContent='Noch zu wenig Daten – trag an ein paar Tagen deinen Blutdruck ein, dann erscheint hier dein Verlauf.'; return; }
+      if(sysV.length<2){ if(leg) leg.textContent='Noch zu wenig Daten für den Blutdruck-Verlauf.'; return; }
       var alle=sysV.concat(diaV), mn=Math.min.apply(0,alle)-5, mx=Math.max.apply(0,alle)+5;
       line(ctx, mapMM(sysV,w,h,26,mn,mx), css('--joint'), 'color-mix(in srgb,'+css('--joint')+' 20%, transparent)');
       line(ctx, mapMM(diaV,w,h,26,mn,mx), css('--pine'), null);
       punkt(ctx, mapMM(sysV,w,h,26,mn,mx), css('--joint')); punkt(ctx, mapMM(diaV,w,h,26,mn,mx), css('--pine'));
       if(leg) leg.textContent='mmHg (sys/dia) · '+sysV.length+' Messungen · zuletzt '+sysV[sysV.length-1]+'/'+diaV[diaV.length-1];
-    } else {
-      var name = vitMetric==='puls'?'vital.puls':'vital.gewicht';
-      var farbe = vitMetric==='puls'?css('--joint'):css('--pine');
-      var einheit = vitMetric==='puls'?'bpm':'kg';
-      var raw = vitHist(name).filter(function(v){ return v!==null; });
-      if(raw.length<2){ if(leg) leg.textContent='Noch zu wenig Daten – trag an ein paar Tagen einen Wert ein, dann erscheint hier dein Verlauf.'; return; }
-      line(ctx, mapPts(raw,w,h,22), farbe, 'color-mix(in srgb,'+farbe+' 20%, transparent)');
-      punkt(ctx, mapPts(raw,w,h,22), farbe);
-      var diff=Math.round((raw[raw.length-1]-raw[0])*10)/10;
-      if(leg) leg.textContent=einheit+' · '+raw.length+' Einträge · zuletzt '+String(raw[raw.length-1]).replace('.',',')+' ('+(diff>0?'▲ +'+diff:diff<0?'▼ '+diff:'±0')+')';
+      return;
     }
+    var m=vitMeta[vitMetric]||vitMeta.schritte;
+    var farbe=css(m.farbe);
+    var raw=vitHist(m.key).filter(function(v){ return v!==null; });
+    if(m.teilen) raw=raw.map(function(v){ return v/m.teilen; });
+    if(raw.length<2){ if(leg) leg.textContent='Noch zu wenig Daten für den '+m.label+'-Verlauf – kommt automatisch von der Charge 6 (oder trag unten Werte ein).'; return; }
+    line(ctx, mapPts(raw,w,h,22), farbe, 'color-mix(in srgb,'+farbe+' 20%, transparent)');
+    punkt(ctx, mapPts(raw,w,h,22), farbe);
+    var letzter=raw[raw.length-1], diff=Math.round((letzter-raw[0])*10)/10;
+    var lz = m.dec ? String(Math.round(letzter*10)/10).replace('.',',') : nfmt(Math.round(letzter));
+    if(leg) leg.textContent=m.einheit+' · '+raw.length+' Einträge · zuletzt '+lz+' ('+(diff>0?'▲ +'+(m.dec?String(diff).replace('.',','):diff):diff<0?'▼ '+(m.dec?String(diff).replace('.',','):diff):'±0')+')';
   }
-  // Eingabe der Vitalwerte
+
+  // Tagesform: eigener Index aus Ruhepuls, HRV & Schlaf (Fitbit gibt „Readiness" nicht her)
+  function berechneTagesform(){
+    var rhr=ladeWert('vital.puls'), hrv=ladeWert('vital.hrv'), schlaf=ladeWert('vital.schlafMin');
+    var vorhanden=[rhr,hrv,schlaf].filter(function(v){return v!==null;}).length;
+    if(vorhanden<2) return null;
+    var baseRhr=mittel(vitReihe('vital.puls',30)), baseHrv=mittel(vitReihe('vital.hrv',30));
+    var score=50;
+    if(rhr!==null && baseRhr!==null) score += clamp((baseRhr - (+rhr))*2, -18, 18);
+    if(hrv!==null && baseHrv!==null) score += clamp(((+hrv) - baseHrv)*1.2, -18, 18);
+    if(schlaf!==null) score += clamp(18 - Math.abs((+schlaf)-465)/8, -15, 18);
+    score=Math.round(clamp(score,0,100));
+    var label = score>=78?'Top':score>=60?'Gut':score>=45?'Solide':'Erholung';
+    return {score:score, label:label};
+  }
+
+  function vitOverview(){
+    var dEl=document.getElementById('vitHeuteDatum');
+    if(dEl){ try{ dEl.textContent='· '+new Date().toLocaleDateString('de-DE',{day:'numeric',month:'long'}); }catch(e){} }
+    // Heute-Kacheln
+    var schritte=ladeWert('vital.schritte'), rhr=ladeWert('vital.puls'), hrv=ladeWert('vital.hrv');
+    function setTile(id,val){ var e=document.getElementById(id); if(e) e.innerHTML=val; }
+    setTile('mSchritte', schritte!==null? nfmt(schritte) : '—');
+    setTile('mRhr', rhr!==null? (rhr+' <small>bpm</small>') : '—');
+    setTile('mHrv', hrv!==null? (hrv+' <small>ms</small>') : '—');
+    var tf=berechneTagesform(), tfEl=document.getElementById('mTagesform'), tfFoot=document.getElementById('mTagesformFoot');
+    if(tfEl) tfEl.innerHTML = tf? (tf.score+' <small>/100</small>') : '—';
+    if(tfFoot) tfFoot.textContent = tf? tf.label : 'aus deinen Werten';
+    // Schlafindex
+    var schlaf=ladeWert('vital.schlafMin');
+    var leer=document.getElementById('schlafLeer'), body=document.getElementById('schlafBody'), totalEl=document.getElementById('mSchlafTotal');
+    if(schlaf!==null){
+      if(leer) leer.hidden=true; if(body) body.hidden=false;
+      if(totalEl) totalEl.textContent=formatHM(+schlaf);
+      var phasen=[
+        {n:'Tief',   k:'vital.schlafTief',   c:css('--pine-deep')},
+        {n:'Leicht', k:'vital.schlafLeicht', c:css('--pine')},
+        {n:'REM',    k:'vital.schlafRem',    c:css('--vital')},
+        {n:'Wach',   k:'vital.schlafWach',   c:css('--ink-3')}
+      ];
+      var werte=phasen.map(function(p){ var v=ladeWert(p.k); return v!==null? +v : null; });
+      var summe=werte.reduce(function(a,b){ return a+(b||0); },0);
+      var bar=document.getElementById('sleepBar'), lgd=document.getElementById('sleepLegend');
+      if(summe>0){
+        if(bar){ bar.innerHTML=''; phasen.forEach(function(p,i){ if(werte[i]){ var sp=document.createElement('span'); sp.style.background=p.c; sp.style.flex=werte[i]; bar.appendChild(sp); } }); }
+        if(lgd){ lgd.innerHTML=phasen.map(function(p,i){ return werte[i]!==null? '<span class="sl"><i style="background:'+p.c+'"></i>'+p.n+' <b>'+formatHM(werte[i])+'</b></span>' : ''; }).join(''); }
+      } else {
+        if(bar){ bar.innerHTML='<span style="background:'+css('--supp')+';flex:1"></span>'; }
+        if(lgd){ lgd.innerHTML='<span class="sl"><i style="background:'+css('--supp')+'"></i>Gesamtdauer <b>'+formatHM(+schlaf)+'</b></span><span class="sl" style="color:var(--ink-3)">Phasen (Tief/Leicht/REM) kommen von der Charge 6</span>'; }
+      }
+    } else {
+      if(leer) leer.hidden=false; if(body) body.hidden=true; if(totalEl) totalEl.textContent='';
+    }
+    // Schritte-Auswertung
+    var s30=vitReihe('vital.schritte',30), s365=vitReihe('vital.schritte',365);
+    var avg30=mittel(s30), avgY=mittel(s365);
+    var sumY=s365.filter(function(v){return v!==null;}).reduce(function(a,b){return a+b;},0);
+    var tage=s365.filter(function(v){return v!==null;}).length;
+    function setT(id,v){ var e=document.getElementById(id); if(e) e.textContent=v; }
+    setT('stepAvg30', avg30!==null? nfmt(Math.round(avg30)) : '—');
+    setT('stepAvgYear', avgY!==null? nfmt(Math.round(avgY)) : '—');
+    setT('stepSumYear', tage? nfmt(sumY) : '—');
+    var ev=document.getElementById('stepEval');
+    if(ev){ if(avg30!==null){ var vgl = (avgY!==null && avg30>avgY*1.05)?'– über deinem Jahresschnitt 👍':(avgY!==null && avg30<avgY*0.95)?'– unter deinem Jahresschnitt':''; ev.textContent='Ø '+nfmt(Math.round(avg30))+' Schritte/Tag im letzten Monat '+vgl+' · '+tage+' Tag(e) erfasst.'; } else { ev.textContent='Sobald ein paar Tage erfasst sind, siehst du hier deinen Monats- und Jahresschnitt.'; } }
+  }
+
+  // Eingabe der Vitalwerte (füllt später die Charge 6 automatisch)
   (function(){
-    var inSys=document.getElementById('vSys'), inDia=document.getElementById('vDia'), inPuls=document.getElementById('vPuls'), inGew=document.getElementById('vGew');
-    var saveBtn=document.getElementById('vitSave'), statusEl=document.getElementById('vitStatus'), chips=document.getElementById('vitChips');
+    var el=function(id){return document.getElementById(id);};
+    var inSchritte=el('vSchritte'), inPuls=el('vPuls'), inHrv=el('vHrv'), inSchlaf=el('vSchlaf'), inSys=el('vSys'), inDia=el('vDia'), inGew=el('vGew');
+    var saveBtn=el('vitSave'), statusEl=el('vitStatus'), chips=el('vitChips'), manToggle=el('manToggle'), manBody=el('manBody');
     if(!saveBtn) return;
-    function intVal(el){ var s=(el.value||'').replace(/[^0-9]/g,''); return s===''? null : parseInt(s,10); }
-    function floatVal(el){ var s=(el.value||'').trim().replace(',', '.').replace(/[^0-9.]/g,''); if(s==='') return null; var n=parseFloat(s); return isFinite(n)? n : null; }
+    function intVal(e){ if(!e) return null; var s=(e.value||'').replace(/[^0-9]/g,''); return s===''? null : parseInt(s,10); }
+    function floatVal(e){ if(!e) return null; var s=(e.value||'').trim().replace(',', '.').replace(/[^0-9.]/g,''); if(s==='') return null; var n=parseFloat(s); return isFinite(n)? n : null; }
     function setOrClear(name,val){ try{ if(val===null || (typeof val==='number' && isNaN(val))) localStorage.removeItem(keyFuer(name)); else localStorage.setItem(keyFuer(name), String(val)); }catch(e){} }
-    function status(){ var any=['vital.sys','vital.dia','vital.puls','vital.gewicht'].some(function(n){ return ladeWert(n)!==null; }); if(statusEl) statusEl.textContent = any ? '· ✓ heute gespeichert' : '· heute noch nichts'; }
+    var alleKeys=['vital.schritte','vital.puls','vital.hrv','vital.schlafMin','vital.sys','vital.dia','vital.gewicht'];
+    function status(){ var any=alleKeys.some(function(n){ return ladeWert(n)!==null; }); if(statusEl) statusEl.textContent = any ? '✓ heute gespeichert' : ''; }
     function prefill(){ var v;
+      v=ladeWert('vital.schritte'); if(v!==null && inSchritte) inSchritte.value=v;
+      v=ladeWert('vital.puls'); if(v!==null && inPuls) inPuls.value=v;
+      v=ladeWert('vital.hrv'); if(v!==null && inHrv) inHrv.value=v;
+      v=ladeWert('vital.schlafMin'); if(v!==null && inSchlaf) inSchlaf.value=String(Math.round(v/60*10)/10).replace('.',',');
       v=ladeWert('vital.sys'); if(v!==null && inSys) inSys.value=v;
       v=ladeWert('vital.dia'); if(v!==null && inDia) inDia.value=v;
-      v=ladeWert('vital.puls'); if(v!==null && inPuls) inPuls.value=v;
       v=ladeWert('vital.gewicht'); if(v!==null && inGew) inGew.value=String(v).replace('.',',');
       status();
     }
     saveBtn.addEventListener('click', function(){
+      setOrClear('vital.schritte', intVal(inSchritte));
+      setOrClear('vital.puls', intVal(inPuls));
+      setOrClear('vital.hrv', intVal(inHrv));
+      var std=floatVal(inSchlaf); setOrClear('vital.schlafMin', std!==null? Math.round(std*60) : null);
       setOrClear('vital.sys', intVal(inSys)); setOrClear('vital.dia', intVal(inDia));
-      setOrClear('vital.puls', intVal(inPuls)); setOrClear('vital.gewicht', floatVal(inGew));
-      status(); drawVit(); homeUpdate();
+      setOrClear('vital.gewicht', floatVal(inGew));
+      status(); drawVit(); vitOverview(); homeUpdate();
       saveBtn.textContent='✓ Gespeichert'; setTimeout(function(){ saveBtn.textContent='Speichern'; }, 1600);
     });
     if(chips){ chips.querySelectorAll('.chip').forEach(function(c){ c.addEventListener('click', function(){
       chips.querySelectorAll('.chip').forEach(function(x){ x.classList.remove('on'); }); c.classList.add('on');
-      vitMetric=c.dataset.metric||'bp';
-      var t=document.getElementById('vitVerlaufTitle'); if(t) t.textContent = vitMetric==='bp'?'Blutdruck':vitMetric==='puls'?'Ruhepuls':'Gewicht';
+      vitMetric=c.dataset.metric||'schritte';
+      var t=el('vitVerlaufTitle'); if(t) t.textContent = (vitMeta[vitMetric]||vitMeta.schritte).label;
       drawVit();
     }); }); }
+    if(manToggle && manBody){ manToggle.addEventListener('click', function(e){ e.preventDefault();
+      manBody.hidden=!manBody.hidden; manToggle.textContent=manBody.hidden?'anzeigen ›':'ausblenden ▾';
+    }); }
+    var fc=el('fitbitConnect'); if(fc){ fc.addEventListener('click', function(){ if(manBody){ manBody.hidden=false; if(manToggle) manToggle.textContent='ausblenden ▾'; } var t=el('fitbitStatus'); if(t){ t.textContent='in Vorbereitung'; } }); }
     prefill();
   })();
   function drawJoint(){ var c=document.getElementById('jointChart'); if(!c) return; var ctx=c.getContext('2d'); var w=c.width,h=c.height; ctx.clearRect(0,0,w,h);
@@ -1217,7 +1344,7 @@
     line(ctx, mapPts(v,w,h,18), css('--pine'), 'color-mix(in srgb,'+css('--pine')+' 22%, transparent)');
     var pp=mapPts(v,w,h,18), last=pp[pp.length-1]; ctx.beginPath(); ctx.arc(last[0],last[1],5,0,7); ctx.fillStyle=css('--pine'); ctx.fill(); ctx.strokeStyle=css('--surface'); ctx.lineWidth=2.5; ctx.stroke();
     if(legende){ var letzter=v[v.length-1], diff=letzter-v[0]; legende.textContent='Gesamt (Sätze×Wdh) · '+v.length+' Einträge · zuletzt '+letzter+' ('+(diff>0?'▲ +'+diff:diff<0?'▼ '+diff:'±0')+')'; } }
-  function drawAll(){ drawVit(); drawJoint(); drawEx(); }
+  function drawAll(){ drawVit(); vitOverview(); drawJoint(); drawEx(); }
   drawAll();
   window.addEventListener('resize', function(){ setTimeout(drawAll,60); });
 })();
