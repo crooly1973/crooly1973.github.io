@@ -62,8 +62,9 @@ if ($debug) $dbg['sleep'] = array('code' => $rs['code'], 'body' => substr((strin
 $d1 = $startLocal7->format('Y-m-d');
 $d2 = $endLocal->format('Y-m-d');
 function vitara_daily_value($access, $dataType, $d1, $d2, &$raw) {
-    $filter = '`' . $dataType . '`.date >= "' . $d1 . '" AND `' . $dataType . '`.date <= "' . $d2 . '"';
-    $r = vitara_health_get_raw($access, $dataType, $filter, 30);
+    // Tages-Typen mit Bindestrich-Namen lassen sich nicht per Filter abfragen -> ohne Filter
+    // die neuesten Punkte holen und den jüngsten nehmen. Liefert null, solange keine Daten da sind.
+    $r = vitara_health_get_raw($access, $dataType, null, 30);
     $raw = array('code' => $r['code'], 'body' => substr((string)$r['body'], 0, 1800));
     if ($r['code'] !== 200) return null;
     $j = json_decode($r['body'], true);
