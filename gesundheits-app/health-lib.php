@@ -110,7 +110,7 @@ function vitara_daily_rollup($access, $dataType, $startLocal, $endLocal) {
         );
     };
     $body = json_encode(array(
-        'range' => array('startTime' => $civ($startLocal), 'endTime' => $civ($endLocal)),
+        'range' => array('start' => $civ($startLocal), 'end' => $civ($endLocal)),
         'windowSizeDays' => 1,
     ));
     $url = 'https://health.googleapis.com/v4/users/me/dataTypes/' . rawurlencode($dataType) . '/dataPoints:dailyRollUp';
