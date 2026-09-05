@@ -1320,7 +1320,11 @@
     if(manToggle && manBody){ manToggle.addEventListener('click', function(e){ e.preventDefault();
       manBody.hidden=!manBody.hidden; manToggle.textContent=manBody.hidden?'anzeigen ›':'ausblenden ▾';
     }); }
-    var fc=el('fitbitConnect'); if(fc){ fc.addEventListener('click', function(){ if(manBody){ manBody.hidden=false; if(manToggle) manToggle.textContent='ausblenden ▾'; } var t=el('fitbitStatus'); if(t){ t.textContent='in Vorbereitung'; } }); }
+    var fc=el('fitbitConnect'); if(fc){ fc.addEventListener('click', function(){
+      if(location.hostname.indexOf('oliver-rock.de')>=0){ window.location.href='health-connect.php'; }
+      else { alert('Die Fitbit-Verbindung funktioniert nur auf der echten Adresse oliver-rock.de/gesundheitsapp/ – dort läuft der Server-Teil. In dieser Vorschau kannst du unten „Selbst eintragen" nutzen.'); if(manBody){ manBody.hidden=false; if(manToggle) manToggle.textContent='ausblenden ▾'; } }
+    }); }
+    if(location.search.indexOf('fitbit=verbunden')>=0){ var fs=el('fitbitStatus'); if(fs){ fs.textContent='verbunden ✓'; fs.className='pill good'; } }
     prefill();
   })();
   function drawJoint(){ var c=document.getElementById('jointChart'); if(!c) return; var ctx=c.getContext('2d'); var w=c.width,h=c.height; ctx.clearRect(0,0,w,h);

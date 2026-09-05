@@ -1,5 +1,5 @@
 # Geheime Server-Konfiguration der Health-Anbindung – NIE in GitHub!
 gesundheits-app/health-config.php
 # Token-Speicher der Fitbit-/Google-Anbindung (nur auf dem Server)
-gesundheits-app/health-tokens.json
+gesundheits-app/health-tokens*.json
 gesundheits-app/.vitara-write-test
