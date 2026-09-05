@@ -62,7 +62,7 @@ if ($debug) $dbg['sleep'] = array('code' => $rs['code'], 'body' => substr((strin
 $d1 = $startLocal7->format('Y-m-d');
 $d2 = $endLocal->format('Y-m-d');
 function vitara_daily_value($access, $dataType, $d1, $d2, &$raw) {
-    $filter = $dataType . '.date >= "' . $d1 . '" AND ' . $dataType . '.date <= "' . $d2 . '"';
+    $filter = '`' . $dataType . '`.date >= "' . $d1 . '" AND `' . $dataType . '`.date <= "' . $d2 . '"';
     $r = vitara_health_get_raw($access, $dataType, $filter, 30);
     $raw = array('code' => $r['code'], 'body' => substr((string)$r['body'], 0, 1800));
     if ($r['code'] !== 200) return null;
