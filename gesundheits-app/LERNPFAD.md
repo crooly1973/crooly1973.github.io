@@ -51,11 +51,23 @@ Weg C heben wir uns auf, falls wir später sehr tiefe Funktionen brauchen.
 - [ ] Eigenes Datenmodell / Struktur der gespeicherten Daten sauber aufsetzen
 - **Was du hier lernst:** Wie eine App „von innen" funktioniert und Daten behält.
 
-### ⚪ Fitbit-Anbindung (eigener Meilenstein, nach dem Fundament)
-- [ ] **Google-Cloud-Projekt** anlegen + OAuth-Zugangsdaten (Client-ID) — **nur Oliver kann das**
-- [ ] Anmelde-/Erlaubnis-Ablauf (Google OAuth 2.0) einbauen
-- [ ] Werte abholen und in denselben `vital.*`-Speicher wie die manuelle Eingabe schreiben
-- [ ] Kleiner Server-Baustein prüfen (unsere App ist rein statisch; Google-Token-Tausch braucht meist ein Backend)
+### 🟢 Fitbit-Anbindung (Google Health API) – ERLEDIGT (6. Sept. 2026) ✅
+- [x] **Google-Cloud-Projekt** angelegt + OAuth-Client (Test-Modus, Restricted-Scopes) — von Oliver
+- [x] Anmelde-/Erlaubnis-Ablauf (Google OAuth 2.0, PKCE-frei über Server) eingebaut
+      → `health-connect.php` (Start), `health-callback.php` (Token), `health-lib.php` (Helfer)
+- [x] Kleiner Server-Baustein auf IONOS (PHP) für Token-Tausch & Datenabruf — `health-data.php`
+- [x] Werte abholen und in denselben `vital.*`-Speicher schreiben (App holt beim Öffnen automatisch)
+- [x] Abgeholt: Schritte, Herzfrequenz (neueste Messung), Ruheherzfrequenz, HRV, Atemfrequenz,
+      Aktivzonenminuten, Hauptschlaf-Dauer + Schlafphasen (Tief/Leicht/REM/Wach bei STAGES-Nächten)
+- [x] Vitalwerte-Seite im Fitbit-Kachelstil mit 7-Tage-Mini-Trends
+- **Gelernte API-Details (Google Health API v4):**
+  - Filter je Datentyp: Intervall `typ.interval.start_time` (nur `>=`/`<`), Sitzung `typ.interval.end_time`,
+    Sample `typ.sample_time.physical_time`, Tageswert `typ.date`.
+  - **Bindestrich-Namen** (heart-rate, daily-*, active-zone-minutes) lassen sich NICHT filtern
+    → ohne Filter abrufen (Liste ist neueste-zuerst) und den passenden Punkt/Tag wählen.
+  - Tageswerte: Feld z.B. `dailyRestingHeartRate.beatsPerMinute`, `dailyHeartRateVariability.
+    averageHeartRateVariabilityMilliseconds`, `dailyRespiratoryRate.breathsPerMinute`.
+  - Schlaf: `sleep.summary.minutesAsleep` + `sleep.summary.stagesSummary[]` (DEEP/LIGHT/REM/WAKE).
 
 **Stand der Technik (recherchiert am 3. Sept. 2026):**
 - ⚠️ Die **alte Fitbit-Web-API wird zum 30. September 2026 abgeschaltet.** Neu-Anbindungen
