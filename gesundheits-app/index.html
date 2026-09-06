@@ -264,6 +264,17 @@
   .sleeplegend .sl { display: flex; align-items: center; gap: 6px; }
   .sleeplegend .sl i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; flex: none; }
   .sleeplegend .sl b { font-variant-numeric: tabular-nums; font-weight: 800; }
+  /* Vitalwerte-Kacheln (Fitbit-Stil) */
+  .vgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .vtile { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; box-shadow: var(--shadow); display: flex; flex-direction: column; }
+  .vtile .vt-lab { font-size: 12.5px; color: var(--ink-2); font-weight: 700; line-height: 1.25; min-height: 2.5em; }
+  .vtile .vt-val { font-size: 26px; font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; margin-top: 2px; }
+  .vtile .vt-val small { font-size: 13px; font-weight: 700; color: var(--ink-3); }
+  .vtile .hmini { width: 100%; height: 40px; display: block; margin: 8px 0 8px; }
+  .vtile .vt-pill { align-self: flex-start; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: var(--surface-2); color: var(--ink-3); }
+  .vtile .vt-pill.good { background: color-mix(in srgb, var(--good) 16%, transparent); color: var(--good); }
+  .vtile .vt-pill.warn { background: color-mix(in srgb, var(--warn) 18%, transparent); color: var(--warn); }
+  .vtile .vt-pill.info { background: color-mix(in srgb, var(--vital) 14%, transparent); color: var(--vital); }
   .disc { font-size: 11.5px; color: var(--ink-3); background: var(--surface-2); border: 1px dashed var(--line); border-radius: 12px; padding: 10px 12px; line-height: 1.5; }
   .clickable { cursor: pointer; }
 
@@ -454,19 +465,23 @@
               <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--line);font-size:12px"><a href="#" id="fitbitReconnect" style="color:var(--pine);text-decoration:none;font-weight:700">Konto wechseln / neu verbinden ›</a></div>
             </div>
 
-            <!-- Heute -->
+            <!-- Heute: Kachel-Raster im Fitbit-Stil -->
             <div class="sec-title" style="margin-top:18px">Heute <span id="vitHeuteDatum" style="font-weight:600;text-transform:none;letter-spacing:0;font-size:12px;color:var(--ink-3)"></span></div>
-            <div class="grid2">
-              <div class="card metric"><div class="lab"><span class="icoq" style="background:color-mix(in srgb,var(--pine) 16%,transparent);color:var(--pine)">👟</span>Schritte</div><div class="val" id="mSchritte">—</div><div class="foot flat" id="mSchritteFoot">von der Charge 6</div></div>
-              <div class="card metric"><div class="lab"><span class="icoq" style="background:color-mix(in srgb,var(--supp) 18%,transparent);color:var(--supp)">✦</span>Tagesform</div><div class="val" id="mTagesform">—</div><div class="foot flat" id="mTagesformFoot">aus deinen Werten</div></div>
-              <div class="card metric"><div class="lab"><span class="icoq" style="background:color-mix(in srgb,var(--joint) 16%,transparent);color:var(--joint)">❤</span>Ruhepuls</div><div class="val" id="mRhr">—</div><div class="foot flat" id="mRhrFoot">bpm</div></div>
-              <div class="card metric"><div class="lab"><span class="icoq" style="background:color-mix(in srgb,var(--mint) 22%,transparent);color:var(--pine)">〰</span>HRV</div><div class="val" id="mHrv">—</div><div class="foot flat" id="mHrvFoot">ms</div></div>
+            <div class="vgrid">
+              <div class="vtile clickable" id="tileHr"><div class="vt-lab">Herzfrequenz</div><div class="vt-val" id="cHr">—</div><canvas class="hmini" id="spHr" width="260" height="80"></canvas><span class="vt-pill" id="cHrFoot">zuletzt gemessen</span></div>
+              <div class="vtile"><div class="vt-lab">Ruheherzfrequenz</div><div class="vt-val" id="cRhr">—</div><canvas class="hmini" id="spRhr" width="260" height="80"></canvas><span class="vt-pill" id="cRhrFoot">—</span></div>
+              <div class="vtile"><div class="vt-lab">Herzfrequenz&shy;variabilität</div><div class="vt-val" id="cHrv">—</div><canvas class="hmini" id="spHrv" width="260" height="80"></canvas><span class="vt-pill" id="cHrvFoot">—</span></div>
+              <div class="vtile"><div class="vt-lab">Atemfrequenz</div><div class="vt-val" id="cAtem">—</div><canvas class="hmini" id="spAtem" width="260" height="80"></canvas><span class="vt-pill" id="cAtemFoot">—</span></div>
+              <div class="vtile"><div class="vt-lab">Hauptschlaf</div><div class="vt-val" id="cSchlaf">—</div><canvas class="hmini" id="spSchlaf" width="260" height="80"></canvas><span class="vt-pill" id="cSchlafFoot">—</span></div>
+              <div class="vtile"><div class="vt-lab">Aktivzonenminuten</div><div class="vt-val" id="cAzm">—</div><canvas class="hmini" id="spAzm" width="260" height="80"></canvas><span class="vt-pill" id="cAzmFoot">—</span></div>
+              <div class="vtile"><div class="vt-lab">Schritte</div><div class="vt-val" id="cSchritte">—</div><canvas class="hmini" id="spSchritte" width="260" height="80"></canvas><span class="vt-pill" id="cSchritteFoot">—</span></div>
+              <div class="vtile"><div class="vt-lab">Tagesform</div><div class="vt-val" id="cTagesform">—</div><canvas class="hmini" id="spTf" width="260" height="80"></canvas><span class="vt-pill" id="cTagesformFoot">aus deinen Werten</span></div>
             </div>
 
-            <!-- Schlafindex -->
-            <div class="sec-title" style="margin-top:20px">Schlafindex <span id="mSchlafTotal" style="font-weight:700;text-transform:none;letter-spacing:0;font-size:12.5px;color:var(--ink)"></span></div>
+            <!-- Schlafphasen -->
+            <div class="sec-title" style="margin-top:20px">Schlafphasen <span id="mSchlafTotal" style="font-weight:700;text-transform:none;letter-spacing:0;font-size:12.5px;color:var(--ink)"></span></div>
             <div class="card">
-              <div id="schlafLeer" style="font-size:12px;color:var(--ink-3);line-height:1.5">Sobald die Charge 6 verbunden ist (oder du unten die Schlafdauer einträgst), siehst du hier deine Schlafqualität mit den Phasen <b>Tief, Leicht, REM & Wach</b>.</div>
+              <div id="schlafLeer" style="font-size:12px;color:var(--ink-3);line-height:1.5">Sobald in der Früh deine Schlafdaten synchronisiert sind, siehst du hier deine Phasen <b>Tief, Leicht, REM & Wach</b>.</div>
               <div id="schlafBody" hidden>
                 <div class="sleepbar" id="sleepBar"></div>
                 <div class="sleeplegend" id="sleepLegend"></div>
@@ -490,6 +505,8 @@
               <button class="chip on" data-metric="schritte">Schritte</button>
               <button class="chip" data-metric="puls">Ruhepuls</button>
               <button class="chip" data-metric="hrv">HRV</button>
+              <button class="chip" data-metric="atem">Atemfreq.</button>
+              <button class="chip" data-metric="azm">Aktivzonen</button>
               <button class="chip" data-metric="schlaf">Schlaf</button>
               <button class="chip" data-metric="gewicht">Gewicht</button>
               <button class="chip" data-metric="bp">Blutdruck</button>
@@ -1183,11 +1200,14 @@
   function mapMM(vals,w,h,pad,mn,mx){ var r=(mx-mn)||1; return vals.map(function(v,i){ return [pad + (vals.length<2?0.5:i/(vals.length-1))*(w-2*pad), h-pad-(v-mn)/r*(h-2*pad)]; }); }
   function punkt(ctx,pp,color){ var last=pp[pp.length-1]; ctx.beginPath(); ctx.arc(last[0],last[1],5,0,7); ctx.fillStyle=color; ctx.fill(); ctx.strokeStyle=css('--surface'); ctx.lineWidth=2.5; ctx.stroke(); }
   var vitMeta = {
-    schritte:{label:'Schritte', key:'vital.schritte', farbe:'--pine', einheit:'Schritte', dec:false},
-    puls:    {label:'Ruhepuls', key:'vital.puls',     farbe:'--joint',einheit:'bpm',      dec:false},
-    hrv:     {label:'HRV',      key:'vital.hrv',      farbe:'--pine', einheit:'ms',       dec:false},
-    schlaf:  {label:'Schlaf',   key:'vital.schlafMin',farbe:'--supp', einheit:'Std.',     dec:true, teilen:60},
-    gewicht: {label:'Gewicht',  key:'vital.gewicht',  farbe:'--pine', einheit:'kg',       dec:true},
+    schritte:{label:'Schritte',     key:'vital.schritte', farbe:'--pine', einheit:'Schritte', dec:false},
+    hr:      {label:'Herzfrequenz', key:'vital.hr',       farbe:'--joint',einheit:'bpm',      dec:false},
+    puls:    {label:'Ruhepuls',     key:'vital.puls',     farbe:'--joint',einheit:'bpm',      dec:false},
+    hrv:     {label:'HRV',          key:'vital.hrv',      farbe:'--pine', einheit:'ms',       dec:false},
+    atem:    {label:'Atemfrequenz', key:'vital.atem',     farbe:'--pine', einheit:'/min',     dec:true},
+    azm:     {label:'Aktivzonen',   key:'vital.azm',      farbe:'--good', einheit:'Min.',     dec:false},
+    schlaf:  {label:'Schlaf',       key:'vital.schlafMin',farbe:'--supp', einheit:'Std.',     dec:true, teilen:60},
+    gewicht: {label:'Gewicht',      key:'vital.gewicht',  farbe:'--pine', einheit:'kg',       dec:true},
     bp:      {label:'Blutdruck'}
   };
   function drawVit(){ var c=document.getElementById('vitChart'); if(!c) return; var ctx=c.getContext('2d'); var w=c.width,h=c.height; ctx.clearRect(0,0,w,h);
@@ -1231,20 +1251,35 @@
     return {score:score, label:label};
   }
 
+  // kleine 7-Tage-Trendgrafik in den Kacheln
+  function drawSpark(id,key,color){
+    var c=document.getElementById(id); if(!c) return; var ctx=c.getContext('2d'); var w=c.width,h=c.height; ctx.clearRect(0,0,w,h);
+    var vals=vitReihe(key,7).filter(function(v){ return v!==null; });
+    if(vals.length<2) return;
+    var pts=mapPts(vals,w,h,10);
+    line(ctx, pts, css(color), 'color-mix(in srgb,'+css(color)+' 16%, transparent)');
+    var last=pts[pts.length-1]; ctx.beginPath(); ctx.arc(last[0],last[1],4,0,7); ctx.fillStyle=css(color); ctx.fill(); ctx.strokeStyle=css('--surface'); ctx.lineWidth=2; ctx.stroke();
+  }
   function vitOverview(){
     var dEl=document.getElementById('vitHeuteDatum');
     if(dEl){ try{ dEl.textContent='· '+new Date().toLocaleDateString('de-DE',{day:'numeric',month:'long'}); }catch(e){} }
-    // Heute-Kacheln
-    var schritte=ladeWert('vital.schritte'), rhr=ladeWert('vital.puls'), hrv=ladeWert('vital.hrv');
-    function setTile(id,val){ var e=document.getElementById(id); if(e) e.innerHTML=val; }
-    setTile('mSchritte', schritte!==null? nfmt(schritte) : '—');
-    setTile('mRhr', rhr!==null? (rhr+' <small>bpm</small>') : '—');
-    setTile('mHrv', hrv!==null? (hrv+' <small>ms</small>') : '—');
-    var tf=berechneTagesform(), tfEl=document.getElementById('mTagesform'), tfFoot=document.getElementById('mTagesformFoot');
-    if(tfEl) tfEl.innerHTML = tf? (tf.score+' <small>/100</small>') : '—';
-    if(tfFoot) tfFoot.textContent = tf? tf.label : 'aus deinen Werten';
-    // Schlafindex
-    var schlaf=ladeWert('vital.schlafMin');
+    function V(id,html){ var e=document.getElementById(id); if(e) e.innerHTML=html; }
+    function P(id,txt,cls){ var e=document.getElementById(id); if(e){ e.textContent=txt; e.className='vt-pill'+(cls?(' '+cls):''); } }
+    var hr=ladeWert('vital.hr'), rhr=ladeWert('vital.puls'), hrv=ladeWert('vital.hrv'),
+        atem=ladeWert('vital.atem'), azm=ladeWert('vital.azm'), schritte=ladeWert('vital.schritte'), schlaf=ladeWert('vital.schlafMin');
+    V('cHr', hr!==null? (hr+' <small>bpm</small>') : '—');       P('cHrFoot', hr!==null? 'zuletzt gemessen' : 'keine Daten', '');
+    V('cRhr', rhr!==null? (rhr+' <small>bpm</small>') : '—');    P('cRhrFoot', rhr!==null? 'Ø Vortag' : 'keine Daten', rhr!==null?'good':'');
+    V('cHrv', hrv!==null? (hrv+' <small>ms</small>') : '—');     P('cHrvFoot', hrv!==null? 'Vortag' : 'keine Daten', '');
+    V('cAtem', atem!==null? (String(atem).replace('.',',')+' <small>/min</small>') : '—'); P('cAtemFoot', atem!==null? 'Vortag' : 'keine Daten', '');
+    V('cSchlaf', schlaf!==null? (Math.floor(schlaf/60)+'h '+(schlaf%60)+'min') : '—'); P('cSchlafFoot', schlaf!==null? 'letzte Nacht' : 'keine Daten', schlaf!==null?'good':'');
+    V('cAzm', azm!==null? (azm+' <small>Min.</small>') : '—');   P('cAzmFoot', azm!==null? 'Vortag' : 'keine Daten', '');
+    V('cSchritte', schritte!==null? nfmt(schritte) : '—');      P('cSchritteFoot', schritte!==null? 'heute' : 'keine Daten', '');
+    var tf=berechneTagesform();
+    V('cTagesform', tf? (tf.score+' <small>/100</small>') : '—'); P('cTagesformFoot', tf? tf.label : 'aus deinen Werten', tf?(tf.score>=60?'good':tf.score>=45?'':'warn'):'');
+    drawSpark('spHr','vital.hr','--joint'); drawSpark('spRhr','vital.puls','--joint'); drawSpark('spHrv','vital.hrv','--pine');
+    drawSpark('spAtem','vital.atem','--pine'); drawSpark('spSchlaf','vital.schlafMin','--supp'); drawSpark('spAzm','vital.azm','--good');
+    drawSpark('spSchritte','vital.schritte','--pine');
+    // Schlafphasen
     var leer=document.getElementById('schlafLeer'), body=document.getElementById('schlafBody'), totalEl=document.getElementById('mSchlafTotal');
     if(schlaf!==null){
       if(leer) leer.hidden=true; if(body) body.hidden=false;
@@ -1323,10 +1358,14 @@
     }); }
     var istServer = (location.hostname === 'oliver-rock.de' || location.hostname === 'www.oliver-rock.de');
     function applyFitbit(d){
-      if(d.schritte!=null) localStorage.setItem(keyFuer('vital.schritte'), String(d.schritte));
-      if(d.rhr!=null) localStorage.setItem(keyFuer('vital.puls'), String(d.rhr));
-      if(d.hrv!=null) localStorage.setItem(keyFuer('vital.hrv'), String(d.hrv));
-      if(d.schlafMin!=null) localStorage.setItem(keyFuer('vital.schlafMin'), String(d.schlafMin));
+      function put(key,val){ if(val!=null) localStorage.setItem(keyFuer(key), String(val)); }
+      put('vital.schritte', d.schritte);
+      put('vital.hr', d.hr);
+      put('vital.puls', d.rhr);
+      put('vital.hrv', d.hrv);
+      put('vital.atem', d.atem);
+      put('vital.azm', d.azm);
+      put('vital.schlafMin', d.schlafMin);
       if(d.schlaf){ var m={tief:'vital.schlafTief',leicht:'vital.schlafLeicht',rem:'vital.schlafRem',wach:'vital.schlafWach'};
         Object.keys(m).forEach(function(k){ if(d.schlaf[k]!=null) localStorage.setItem(keyFuer(m[k]), String(d.schlaf[k])); }); }
       var fs=el('fitbitStatus'); if(fs){ fs.textContent='verbunden ✓'; fs.className='pill good'; }
@@ -1341,6 +1380,7 @@
       }).catch(function(){ if(goConnect){ window.location.href='health-connect.php'; } });
     }
     var fc=el('fitbitConnect'); if(fc){ fc.addEventListener('click', function(){ fitbitSync(true); }); }
+    var th=el('tileHr'); if(th){ th.addEventListener('click', function(){ var f=el('cHrFoot'); if(f) f.textContent='lädt …'; fitbitSync(false); }); }
     var frc=el('fitbitReconnect'); if(frc){ frc.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation();
       if(istServer){ window.location.href='health-connect.php'; } else { alert('Nur auf oliver-rock.de/gesundheitsapp/ möglich – dort läuft der Server-Teil.'); }
     }); }

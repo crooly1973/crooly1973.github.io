@@ -100,6 +100,40 @@ function vitara_health_get($access, $dataType, $start, $end) {
     return vitara_health_get_raw($access, $dataType, $filter, 100);
 }
 
+/** Sucht in einem Schlaf-Datenpunkt nach Phasen-Minuten (tief/leicht/rem/wach).
+ *  Greift nur Zahlenfelder, deren Name eine Phase UND eine Dauer andeutet – konservativ. */
+function vitara_sleep_stages($dp) {
+    $map = array(
+        'tief'   => array('deep', 'tiefschlaf', 'tief'),
+        'leicht' => array('light', 'leicht'),
+        'rem'    => array('rem'),
+        'wach'   => array('wake', 'awake', 'wach'),
+    );
+    $found = array();
+    $walk = function ($node) use (&$walk, &$found, $map) {
+        if (!is_array($node)) return;
+        foreach ($node as $k => $v) {
+            if (is_numeric($v)) {
+                $lk = strtolower((string)$k);
+                $isDur = (strpos($lk, 'min') !== false || strpos($lk, 'duration') !== false);
+                if ($isDur) {
+                    foreach ($map as $bucket => $names) {
+                        foreach ($names as $nm) {
+                            if (strpos($lk, $nm) !== false) { $found[$bucket] = (isset($found[$bucket]) ? $found[$bucket] : 0) + (0 + $v); }
+                        }
+                    }
+                }
+            } elseif (is_array($v)) {
+                $walk($v);
+            }
+        }
+    };
+    $walk($dp);
+    if (!$found) return null;
+    $o = array(); foreach ($found as $k => $m) $o[$k] = (int)round($m);
+    return $o;
+}
+
 /** Tages-Zusammenfassung (für Tages-Typen wie daily-resting-heart-rate).
  *  range = CivilTimeInterval (zivile Datumsangaben, an Mitternacht ausgerichtet). */
 function vitara_daily_rollup($access, $dataType, $startLocal, $endLocal) {
