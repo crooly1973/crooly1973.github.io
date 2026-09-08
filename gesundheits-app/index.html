@@ -211,6 +211,13 @@
 
   .fab { position: absolute; right: 18px; bottom: 92px; width: 54px; height: 54px; border-radius: 18px; background: linear-gradient(135deg, var(--pine), var(--pine-deep)); color: #fff; border: none; box-shadow: 0 12px 24px -8px color-mix(in srgb, var(--pine) 70%, black); cursor: pointer; display: grid; place-items: center; z-index: 20; }
   .fab:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+  .fab.open { transform: rotate(45deg); }
+  .fab-backdrop { position: absolute; inset: 0; background: rgba(10,22,34,.28); z-index: 19; }
+  .fab-menu { position: absolute; right: 18px; bottom: 156px; z-index: 21; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); padding: 6px; display: flex; flex-direction: column; gap: 2px; min-width: 214px; animation: fabpop .16s ease-out; }
+  @keyframes fabpop { from { opacity: 0; transform: translateY(8px) scale(.98); } to { opacity: 1; transform: none; } }
+  .fab-item { display: flex; align-items: center; gap: 11px; background: none; border: none; padding: 11px 12px; border-radius: 11px; font: inherit; font-size: 14px; font-weight: 700; color: var(--ink); cursor: pointer; text-align: left; }
+  .fab-item:hover { background: var(--surface-2); }
+  .fab-item .fi { font-size: 18px; width: 24px; text-align: center; flex: none; }
 
   .foot-note { text-align: center; color: var(--ink-3); font-size: 12.5px; margin-top: 26px; }
 
@@ -709,7 +716,14 @@
             <p class="hint" style="text-align:center;margin-top:16px">VITARA ist ein Konzept-Entwurf und ersetzt keine ärztliche Beratung.</p>
           </section>
 
-          <button class="fab" id="fab" aria-label="Wert hinzufügen">
+          <div class="fab-backdrop" id="fabBackdrop" hidden></div>
+          <div class="fab-menu" id="fabMenu" hidden>
+            <button class="fab-item" data-act="schmerz"><span class="fi">🦴</span>Schmerz eintragen</button>
+            <button class="fab-item" data-act="vitals"><span class="fi">🩸</span>Blutdruck &amp; Gewicht</button>
+            <button class="fab-item" data-act="supp"><span class="fi">💊</span>Präparat abhaken</button>
+            <button class="fab-item" data-act="workout"><span class="fi">🏋️</span>Workout starten</button>
+          </div>
+          <button class="fab" id="fab" aria-label="Schnell hinzufügen">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
           </button>
 
@@ -1129,7 +1143,22 @@
   }); });
   zeigeSchmerz();
 
-  document.getElementById('fab').addEventListener('click', function(){ this.animate([{transform:'scale(1)'},{transform:'scale(.88)'},{transform:'scale(1)'}],{duration:220}); });
+  // Schnell-Menü am „+"-Knopf
+  (function(){
+    var fab=document.getElementById('fab'), fabMenu=document.getElementById('fabMenu'), fabBack=document.getElementById('fabBackdrop');
+    if(!fab) return;
+    function fabClose(){ if(fabMenu) fabMenu.hidden=true; if(fabBack) fabBack.hidden=true; fab.classList.remove('open'); }
+    function fabToggle(){ if(fabMenu && fabMenu.hidden===false){ fabClose(); } else { if(fabMenu) fabMenu.hidden=false; if(fabBack) fabBack.hidden=false; fab.classList.add('open'); } }
+    fab.addEventListener('click', fabToggle);
+    if(fabBack) fabBack.addEventListener('click', fabClose);
+    if(fabMenu) fabMenu.querySelectorAll('.fab-item').forEach(function(b){ b.addEventListener('click', function(){
+      var act=b.dataset.act; fabClose();
+      if(act==='schmerz'){ show('joints'); }
+      else if(act==='vitals'){ show('vitals'); var mb=document.getElementById('manBody'), mt=document.getElementById('manToggle'); if(mb){ mb.hidden=false; if(mt) mt.textContent='ausblenden ▾'; setTimeout(function(){ try{ mb.scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){} }, 60); } }
+      else if(act==='supp'){ show('supp'); }
+      else if(act==='workout'){ show('training'); if(typeof wkOpen==='function') wkOpen(); }
+    }); });
+  })();
   // --- Geführter Workout-Modus: Übung für Übung durchführen ---
   var overlay = document.getElementById('workoutOverlay');
   var wkSteps = [], wkIdx = 0, wkRepVal = 0, wkSetVal = 0;
