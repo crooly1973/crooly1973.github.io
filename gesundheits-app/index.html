@@ -920,11 +920,25 @@
   // Schlüssel enthält das Datum, damit die Häkchen jeden Tag frisch starten.
   function heute(){ return new Date().toISOString().slice(0,10); }        // z.B. "2026-08-03"
   function keyFuer(name){ return 'vitara.' + heute() + '.' + name; }
+  var vitaraIstServer = (location.hostname === 'oliver-rock.de' || location.hostname === 'www.oliver-rock.de');
+  // Wert zusätzlich in die Server-Datenbank schreiben (nur auf der echten Adresse)
+  function dbPush(feld, wert, datum){ if(!vitaraIstServer) return;
+    try { fetch('health-save.php?datum='+(datum||heute())+'&feld='+encodeURIComponent(feld)+'&wert='+encodeURIComponent(wert), {cache:'no-store'}); } catch(e){} }
   function ladeStand(name){ try { return localStorage.getItem(keyFuer(name)) === '1'; } catch(e){ return false; } }
-  function speichereStand(name, an){ try { localStorage.setItem(keyFuer(name), an ? '1' : '0'); } catch(e){} }
+  function speichereStand(name, an){ try { localStorage.setItem(keyFuer(name), an ? '1' : '0'); } catch(e){} dbPush(name, an ? '1' : '0'); }
   // Für echte Werte (z.B. Schmerz 0–10) statt nur Ja/Nein:
   function ladeWert(name){ try { return localStorage.getItem(keyFuer(name)); } catch(e){ return null; } }
-  function speichereWert(name, wert){ try { localStorage.setItem(keyFuer(name), wert); } catch(e){} }
+  function speichereWert(name, wert){ try { localStorage.setItem(keyFuer(name), wert); } catch(e){} dbPush(name, wert); }
+  // Alle sichtbaren Bereiche aus dem lokalen Speicher neu aufbauen (nach DB-Spiegelung)
+  function refreshFromStorage(){
+    try { document.querySelectorAll('.check[data-key]').forEach(function(c){ c.classList.toggle('on', ladeStand(c.dataset.key)); }); } catch(e){}
+    try{ updateSupp(); }catch(e){}
+    try{ updateTraining(); }catch(e){}
+    try{ zeigeSchmerz(); }catch(e){}
+    try{ homeUpdate(); }catch(e){}
+    try{ vitOverview(); drawVit(); }catch(e){}
+    try{ drawJoint(); drawEx(); }catch(e){}
+  }
 
   // Zählt die genommenen Präparate und aktualisiert Zahl + Balken
   function updateSupp(){
@@ -1353,7 +1367,7 @@
     if(!saveBtn) return;
     function intVal(e){ if(!e) return null; var s=(e.value||'').replace(/[^0-9]/g,''); return s===''? null : parseInt(s,10); }
     function floatVal(e){ if(!e) return null; var s=(e.value||'').trim().replace(',', '.').replace(/[^0-9.]/g,''); if(s==='') return null; var n=parseFloat(s); return isFinite(n)? n : null; }
-    function setOrClear(name,val){ try{ if(val===null || (typeof val==='number' && isNaN(val))) localStorage.removeItem(keyFuer(name)); else localStorage.setItem(keyFuer(name), String(val)); }catch(e){} }
+    function setOrClear(name,val){ try{ if(val===null || (typeof val==='number' && isNaN(val))) localStorage.removeItem(keyFuer(name)); else { localStorage.setItem(keyFuer(name), String(val)); dbPush(name, String(val)); } }catch(e){} }
     var alleKeys=['vital.schritte','vital.puls','vital.hrv','vital.schlafMin','vital.sys','vital.dia','vital.gewicht'];
     function status(){ var any=alleKeys.some(function(n){ return ladeWert(n)!==null; }); if(statusEl) statusEl.textContent = any ? '✓ heute gespeichert' : ''; }
     function prefill(){ var v;
@@ -1417,10 +1431,10 @@
     // Verlauf aus der Server-Datenbank in den lokalen Speicher spiegeln (geräteübergreifende Historie)
     function ladeHistorie(){
       if(!istServer) return;
-      fetch('health-history.php?days=120',{cache:'no-store'}).then(function(r){ return r.json(); }).then(function(d){
+      fetch('health-history.php?all=1',{cache:'no-store'}).then(function(r){ return r.json(); }).then(function(d){
         if(!d || !d.ok || !d.daten) return;
         Object.keys(d.daten).forEach(function(feld){ var reihe=d.daten[feld]||{}; Object.keys(reihe).forEach(function(datum){ try{ localStorage.setItem('vitara.'+datum+'.'+feld, String(reihe[datum])); }catch(e){} }); });
-        vitOverview(); drawVit(); homeUpdate();
+        prefill(); refreshFromStorage();
       }).catch(function(){});
     }
     prefill();
