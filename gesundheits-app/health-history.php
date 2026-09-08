@@ -11,6 +11,13 @@ $cfg = vitara_config();
 if (!vitara_config_ok($cfg)) { echo json_encode(array('ok' => false, 'error' => 'konfig_fehlt')); exit; }
 
 $days = isset($_GET['days']) ? intval($_GET['days']) : 120;
+
+// ?all=1 -> kompletter Speicher (auch Gelenke, Präparate, Training, manuelle Werte)
+if (isset($_GET['all'])) {
+    echo json_encode(array('ok' => true, 'speicher' => vitara_db_kind(), 'daten' => vitara_history_all()));
+    exit;
+}
+
 $felder = array(
     'vital.schritte', 'vital.hr', 'vital.puls', 'vital.hrv', 'vital.atem', 'vital.azm',
     'vital.schlafMin', 'vital.schlafTief', 'vital.schlafLeicht', 'vital.schlafRem', 'vital.schlafWach',

@@ -47,6 +47,25 @@ function vitara_store($datum, $feld, $wert) {
     @file_put_contents($p, json_encode($all));
 }
 
+/** Kompletter Speicher als { feld: { datum: wert } } – für die geräteübergreifende Spiegelung. */
+function vitara_history_all() {
+    $out = array();
+    $db = vitara_db();
+    if ($db) {
+        try {
+            $s = $db->query('SELECT datum, feld, wert FROM werte');
+            if ($s) foreach ($s as $row) {
+                if (!isset($out[$row['feld']])) $out[$row['feld']] = array();
+                $out[$row['feld']][$row['datum']] = $row['wert'];
+            }
+        } catch (Exception $e) {}
+        return $out;
+    }
+    $p = vitara_db_path('json');
+    if (file_exists($p)) { $all = json_decode(file_get_contents($p), true); if (is_array($all)) $out = $all; }
+    return $out;
+}
+
 /** Verlauf eines Feldes als { datum: wert } (neueste zuerst begrenzt auf $days). */
 function vitara_history($feld, $days) {
     $days = max(1, min(1000, intval($days)));
