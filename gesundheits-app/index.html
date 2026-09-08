@@ -274,6 +274,7 @@
   .vtile .vt-pill { align-self: flex-start; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: var(--surface-2); color: var(--ink-3); }
   .vtile .vt-pill.good { background: color-mix(in srgb, var(--good) 16%, transparent); color: var(--good); }
   .vtile .vt-pill.warn { background: color-mix(in srgb, var(--warn) 18%, transparent); color: var(--warn); }
+  .vtile .vt-pill.crit { background: color-mix(in srgb, var(--crit) 16%, transparent); color: var(--crit); }
   .vtile .vt-pill.info { background: color-mix(in srgb, var(--vital) 14%, transparent); color: var(--vital); }
   .disc { font-size: 11.5px; color: var(--ink-3); background: var(--surface-2); border: 1px dashed var(--line); border-radius: 12px; padding: 10px 12px; line-height: 1.5; }
   .clickable { cursor: pointer; }
@@ -532,7 +533,7 @@
               <div class="disc" style="margin-top:10px">Diese Felder füllt später die Charge 6 <b>automatisch</b>. Bis dahin kannst du Werte selbst eintragen (z.B. aus der Fitbit-App) – so siehst du die Übersicht schon in Aktion.</div>
             </div>
 
-            <div class="disc" style="margin-top:16px">Die „Tagesform" berechnet VITARA aus <b>deinen</b> Werten (Ruhepuls, HRV, Schlaf) – Fitbit gibt seine eigene „Readiness"-Zahl nicht über die Schnittstelle heraus. „Live" gibt es bei Fitbit nicht; es sind die zuletzt synchronisierten Werte. Alles wird nur <b>lokal auf deinem Gerät</b> gespeichert. VITARA ersetzt keine ärztliche Beurteilung.</div>
+            <div class="disc" style="margin-top:16px">Die farbigen Ampeln (grün/gelb/rot) sind <b>allgemeine Orientierungswerte</b>, keine ärztliche Bewertung. Die „Tagesform" berechnet VITARA aus <b>deinen</b> Werten (Ruhepuls, HRV, Schlaf) – Fitbit gibt seine eigene „Readiness"-Zahl nicht über die Schnittstelle heraus. „Live" gibt es bei Fitbit nicht; es sind die zuletzt synchronisierten Werte. Alles wird nur <b>lokal auf deinem Gerät</b> gespeichert. VITARA ersetzt keine ärztliche Beurteilung.</div>
           </section>
 
           <!-- SUPPLEMENTS -->
@@ -996,11 +997,16 @@
 
     // Vitalwerte-Kacheln: echte Werte
     var puls=ladeWert('vital.puls'), hrv=ladeWert('vital.hrv'), schlaf=ladeWert('vital.schlafMin'), schritte=schritteHeute;
-    function setK(id,footId,html,foot){ var e=document.getElementById(id); if(e) e.innerHTML=html; var f=document.getElementById(footId); if(f) f.textContent=foot; }
-    setK('hvSchritte','hvSchritteFoot', schritte!==null? nfmt(schritte) : '—', schritte!==null?'heute':'noch keine Daten');
-    setK('hvPuls','hvPulsFoot', puls!==null? (puls+' <small>bpm</small>') : '—', puls!==null?'Ø Vortag':'noch keine Daten');
-    setK('hvSchlaf','hvSchlafFoot', schlaf!==null? (Math.floor(schlaf/60)+'h '+(schlaf%60)+'min') : '—', schlaf!==null?'letzte Nacht':'noch keine Daten');
-    setK('hvHrv','hvHrvFoot', hrv!==null? (hrv+' <small>ms</small>') : '—', hrv!==null?'Vortag':'noch keine Daten');
+    function setK(id,footId,html,feld,wert){ var e=document.getElementById(id); if(e) e.innerHTML=html;
+      var f=document.getElementById(footId); if(!f) return;
+      if(wert===null||wert===undefined){ f.textContent='noch keine Daten'; f.style.color=''; return; }
+      var a=ampel(feld,wert); f.textContent=a.text||'';
+      f.style.color = a.cls==='good'?'var(--good)': a.cls==='warn'?'var(--warn)': a.cls==='crit'?'var(--crit)':'';
+    }
+    setK('hvSchritte','hvSchritteFoot', schritte!==null? nfmt(schritte) : '—', 'vital.schritte', schritte);
+    setK('hvPuls','hvPulsFoot', puls!==null? (puls+' <small>bpm</small>') : '—', 'vital.puls', puls);
+    setK('hvSchlaf','hvSchlafFoot', schlaf!==null? (Math.floor(schlaf/60)+'h '+(schlaf%60)+'min') : '—', 'vital.schlafMin', schlaf);
+    setK('hvHrv','hvHrvFoot', hrv!==null? (hrv+' <small>ms</small>') : '—', 'vital.hrv', hrv);
 
     // Gut für die Gelenke heute
     setHomePill('homeWaerme', ladeStand('joint-waerme'));
@@ -1258,6 +1264,20 @@
     return {score:score, label:label};
   }
 
+  // Ampel/Zielbereich je Wert -> {cls:'good'|'warn'|'crit'|'', text}. Orientierungswerte, keine Diagnose.
+  function ampel(feld, wert){
+    if(wert===null || wert===undefined || wert==='') return {cls:'',text:''};
+    var w=+wert;
+    if(feld==='vital.puls'){ if(w>=50&&w<=70) return {cls:'good',text:'im Zielbereich'}; if((w>=45&&w<=49)||(w>=71&&w<=80)) return {cls:'warn',text:'beobachten'}; return {cls:'crit',text:'auffällig'}; }
+    if(feld==='vital.hrv'){ var b=mittel(vitReihe('vital.hrv',30)); if(b===null||b<=0) return {cls:'',text:'Vortag'}; if(w>=b*0.9) return {cls:'good',text:'im Zielbereich'}; if(w>=b*0.75) return {cls:'warn',text:'unter Schnitt'}; return {cls:'crit',text:'deutlich niedrig'}; }
+    if(feld==='vital.atem'){ if(w>=12&&w<=18) return {cls:'good',text:'im Zielbereich'}; if((w>=10&&w<12)||(w>18&&w<=22)) return {cls:'warn',text:'beobachten'}; return {cls:'crit',text:'auffällig'}; }
+    if(feld==='vital.schlafMin'){ if(w>=420) return {cls:'good',text:'Ziel erreicht'}; if(w>=360) return {cls:'warn',text:'etwas kurz'}; return {cls:'crit',text:'zu kurz'}; }
+    if(feld==='vital.schritte'){ if(w>=7000) return {cls:'good',text:'Ziel erreicht'}; if(w>=3500) return {cls:'warn',text:'dran bleiben'}; return {cls:'crit',text:'wenig heute'}; }
+    if(feld==='vital.azm'){ if(w>=22) return {cls:'good',text:'Ziel erreicht'}; if(w>=1) return {cls:'warn',text:'dran bleiben'}; return {cls:'crit',text:'noch nichts'}; }
+    if(feld==='tagesform'){ if(w>=78) return {cls:'good',text:'Top'}; if(w>=60) return {cls:'good',text:'Gut'}; if(w>=45) return {cls:'warn',text:'Solide'}; return {cls:'crit',text:'Erholung'}; }
+    if(feld==='vital.hr'){ var rp=ladeWert('vital.puls'); var ruhe=rp!==null?+rp:60; if(w<=ruhe+12) return {cls:'',text:'Ruhe'}; if(w<=100) return {cls:'',text:'leicht'}; if(w<=120) return {cls:'',text:'moderat'}; return {cls:'',text:'intensiv'}; }
+    return {cls:'',text:''};
+  }
   // kleine 7-Tage-Trendgrafik in den Kacheln
   function drawSpark(id,key,color){
     var c=document.getElementById(id); if(!c) return; var ctx=c.getContext('2d'); var w=c.width,h=c.height; ctx.clearRect(0,0,w,h);
@@ -1274,15 +1294,16 @@
     function P(id,txt,cls){ var e=document.getElementById(id); if(e){ e.textContent=txt; e.className='vt-pill'+(cls?(' '+cls):''); } }
     var hr=ladeWert('vital.hr'), rhr=ladeWert('vital.puls'), hrv=ladeWert('vital.hrv'),
         atem=ladeWert('vital.atem'), azm=ladeWert('vital.azm'), schritte=ladeWert('vital.schritte'), schlaf=ladeWert('vital.schlafMin');
-    V('cHr', hr!==null? (hr+' <small>bpm</small>') : '—');       P('cHrFoot', hr!==null? 'zuletzt gemessen' : 'keine Daten', '');
-    V('cRhr', rhr!==null? (rhr+' <small>bpm</small>') : '—');    P('cRhrFoot', rhr!==null? 'Ø Vortag' : 'keine Daten', rhr!==null?'good':'');
-    V('cHrv', hrv!==null? (hrv+' <small>ms</small>') : '—');     P('cHrvFoot', hrv!==null? 'Vortag' : 'keine Daten', '');
-    V('cAtem', atem!==null? (String(atem).replace('.',',')+' <small>/min</small>') : '—'); P('cAtemFoot', atem!==null? 'Vortag' : 'keine Daten', '');
-    V('cSchlaf', schlaf!==null? (Math.floor(schlaf/60)+'h '+(schlaf%60)+'min') : '—'); P('cSchlafFoot', schlaf!==null? 'letzte Nacht' : 'keine Daten', schlaf!==null?'good':'');
-    V('cAzm', azm!==null? (azm+' <small>Min.</small>') : '—');   P('cAzmFoot', azm!==null? 'Vortag' : 'keine Daten', '');
-    V('cSchritte', schritte!==null? nfmt(schritte) : '—');      P('cSchritteFoot', schritte!==null? 'heute' : 'keine Daten', '');
+    function AP(id, feld, wert, leerText){ var a=ampel(feld, wert); P(id, (wert===null||wert===undefined)? leerText : (a.text||leerText), (wert===null||wert===undefined)?'':a.cls); }
+    V('cHr', hr!==null? (hr+' <small>bpm</small>') : '—');       AP('cHrFoot','vital.hr',hr,'keine Daten');
+    V('cRhr', rhr!==null? (rhr+' <small>bpm</small>') : '—');    AP('cRhrFoot','vital.puls',rhr,'keine Daten');
+    V('cHrv', hrv!==null? (hrv+' <small>ms</small>') : '—');     AP('cHrvFoot','vital.hrv',hrv,'keine Daten');
+    V('cAtem', atem!==null? (String(atem).replace('.',',')+' <small>/min</small>') : '—'); AP('cAtemFoot','vital.atem',atem,'keine Daten');
+    V('cSchlaf', schlaf!==null? (Math.floor(schlaf/60)+'h '+(schlaf%60)+'min') : '—'); AP('cSchlafFoot','vital.schlafMin',schlaf,'keine Daten');
+    V('cAzm', azm!==null? (azm+' <small>Min.</small>') : '—');   AP('cAzmFoot','vital.azm',azm,'keine Daten');
+    V('cSchritte', schritte!==null? nfmt(schritte) : '—');      AP('cSchritteFoot','vital.schritte',schritte,'keine Daten');
     var tf=berechneTagesform();
-    V('cTagesform', tf? (tf.score+' <small>/100</small>') : '—'); P('cTagesformFoot', tf? tf.label : 'aus deinen Werten', tf?(tf.score>=60?'good':tf.score>=45?'':'warn'):'');
+    V('cTagesform', tf? (tf.score+' <small>/100</small>') : '—'); if(tf){ var at=ampel('tagesform',tf.score); P('cTagesformFoot',at.text,at.cls); } else { P('cTagesformFoot','aus deinen Werten',''); }
     drawSpark('spHr','vital.hr','--joint'); drawSpark('spRhr','vital.puls','--joint'); drawSpark('spHrv','vital.hrv','--pine');
     drawSpark('spAtem','vital.atem','--pine'); drawSpark('spSchlaf','vital.schlafMin','--supp'); drawSpark('spAzm','vital.azm','--good');
     drawSpark('spSchritte','vital.schritte','--pine');
