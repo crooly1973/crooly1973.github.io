@@ -1385,8 +1385,18 @@
       if(istServer){ window.location.href='health-connect.php'; } else { alert('Nur auf oliver-rock.de/gesundheitsapp/ möglich – dort läuft der Server-Teil.'); }
     }); }
     if(location.search.indexOf('fitbit=verbunden')>=0){ var fs=el('fitbitStatus'); if(fs){ fs.textContent='verbunden ✓'; fs.className='pill good'; } }
+    // Verlauf aus der Server-Datenbank in den lokalen Speicher spiegeln (geräteübergreifende Historie)
+    function ladeHistorie(){
+      if(!istServer) return;
+      fetch('health-history.php?days=120',{cache:'no-store'}).then(function(r){ return r.json(); }).then(function(d){
+        if(!d || !d.ok || !d.daten) return;
+        Object.keys(d.daten).forEach(function(feld){ var reihe=d.daten[feld]||{}; Object.keys(reihe).forEach(function(datum){ try{ localStorage.setItem('vitara.'+datum+'.'+feld, String(reihe[datum])); }catch(e){} }); });
+        vitOverview(); drawVit(); homeUpdate();
+      }).catch(function(){});
+    }
     prefill();
     fitbitSync(false);   // beim Öffnen still aktualisieren, falls schon verbunden
+    ladeHistorie();      // gespeicherten Verlauf aus der Datenbank holen
   })();
   function drawJoint(){ var c=document.getElementById('jointChart'); if(!c) return; var ctx=c.getContext('2d'); var w=c.width,h=c.height; ctx.clearRect(0,0,w,h);
     var legende=document.getElementById('jointLegend');
