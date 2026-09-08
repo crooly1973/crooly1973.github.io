@@ -382,18 +382,18 @@
               <div class="tt" id="homeTipp"><b>Tipp für heute:</b> Schön, dass du da bist – trag deine ersten Werte ein, dann werden die Tipps persönlicher.</div>
             </div>
 
-            <div class="card hero floaty clickable" data-goto="supp">
+            <div class="card hero floaty clickable" data-goto="vitals">
               <div class="row">
                 <svg class="ring" viewBox="0 0 100 100">
                   <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="9"/>
                   <circle id="heroRing" cx="50" cy="50" r="40" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-dasharray="251.3" stroke-dashoffset="251.3" transform="rotate(-90 50 50)"/>
-                  <text id="heroNum" x="50" y="47" text-anchor="middle" font-size="22" font-weight="800" fill="#fff" font-family="var(--font)">0</text>
-                  <text id="heroDen" x="50" y="63" text-anchor="middle" font-size="9" fill="rgba(255,255,255,.8)">von 4</text>
+                  <text id="heroNum" x="50" y="46" text-anchor="middle" font-size="23" font-weight="800" fill="#fff" font-family="var(--font)">–</text>
+                  <text id="heroDen" x="50" y="62" text-anchor="middle" font-size="9" fill="rgba(255,255,255,.8)">von 100</text>
                 </svg>
                 <div>
-                  <div class="big" id="heroBig">Heute noch offen</div>
-                  <div class="sub">Nahrungsergänzung heute</div>
-                  <span class="tag" id="heroTag">0 von 4 genommen</span>
+                  <div class="big" id="heroBig">Tagesform</div>
+                  <div class="sub">aus Ruhepuls, HRV &amp; Schlaf</div>
+                  <span class="tag" id="heroTag">💊 0/4 · 👟 –</span>
                 </div>
               </div>
             </div>
@@ -401,24 +401,24 @@
             <div class="sec-title">Vitalwerte heute <a href="#" data-goto="vitals">Alle ›</a></div>
             <div class="grid2">
               <div class="card metric clickable" data-goto="vitals">
-                <div class="lab"><span class="icoq" style="background:color-mix(in srgb,var(--joint) 16%,transparent);color:var(--joint)">❤</span>Ruhepuls</div>
-                <div class="val" id="hvPuls">—</div>
-                <div class="foot flat" id="hvPulsFoot">noch nicht eingetragen</div>
+                <div class="lab"><span class="icoq" style="background:color-mix(in srgb,var(--pine) 16%,transparent);color:var(--pine)">👟</span>Schritte</div>
+                <div class="val" id="hvSchritte">—</div>
+                <div class="foot flat" id="hvSchritteFoot">von der Charge 6</div>
               </div>
               <div class="card metric clickable" data-goto="vitals">
-                <div class="lab"><span class="icoq" style="background:color-mix(in srgb,var(--pine) 16%,transparent);color:var(--pine)">⚖</span>Gewicht</div>
-                <div class="val" id="hvGew">—</div>
-                <div class="foot flat" id="hvGewFoot">noch nicht eingetragen</div>
+                <div class="lab"><span class="icoq" style="background:color-mix(in srgb,var(--joint) 16%,transparent);color:var(--joint)">❤</span>Ruhepuls</div>
+                <div class="val" id="hvPuls">—</div>
+                <div class="foot flat" id="hvPulsFoot">noch keine Daten</div>
               </div>
-              <div class="card metric">
-                <div class="lab"><span class="icoq" style="background:color-mix(in srgb,var(--mint) 22%,transparent);color:var(--pine)">〰</span>HRV</div>
-                <div class="val">—</div>
-                <div class="foot flat">via Fitbit · bald</div>
-              </div>
-              <div class="card metric">
+              <div class="card metric clickable" data-goto="vitals">
                 <div class="lab"><span class="icoq" style="background:color-mix(in srgb,var(--supp) 18%,transparent);color:var(--supp)">☾</span>Schlaf</div>
-                <div class="val">—</div>
-                <div class="foot flat">via Fitbit · bald</div>
+                <div class="val" id="hvSchlaf">—</div>
+                <div class="foot flat" id="hvSchlafFoot">letzte Nacht</div>
+              </div>
+              <div class="card metric clickable" data-goto="vitals">
+                <div class="lab"><span class="icoq" style="background:color-mix(in srgb,var(--mint) 22%,transparent);color:var(--pine)">〰</span>HRV</div>
+                <div class="val" id="hvHrv">—</div>
+                <div class="foot flat" id="hvHrvFoot">noch keine Daten</div>
               </div>
             </div>
 
@@ -962,12 +962,17 @@
     document.querySelectorAll('#bodySvg .bpin').forEach(function(p){ var n=p.dataset.j; var v=ladeWert('schmerz.'+n); if(v!==null && +v>maxV){ maxV=+v; maxJoint=n; } });
     var exKeys=['exercise-liegestuetz','exercise-kniebeugen','exercise-bizeps','exercise-schulter'];
     var done=0; for(var k=0;k<7;k++){ var datum=tagStr(k); if(exKeys.every(function(name){ try{return localStorage.getItem('vitara.'+datum+'.'+name)==='1';}catch(e){return false;} })) done++; }
-    var vitalsHeute = ladeWert('vital.puls')!==null || ladeWert('vital.gewicht')!==null || ladeWert('vital.sys')!==null;
+    var tf=berechneTagesform();
+    var hrv=ladeWert('vital.hrv'), baseHrv=mittel(vitReihe('vital.hrv',30));
+    var schlaf=ladeWert('vital.schlafMin');
     var msg;
     if(maxV>=6) msg='Deine '+maxJoint+' meldet heute '+maxV+'/10. Wärme & sanfte Bewegung haben dir bisher geholfen. 🔥';
+    else if(tf && tf.score<45) msg='Deine Tagesform ist heute niedrig ('+tf.score+'/100). Gönn dir einen ruhigeren Tag – Spazieren oder Sauna statt intensiv. 🌙';
+    else if(hrv!==null && baseHrv!==null && (+hrv) < baseHrv*0.85) msg='Deine HRV liegt heute unter deinem Schnitt – oft ein Zeichen für weniger Erholung. Heute lieber ruhiger angehen. 〰️';
+    else if(tf && tf.score>=70 && done<2) msg='Erholung top (Tagesform '+tf.score+'/100) – ein idealer Tag für dein Krafttraining! 💪';
     else if(taken<total) msg='Noch '+(total-taken)+' Präparat'+((total-taken)===1?'':'e')+' für heute offen – kurz abhaken nicht vergessen. 💊';
     else if(done<2) msg='Diese Woche noch '+(2-done)+' Krafteinheit'+((2-done)===1?'':'en')+' – heute wäre ein guter Tag dafür. 💪';
-    else if(!vitalsHeute) msg='Trag heute kurz Ruhepuls oder Gewicht ein, dann wächst dein Verlauf. 📈';
+    else if(schlaf!==null && schlaf>=420) msg='Guter Schlaf letzte Nacht ('+Math.floor(schlaf/60)+'h '+(schlaf%60)+'min) – beste Basis für einen starken Tag. 😴';
     else msg='Stark – heute schon alles im Blick: Präparate, Training und Werte. Weiter so! 🌊';
     el.innerHTML='<b>Tipp für heute:</b> '+msg;
   }
@@ -975,25 +980,27 @@
     var greet=document.getElementById('homeGreet');
     if(greet){ try{ greet.textContent = new Date().toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long'}); }catch(e){} }
 
-    // Nahrungsergänzung heute -> Hero-Ring
+    // Nahrungsergänzung heute (für Hero-Zeile & Tipp)
     var checks=document.querySelectorAll('.check[data-key^="supp-"]');
     var total=checks.length||4;
     var taken=[].filter.call(checks,function(c){return c.classList.contains('on');}).length;
-    var C=251.3, ring=document.getElementById('heroRing');
-    if(ring) ring.setAttribute('stroke-dashoffset', String(Math.round((C-C*(total?taken/total:0))*10)/10));
-    var hn=document.getElementById('heroNum'); if(hn) hn.textContent=taken;
-    var hd=document.getElementById('heroDen'); if(hd) hd.textContent='von '+total;
-    var hb=document.getElementById('heroBig'); if(hb) hb.textContent = taken>=total ? 'Alles genommen ✓' : 'Heute noch offen';
-    var hg=document.getElementById('heroTag'); if(hg) hg.textContent = taken+' von '+total+' genommen';
 
-    // Vitalwerte heute (Blutdruck bewusst nicht auf der Startseite)
-    var puls=ladeWert('vital.puls'), gew=ladeWert('vital.gewicht');
-    var pv=document.getElementById('hvPuls'), pf=document.getElementById('hvPulsFoot');
-    if(pv) pv.innerHTML = puls!==null ? (puls+' <small>bpm</small>') : '—';
-    if(pf) pf.textContent = puls!==null ? 'heute · Ruhe' : 'noch nicht eingetragen';
-    var gv=document.getElementById('hvGew'), gf=document.getElementById('hvGewFoot');
-    if(gv) gv.innerHTML = gew!==null ? (String(gew).replace('.',',')+' <small>kg</small>') : '—';
-    if(gf) gf.textContent = gew!==null ? 'heute' : 'noch nicht eingetragen';
+    // Hero = Tagesform (aus Ruhepuls, HRV & Schlaf)
+    var tf=berechneTagesform();
+    var C=251.3, ring=document.getElementById('heroRing');
+    if(ring) ring.setAttribute('stroke-dashoffset', String(Math.round((C-C*((tf?tf.score:0)/100))*10)/10));
+    var hn=document.getElementById('heroNum'); if(hn) hn.textContent = tf? tf.score : '–';
+    var hb=document.getElementById('heroBig'); if(hb) hb.textContent = tf? tf.label : 'Tagesform';
+    var schritteHeute=ladeWert('vital.schritte');
+    var hg=document.getElementById('heroTag'); if(hg) hg.innerHTML = '💊 '+taken+'/'+total+' · 👟 '+(schritteHeute!==null?nfmt(schritteHeute):'–');
+
+    // Vitalwerte-Kacheln: echte Werte
+    var puls=ladeWert('vital.puls'), hrv=ladeWert('vital.hrv'), schlaf=ladeWert('vital.schlafMin'), schritte=schritteHeute;
+    function setK(id,footId,html,foot){ var e=document.getElementById(id); if(e) e.innerHTML=html; var f=document.getElementById(footId); if(f) f.textContent=foot; }
+    setK('hvSchritte','hvSchritteFoot', schritte!==null? nfmt(schritte) : '—', schritte!==null?'heute':'noch keine Daten');
+    setK('hvPuls','hvPulsFoot', puls!==null? (puls+' <small>bpm</small>') : '—', puls!==null?'Ø Vortag':'noch keine Daten');
+    setK('hvSchlaf','hvSchlafFoot', schlaf!==null? (Math.floor(schlaf/60)+'h '+(schlaf%60)+'min') : '—', schlaf!==null?'letzte Nacht':'noch keine Daten');
+    setK('hvHrv','hvHrvFoot', hrv!==null? (hrv+' <small>ms</small>') : '—', hrv!==null?'Vortag':'noch keine Daten');
 
     // Gut für die Gelenke heute
     setHomePill('homeWaerme', ladeStand('joint-waerme'));
