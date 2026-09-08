@@ -53,7 +53,24 @@ do {
     if (!empty($j['dataPoints'])) { $gotAny = true; foreach ($j['dataPoints'] as $dp) { if (isset($dp['steps']['count'])) $total += intval($dp['steps']['count']); } }
     $pageToken = isset($j['nextPageToken']) ? $j['nextPageToken'] : null; $pages++;
 } while ($pageToken && $pages < 20);
-if ($gotAny) { $schritte = $total; vitara_store($heuteDatum, 'vital.schritte', $schritte); }
+if ($gotAny) { $schritte = $total; }
+
+// ---- Schritte-Rückblick (Backfill): Tages-Summen der letzten 30 Tage via dailyRollUp ----
+$startLocal30 = (clone $startLocal)->modify('-30 days');
+$rSr = vitara_daily_rollup($access, 'steps', $startLocal30, $endLocal);
+if ($debug) $dbg['stepsRollup'] = array('code' => $rSr['code'], 'body' => substr((string)$rSr['body'], 0, 700));
+if ($rSr['code'] === 200) {
+    $j = json_decode($rSr['body'], true);
+    if (!empty($j['dataPoints'])) foreach ($j['dataPoints'] as $dp) {
+        $iv = isset($dp['steps']['interval']) ? $dp['steps']['interval'] : (isset($dp['interval']) ? $dp['interval'] : null);
+        $datum = null;
+        if ($iv && isset($iv['civilStartTime']['date'])) $datum = vitara_datum_aus($iv['civilStartTime']['date']);
+        elseif ($iv && isset($iv['startTime'])) $datum = gmdate('Y-m-d', strtotime($iv['startTime']) + (isset($iv['startUtcOffset']) ? intval($iv['startUtcOffset']) : 0));
+        if ($datum && isset($dp['steps']['count'])) vitara_store($datum, 'vital.schritte', intval($dp['steps']['count']));
+    }
+}
+// heutigen (Live-)Wert zuletzt schreiben, damit er den Rollup-Wert für heute überschreibt
+if ($schritte !== null) vitara_store($heuteDatum, 'vital.schritte', $schritte);
 
 // ---- Herzfrequenz (neueste Messung, Momentaufnahme unter heute) ----
 $hr = null;
