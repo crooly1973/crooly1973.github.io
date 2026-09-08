@@ -2,4 +2,7 @@
 gesundheits-app/health-config.php
 # Token-Speicher der Fitbit-/Google-Anbindung (nur auf dem Server)
 gesundheits-app/health-tokens*.json
+# Datenbank der Vitalwerte (nur auf dem Server)
+gesundheits-app/health-db-*.sqlite
+gesundheits-app/health-db-*.json
 gesundheits-app/.vitara-write-test

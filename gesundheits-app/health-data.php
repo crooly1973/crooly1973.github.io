@@ -1,10 +1,12 @@
 <?php
 /**
- * VITARA – liefert die aktuellen Werte aus Google Health als JSON an die App.
- * Nutzt die gespeicherten Token (erneuert sie bei Bedarf). Kein Neu-Anmelden nötig.
+ * VITARA – holt aktuelle Werte aus Google Health, SPEICHERT sie in der Datenbank
+ * und liefert sie als JSON an die App. Die Tages-Listen (Ruhepuls/HRV/Atem/Schlaf/Aktivzonen)
+ * enthalten mehrere Tage -> damit füllt sich der Verlauf automatisch (Backfill).
  * Mit ?debug=1 werden zusätzlich Roh-Antworten mitgeliefert.
  */
 require __DIR__ . '/health-lib.php';
+require __DIR__ . '/health-store.php';
 header('Content-Type: application/json; charset=utf-8');
 
 $debug = isset($_GET['debug']);
@@ -17,18 +19,29 @@ $err = '';
 $access = vitara_access_token($cfg, $err);
 if (!$access) { $out['error'] = $err; echo json_encode($out); exit; }
 
-// Heutiges Zeitfenster in Berliner Zeit -> UTC
 $tz = new DateTimeZone('Europe/Berlin');
 $utc = new DateTimeZone('UTC');
 $startLocal = new DateTime('today 00:00:00', $tz);
 $endLocal   = new DateTime('tomorrow 00:00:00', $tz);
+$heuteDatum = $startLocal->format('Y-m-d');
 $startUTC = (clone $startLocal)->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
 $endUTC   = (clone $endLocal)->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
-$startUTC7 = (clone $startLocal)->modify('-6 days')->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
+$startUTC7 = (clone $startLocal)->modify('-30 days')->setTimezone($utc)->format('Y-m-d\TH:i:s\Z');
 
 $dbg = array();
 
-// ---- Schritte (Intervall-Typ, kein Bindestrich -> Filter erlaubt): Tag summieren ----
+function vitara_first_number($node, $depth = 0) {
+    if ($depth > 6) return null;
+    if (is_numeric($node)) return $node + 0;
+    if (is_array($node)) foreach ($node as $k => $v) {
+        if (in_array($k, array('dataSource','interval','dataType','date','startUtcOffset','endUtcOffset','civilStartTime','civilEndTime','year','month','day','hours','minutes','seconds','nanos'), true)) continue;
+        $n = vitara_first_number($v, $depth + 1); if ($n !== null) return $n;
+    }
+    return null;
+}
+function vitara_datum_aus($d) { return sprintf('%04d-%02d-%02d', $d['year'], $d['month'], $d['day']); }
+
+// ---- Schritte (heute) ----
 $schritte = null; $total = 0; $pageToken = null; $pages = 0; $gotAny = false;
 do {
     $filter = 'steps.interval.start_time >= "' . $startUTC . '" AND steps.interval.start_time < "' . $endUTC . '"';
@@ -40,101 +53,109 @@ do {
     if (!empty($j['dataPoints'])) { $gotAny = true; foreach ($j['dataPoints'] as $dp) { if (isset($dp['steps']['count'])) $total += intval($dp['steps']['count']); } }
     $pageToken = isset($j['nextPageToken']) ? $j['nextPageToken'] : null; $pages++;
 } while ($pageToken && $pages < 20);
-if ($gotAny) $schritte = $total;
+if ($gotAny) { $schritte = $total; vitara_store($heuteDatum, 'vital.schritte', $schritte); }
 
-// ---- Herzfrequenz (Sample-Typ mit Bindestrich -> kein Filter): neueste Messung ----
+// ---- Herzfrequenz (neueste Messung, Momentaufnahme unter heute) ----
 $hr = null;
 $rHr = vitara_health_get_raw($access, 'heart-rate', null, 1);
-if ($debug) $dbg['hr'] = array('code' => $rHr['code'], 'body' => substr((string)$rHr['body'], 0, 800));
+if ($debug) $dbg['hr'] = array('code' => $rHr['code'], 'body' => substr((string)$rHr['body'], 0, 600));
 if ($rHr['code'] === 200) {
     $j = json_decode($rHr['body'], true);
     if (!empty($j['dataPoints'])) {
         $dp = $j['dataPoints'][0];
-        if (isset($dp['heartRate']['beatsPerMinute'])) $hr = (int)round($dp['heartRate']['beatsPerMinute']);
-        else { $v = vitara_first_number($dp); if ($v !== null) $hr = (int)round($v); }
+        $hr = isset($dp['heartRate']['beatsPerMinute']) ? (int)round($dp['heartRate']['beatsPerMinute']) : (($v = vitara_first_number($dp)) !== null ? (int)round($v) : null);
     }
 }
+if ($hr !== null) vitara_store($heuteDatum, 'vital.hr', $hr);
 
-// ---- Tageswerte (Bindestrich -> kein Filter): neuesten Punkt nehmen ----
-function vitara_daily_first($access, $dataType, &$raw) {
-    $r = vitara_health_get_raw($access, $dataType, null, 10);
-    $raw = array('code' => $r['code'], 'body' => substr((string)$r['body'], 0, 700));
+// ---- Tageswerte: alle zurückgelieferten Tage speichern (Backfill) + neuesten zurückgeben ----
+function vitara_daily_store($access, $dataType, $feld, $payloadKey, $valueKey, &$raw) {
+    $r = vitara_health_get_raw($access, $dataType, null, 40);
+    $raw = array('code' => $r['code'], 'body' => substr((string)$r['body'], 0, 600));
     if ($r['code'] !== 200) return null;
     $j = json_decode($r['body'], true);
-    return empty($j['dataPoints']) ? null : $j['dataPoints'][0];   // Liste ist neueste-zuerst
-}
-function vitara_first_number($node, $depth = 0) {
-    if ($depth > 6) return null;
-    if (is_numeric($node)) return $node + 0;
-    if (is_array($node)) foreach ($node as $k => $v) {
-        if (in_array($k, array('dataSource','interval','dataType','date','startUtcOffset','endUtcOffset','civilStartTime','civilEndTime','year','month','day','hours','minutes','seconds','nanos'), true)) continue;
-        $n = vitara_first_number($v, $depth + 1); if ($n !== null) return $n;
+    if (empty($j['dataPoints'])) return null;
+    $latest = null;
+    foreach ($j['dataPoints'] as $dp) {
+        $o = isset($dp[$payloadKey]) ? $dp[$payloadKey] : null;
+        if (!$o || !isset($o[$valueKey]) || !isset($o['date'])) continue;
+        $datum = vitara_datum_aus($o['date']);
+        vitara_store($datum, $feld, $o[$valueKey]);
+        if ($latest === null) $latest = $o[$valueKey];   // erster = neuester
     }
-    return null;
+    return $latest;
 }
 
-$rhr = null; $dpR = vitara_daily_first($access, 'daily-resting-heart-rate', $rawR);
-if ($dpR && isset($dpR['dailyRestingHeartRate']['beatsPerMinute'])) $rhr = (int)round($dpR['dailyRestingHeartRate']['beatsPerMinute']);
+$rhr = vitara_daily_store($access, 'daily-resting-heart-rate', 'vital.puls', 'dailyRestingHeartRate', 'beatsPerMinute', $rawR);
+if ($rhr !== null) $rhr = (int)round($rhr);
 if ($debug) $dbg['rhr'] = $rawR;
 
-$hrv = null; $dpH = vitara_daily_first($access, 'daily-heart-rate-variability', $rawH);
-if ($dpH && isset($dpH['dailyHeartRateVariability']['averageHeartRateVariabilityMilliseconds'])) $hrv = (int)round($dpH['dailyHeartRateVariability']['averageHeartRateVariabilityMilliseconds']);
+$hrv = vitara_daily_store($access, 'daily-heart-rate-variability', 'vital.hrv', 'dailyHeartRateVariability', 'averageHeartRateVariabilityMilliseconds', $rawH);
+if ($hrv !== null) $hrv = (int)round($hrv);
 if ($debug) $dbg['hrv'] = $rawH;
 
-$atem = null; $dpA = vitara_daily_first($access, 'daily-respiratory-rate', $rawA);
-if ($dpA && isset($dpA['dailyRespiratoryRate']['breathsPerMinute'])) $atem = round(($dpA['dailyRespiratoryRate']['breathsPerMinute']) * 10) / 10;
+$atem = vitara_daily_store($access, 'daily-respiratory-rate', 'vital.atem', 'dailyRespiratoryRate', 'breathsPerMinute', $rawA);
+if ($atem !== null) $atem = round($atem * 10) / 10;
 if ($debug) $dbg['atem'] = $rawA;
 
-// ---- Aktivzonenminuten (Intervall-Typ mit Bindestrich -> kein Filter): neuesten Tag summieren ----
+// ---- Aktivzonenminuten: je Tag summieren & speichern, neuesten Tag zurückgeben ----
 $azm = null;
 $rZ = vitara_health_get_raw($access, 'active-zone-minutes', null, 1000);
-if ($debug) $dbg['azm'] = array('code' => $rZ['code'], 'body' => substr((string)$rZ['body'], 0, 700));
+if ($debug) $dbg['azm'] = array('code' => $rZ['code'], 'body' => substr((string)$rZ['body'], 0, 500));
 if ($rZ['code'] === 200) {
     $j = json_decode($rZ['body'], true);
     if (!empty($j['dataPoints'])) {
-        $zielDatum = null; $summe = 0;
+        $proTag = array(); $reihenfolge = array();
         foreach ($j['dataPoints'] as $dp) {
-            $d = isset($dp['activeZoneMinutes']['interval']['civilStartTime']['date']) ? $dp['activeZoneMinutes']['interval']['civilStartTime']['date'] : null;
-            if (!$d) continue;
-            $tag = $d['year'] . '-' . $d['month'] . '-' . $d['day'];
-            if ($zielDatum === null) $zielDatum = $tag;         // neuester Tag mit Daten
-            if ($tag !== $zielDatum) break;                     // Liste ist neueste-zuerst -> fertig
-            if (isset($dp['activeZoneMinutes']['activeZoneMinutes'])) $summe += intval($dp['activeZoneMinutes']['activeZoneMinutes']);
+            $iv = isset($dp['activeZoneMinutes']['interval']['civilStartTime']['date']) ? $dp['activeZoneMinutes']['interval']['civilStartTime']['date'] : null;
+            if (!$iv) continue;
+            $datum = vitara_datum_aus($iv);
+            if (!isset($proTag[$datum])) { $proTag[$datum] = 0; $reihenfolge[] = $datum; }
+            if (isset($dp['activeZoneMinutes']['activeZoneMinutes'])) $proTag[$datum] += intval($dp['activeZoneMinutes']['activeZoneMinutes']);
         }
-        $azm = $summe;
+        foreach ($proTag as $datum => $sum) vitara_store($datum, 'vital.azm', $sum);
+        if (!empty($reihenfolge)) $azm = $proTag[$reihenfolge[0]];   // neuester Tag
     }
 }
 
-// ---- Schlaf (Sitzungs-Typ, kein Bindestrich -> Filter erlaubt): neueste Nacht ----
+// ---- Schlaf: jede Nacht speichern (Dauer + Phasen), neueste Hauptschlaf-Nacht zurückgeben ----
 $schlafMin = null; $schlaf = null;
 $sfilter = 'sleep.interval.end_time >= "' . $startUTC7 . '" AND sleep.interval.end_time < "' . $endUTC . '"';
-$rs = vitara_health_get_raw($access, 'sleep', $sfilter, 50);
-if ($debug) $dbg['sleep'] = array('code' => $rs['code'], 'body' => substr((string)$rs['body'], 0, 1200));
+$rs = vitara_health_get_raw($access, 'sleep', $sfilter, 60);
+if ($debug) $dbg['sleep'] = array('code' => $rs['code'], 'body' => substr((string)$rs['body'], 0, 900));
 if ($rs['code'] === 200) {
     $j = json_decode($rs['body'], true);
     if (!empty($j['dataPoints'])) {
-        // neueste Hauptschlaf-Sitzung wählen (mainSleep bevorzugt, sonst erste)
-        $sess = null;
-        foreach ($j['dataPoints'] as $dp) { if (!empty($dp['sleep']['metadata']['mainSleep'])) { $sess = $dp; break; } }
-        if (!$sess) $sess = $j['dataPoints'][0];
-        $sum = isset($sess['sleep']['summary']) ? $sess['sleep']['summary'] : null;
-        if ($sum) {
-            if (isset($sum['minutesAsleep'])) $schlafMin = intval($sum['minutesAsleep']);
-            elseif (isset($sum['minutesInSleepPeriod'])) $schlafMin = intval($sum['minutesInSleepPeriod']);
-            if (!empty($sum['stagesSummary'])) {
-                $map = array('DEEP' => 'tief', 'LIGHT' => 'leicht', 'REM' => 'rem', 'WAKE' => 'wach', 'AWAKE' => 'wach');
-                $st = array();
-                foreach ($sum['stagesSummary'] as $stg) {
-                    $t = isset($stg['type']) ? strtoupper($stg['type']) : '';
-                    if (isset($map[$t]) && isset($stg['minutes'])) $st[$map[$t]] = intval($stg['minutes']);
-                }
-                if ($st) $schlaf = $st;   // echte Phasen (nur bei STAGES-Nächten vorhanden)
+        $stageMap = array('DEEP' => 'schlafTief', 'LIGHT' => 'schlafLeicht', 'REM' => 'schlafRem', 'WAKE' => 'schlafWach', 'AWAKE' => 'schlafWach');
+        $newestMain = null;
+        foreach ($j['dataPoints'] as $dp) {
+            if (!isset($dp['sleep']['summary'])) continue;
+            $sl = $dp['sleep']; $sum = $sl['summary'];
+            // Datum der Nacht = lokales Aufwach-Datum (Ende)
+            $datum = $heuteDatum;
+            if (isset($sl['interval']['endTime'])) {
+                $off = isset($sl['interval']['endUtcOffset']) ? intval($sl['interval']['endUtcOffset']) : 0;
+                $datum = gmdate('Y-m-d', strtotime($sl['interval']['endTime']) + $off);
+            }
+            $mins = isset($sum['minutesAsleep']) ? intval($sum['minutesAsleep']) : (isset($sum['minutesInSleepPeriod']) ? intval($sum['minutesInSleepPeriod']) : null);
+            if ($mins !== null) vitara_store($datum, 'vital.schlafMin', $mins);
+            $stg = array();
+            if (!empty($sum['stagesSummary'])) foreach ($sum['stagesSummary'] as $s) {
+                $t = isset($s['type']) ? strtoupper($s['type']) : '';
+                if (isset($stageMap[$t]) && isset($s['minutes'])) { $stg[$stageMap[$t]] = intval($s['minutes']); vitara_store($datum, 'vital.' . $stageMap[$t], intval($s['minutes'])); }
+            }
+            // neueste Hauptschlaf-Nacht für die Anzeige merken
+            if ($newestMain === null && !empty($sl['metadata']['mainSleep'])) {
+                $newestMain = true; $schlafMin = $mins;
+                if ($stg) { $schlaf = array('tief' => isset($stg['schlafTief']) ? $stg['schlafTief'] : null, 'leicht' => isset($stg['schlafLeicht']) ? $stg['schlafLeicht'] : null, 'rem' => isset($stg['schlafRem']) ? $stg['schlafRem'] : null, 'wach' => isset($stg['schlafWach']) ? $stg['schlafWach'] : null); }
             }
         }
+        if ($schlafMin === null && !empty($j['dataPoints'][0]['sleep']['summary']['minutesAsleep'])) $schlafMin = intval($j['dataPoints'][0]['sleep']['summary']['minutesAsleep']);
     }
 }
 
 $out['ok'] = true;
+$out['speicher'] = vitara_db_kind();
 $out['schritte'] = $schritte;
 $out['hr'] = $hr;
 $out['rhr'] = $rhr;
