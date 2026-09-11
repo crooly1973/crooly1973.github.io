@@ -218,6 +218,7 @@
   .fab-item { display: flex; align-items: center; gap: 11px; background: none; border: none; padding: 11px 12px; border-radius: 11px; font: inherit; font-size: 14px; font-weight: 700; color: var(--ink); cursor: pointer; text-align: left; }
   .fab-item:hover { background: var(--surface-2); }
   .fab-item .fi { font-size: 18px; width: 24px; text-align: center; flex: none; }
+  .fab-menu[hidden], .fab-backdrop[hidden] { display: none !important; }
 
   .foot-note { text-align: center; color: var(--ink-3); font-size: 12.5px; margin-top: 26px; }
 
@@ -356,7 +357,7 @@
 
   <div class="stage">
     <aside class="rail">
-      <div class="pillar"><h3><span class="dot" style="background:var(--vital)"></span>Vitalwerte</h3><p>Blutdruck, Puls, HRV, Gewicht, Schlaf & SpO₂ — mit Trend und Zielbereich.</p></div>
+      <div class="pillar"><h3><span class="dot" style="background:var(--vital)"></span>Vitalwerte</h3><p>Puls, HRV, Schlaf, Atemfrequenz & Aktivzonen — mit Trend und Zielbereich.</p></div>
       <div class="pillar"><h3><span class="dot" style="background:var(--supp)"></span>Nahrungsergänzung</h3><p>Einnahme-Plan, Abhaken pro Tageszeit und Vorrats-Warnung, wenn etwas knapp wird.</p></div>
       <div class="pillar"><h3><span class="dot" style="background:var(--joint)"></span>Gelenke</h3><p>Antippbare Körperkarte, Schmerz-Tagebuch (0–10) und Beweglichkeit über Zeit.</p></div>
       <div class="pillar"><h3><span class="dot" style="background:var(--pine)"></span>Training</h3><p>Krafttraining 2× pro Woche mit deinen Übungen (Liegestütz, Kniebeugen, Hanteln) — schulter- & hüftschonend, mit Wochenziel und Fortschritt.</p></div>
@@ -516,8 +517,6 @@
               <button class="chip" data-metric="atem">Atemfreq.</button>
               <button class="chip" data-metric="azm">Aktivzonen</button>
               <button class="chip" data-metric="schlaf">Schlaf</button>
-              <button class="chip" data-metric="gewicht">Gewicht</button>
-              <button class="chip" data-metric="bp">Blutdruck</button>
             </div>
             <div class="card chartcard">
               <canvas id="vitChart" width="640" height="300" style="width:100%;height:150px"></canvas>
@@ -532,8 +531,6 @@
                 <div class="vitrow"><div class="vlab"><span class="icoq" style="background:color-mix(in srgb,var(--joint) 16%,transparent);color:var(--joint)">❤</span>Ruhepuls</div><div class="vin"><input class="vitin" id="vPuls" type="text" inputmode="numeric" maxlength="3" placeholder="60" aria-label="Ruhepuls"><span class="vitunit">bpm</span></div></div>
                 <div class="vitrow"><div class="vlab"><span class="icoq" style="background:color-mix(in srgb,var(--mint) 22%,transparent);color:var(--pine)">〰</span>HRV</div><div class="vin"><input class="vitin" id="vHrv" type="text" inputmode="numeric" maxlength="3" placeholder="45" aria-label="HRV"><span class="vitunit">ms</span></div></div>
                 <div class="vitrow"><div class="vlab"><span class="icoq" style="background:color-mix(in srgb,var(--supp) 18%,transparent);color:var(--supp)">☾</span>Schlafdauer</div><div class="vin"><input class="vitin" id="vSchlaf" type="text" inputmode="decimal" maxlength="4" placeholder="7,5" aria-label="Schlafdauer in Stunden"><span class="vitunit">Std.</span></div></div>
-                <div class="vitrow"><div class="vlab"><span class="icoq" style="background:color-mix(in srgb,var(--vital) 16%,transparent);color:var(--vital)">🩸</span>Blutdruck</div><div class="vin"><input class="vitin" id="vSys" type="text" inputmode="numeric" maxlength="3" placeholder="120" aria-label="Blutdruck systolisch"><span class="vitsep">/</span><input class="vitin" id="vDia" type="text" inputmode="numeric" maxlength="3" placeholder="80" aria-label="Blutdruck diastolisch"><span class="vitunit">mmHg</span></div></div>
-                <div class="vitrow"><div class="vlab"><span class="icoq" style="background:color-mix(in srgb,var(--pine) 16%,transparent);color:var(--pine)">⚖</span>Gewicht</div><div class="vin"><input class="vitin" id="vGew" type="text" inputmode="decimal" maxlength="5" placeholder="84,0" aria-label="Gewicht"><span class="vitunit">kg</span></div></div>
                 <button class="btn-save" id="vitSave" type="button">Speichern</button>
                 <div id="vitStatus" style="font-size:11.5px;color:var(--ink-3);text-align:center"></div>
               </div>
@@ -708,7 +705,7 @@
           <section class="view" id="v-profile" hidden>
             <div class="apphead"><div><div class="greet">Konto</div><div class="name">Profil</div></div><div class="avatar">O</div></div>
             <div class="card stack">
-              <div class="supp-row" style="padding-top:2px"><div class="supp-ico" style="background:color-mix(in srgb,var(--vital) 14%,transparent)">⌚</div><div class="supp-meta"><div class="t">Geräte verbinden</div><div class="s">Smartwatch, Blutdruck­messer, Waage</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
+              <div class="supp-row" style="padding-top:2px"><div class="supp-ico" style="background:color-mix(in srgb,var(--vital) 14%,transparent)">⌚</div><div class="supp-meta"><div class="t">Geräte verbinden</div><div class="s">Fitbit Charge 6 · Smartwatch</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
               <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--supp) 14%,transparent)">🎯</div><div class="supp-meta"><div class="t">Meine Ziele</div><div class="s">Zielbereiche & Erinnerungen</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
               <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--joint) 14%,transparent)">📄</div><div class="supp-meta"><div class="t">Bericht für den Arzt</div><div class="s">PDF-Export der letzten 3 Monate</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
               <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--pine) 14%,transparent)">🔒</div><div class="supp-meta"><div class="t">Daten & Privatsphäre</div><div class="s">Lokal gespeichert · deine Kontrolle</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
@@ -719,7 +716,6 @@
           <div class="fab-backdrop" id="fabBackdrop" hidden></div>
           <div class="fab-menu" id="fabMenu" hidden>
             <button class="fab-item" data-act="schmerz"><span class="fi">🦴</span>Schmerz eintragen</button>
-            <button class="fab-item" data-act="vitals"><span class="fi">🩸</span>Blutdruck &amp; Gewicht</button>
             <button class="fab-item" data-act="supp"><span class="fi">💊</span>Präparat abhaken</button>
             <button class="fab-item" data-act="workout"><span class="fi">🏋️</span>Workout starten</button>
           </div>
@@ -1154,7 +1150,6 @@
     if(fabMenu) fabMenu.querySelectorAll('.fab-item').forEach(function(b){ b.addEventListener('click', function(){
       var act=b.dataset.act; fabClose();
       if(act==='schmerz'){ show('joints'); }
-      else if(act==='vitals'){ show('vitals'); var mb=document.getElementById('manBody'), mt=document.getElementById('manToggle'); if(mb){ mb.hidden=false; if(mt) mt.textContent='ausblenden ▾'; setTimeout(function(){ try{ mb.scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){} }, 60); } }
       else if(act==='supp'){ show('supp'); }
       else if(act==='workout'){ show('training'); if(typeof wkOpen==='function') wkOpen(); }
     }); });
@@ -1263,24 +1258,11 @@
     hrv:     {label:'HRV',          key:'vital.hrv',      farbe:'--pine', einheit:'ms',       dec:false},
     atem:    {label:'Atemfrequenz', key:'vital.atem',     farbe:'--pine', einheit:'/min',     dec:true},
     azm:     {label:'Aktivzonen',   key:'vital.azm',      farbe:'--good', einheit:'Min.',     dec:false},
-    schlaf:  {label:'Schlaf',       key:'vital.schlafMin',farbe:'--supp', einheit:'Std.',     dec:true, teilen:60},
-    gewicht: {label:'Gewicht',      key:'vital.gewicht',  farbe:'--pine', einheit:'kg',       dec:true},
-    bp:      {label:'Blutdruck'}
+    schlaf:  {label:'Schlaf',       key:'vital.schlafMin',farbe:'--supp', einheit:'Std.',     dec:true, teilen:60}
   };
   function drawVit(){ var c=document.getElementById('vitChart'); if(!c) return; var ctx=c.getContext('2d'); var w=c.width,h=c.height; ctx.clearRect(0,0,w,h);
     var leg=document.getElementById('vitLegend');
     ctx.strokeStyle=css('--line'); ctx.lineWidth=1; for(var g=1;g<4;g++){ var y=h/4*g; ctx.beginPath(); ctx.moveTo(20,y); ctx.lineTo(w-10,y); ctx.stroke(); }
-    if(vitMetric==='bp'){
-      var s=vitHist('vital.sys'), d=vitHist('vital.dia'), sysV=[], diaV=[];
-      for(var i=0;i<s.length;i++){ if(s[i]!==null && d[i]!==null){ sysV.push(s[i]); diaV.push(d[i]); } }
-      if(sysV.length<2){ if(leg) leg.textContent='Noch zu wenig Daten für den Blutdruck-Verlauf.'; return; }
-      var alle=sysV.concat(diaV), mn=Math.min.apply(0,alle)-5, mx=Math.max.apply(0,alle)+5;
-      line(ctx, mapMM(sysV,w,h,26,mn,mx), css('--joint'), 'color-mix(in srgb,'+css('--joint')+' 20%, transparent)');
-      line(ctx, mapMM(diaV,w,h,26,mn,mx), css('--pine'), null);
-      punkt(ctx, mapMM(sysV,w,h,26,mn,mx), css('--joint')); punkt(ctx, mapMM(diaV,w,h,26,mn,mx), css('--pine'));
-      if(leg) leg.textContent='mmHg (sys/dia) · '+sysV.length+' Messungen · zuletzt '+sysV[sysV.length-1]+'/'+diaV[diaV.length-1];
-      return;
-    }
     var m=vitMeta[vitMetric]||vitMeta.schritte;
     var farbe=css(m.farbe);
     var raw=vitHist(m.key).filter(function(v){ return v!==null; });
@@ -1391,22 +1373,19 @@
   // Eingabe der Vitalwerte (füllt später die Charge 6 automatisch)
   (function(){
     var el=function(id){return document.getElementById(id);};
-    var inSchritte=el('vSchritte'), inPuls=el('vPuls'), inHrv=el('vHrv'), inSchlaf=el('vSchlaf'), inSys=el('vSys'), inDia=el('vDia'), inGew=el('vGew');
+    var inSchritte=el('vSchritte'), inPuls=el('vPuls'), inHrv=el('vHrv'), inSchlaf=el('vSchlaf');
     var saveBtn=el('vitSave'), statusEl=el('vitStatus'), chips=el('vitChips'), manToggle=el('manToggle'), manBody=el('manBody');
     if(!saveBtn) return;
     function intVal(e){ if(!e) return null; var s=(e.value||'').replace(/[^0-9]/g,''); return s===''? null : parseInt(s,10); }
     function floatVal(e){ if(!e) return null; var s=(e.value||'').trim().replace(',', '.').replace(/[^0-9.]/g,''); if(s==='') return null; var n=parseFloat(s); return isFinite(n)? n : null; }
     function setOrClear(name,val){ try{ if(val===null || (typeof val==='number' && isNaN(val))) localStorage.removeItem(keyFuer(name)); else { localStorage.setItem(keyFuer(name), String(val)); dbPush(name, String(val)); } }catch(e){} }
-    var alleKeys=['vital.schritte','vital.puls','vital.hrv','vital.schlafMin','vital.sys','vital.dia','vital.gewicht'];
+    var alleKeys=['vital.schritte','vital.puls','vital.hrv','vital.schlafMin'];
     function status(){ var any=alleKeys.some(function(n){ return ladeWert(n)!==null; }); if(statusEl) statusEl.textContent = any ? '✓ heute gespeichert' : ''; }
     function prefill(){ var v;
       v=ladeWert('vital.schritte'); if(v!==null && inSchritte) inSchritte.value=v;
       v=ladeWert('vital.puls'); if(v!==null && inPuls) inPuls.value=v;
       v=ladeWert('vital.hrv'); if(v!==null && inHrv) inHrv.value=v;
       v=ladeWert('vital.schlafMin'); if(v!==null && inSchlaf) inSchlaf.value=String(Math.round(v/60*10)/10).replace('.',',');
-      v=ladeWert('vital.sys'); if(v!==null && inSys) inSys.value=v;
-      v=ladeWert('vital.dia'); if(v!==null && inDia) inDia.value=v;
-      v=ladeWert('vital.gewicht'); if(v!==null && inGew) inGew.value=String(v).replace('.',',');
       status();
     }
     saveBtn.addEventListener('click', function(){
@@ -1414,8 +1393,6 @@
       setOrClear('vital.puls', intVal(inPuls));
       setOrClear('vital.hrv', intVal(inHrv));
       var std=floatVal(inSchlaf); setOrClear('vital.schlafMin', std!==null? Math.round(std*60) : null);
-      setOrClear('vital.sys', intVal(inSys)); setOrClear('vital.dia', intVal(inDia));
-      setOrClear('vital.gewicht', floatVal(inGew));
       status(); drawVit(); vitOverview(); homeUpdate();
       saveBtn.textContent='✓ Gespeichert'; setTimeout(function(){ saveBtn.textContent='Speichern'; }, 1600);
     });
