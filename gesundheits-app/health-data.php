@@ -88,18 +88,20 @@ if ($hr !== null) vitara_store($heuteDatum, 'vital.hr', $hr);
 // ---- Tageswerte: alle zurückgelieferten Tage speichern (Backfill) + neuesten zurückgeben ----
 function vitara_daily_store($access, $dataType, $feld, $payloadKey, $valueKey, &$raw) {
     $r = vitara_health_get_raw($access, $dataType, null, 40);
-    $raw = array('code' => $r['code'], 'body' => substr((string)$r['body'], 0, 600));
-    if ($r['code'] !== 200) return null;
+    if ($r['code'] !== 200) { $raw = array('code' => $r['code'], 'body' => substr((string)$r['body'], 0, 600)); return null; }
     $j = json_decode($r['body'], true);
-    if (empty($j['dataPoints'])) return null;
-    $latest = null;
+    if (empty($j['dataPoints'])) { $raw = array('code' => $r['code'], 'body' => substr((string)$r['body'], 0, 600)); return null; }
+    // Nicht auf die Reihenfolge der API verlassen: jeden Tag speichern und den Wert
+    // des SPÄTESTEN Datums als „aktuell" zurückgeben (Datum als YYYY-MM-DD sortiert korrekt).
+    $latest = null; $latestDatum = null;
     foreach ($j['dataPoints'] as $dp) {
         $o = isset($dp[$payloadKey]) ? $dp[$payloadKey] : null;
         if (!$o || !isset($o[$valueKey]) || !isset($o['date'])) continue;
         $datum = vitara_datum_aus($o['date']);
         vitara_store($datum, $feld, $o[$valueKey]);
-        if ($latest === null) $latest = $o[$valueKey];   // erster = neuester
+        if ($latestDatum === null || strcmp($datum, $latestDatum) > 0) { $latestDatum = $datum; $latest = $o[$valueKey]; }
     }
+    $raw = array('code' => $r['code'], 'neuesterTag' => $latestDatum, 'wertRoh' => $latest, 'body' => substr((string)$r['body'], 0, 600));
     return $latest;
 }
 
