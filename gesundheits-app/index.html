@@ -537,12 +537,12 @@
               <div class="disc" style="margin-top:10px">Diese Felder füllt später die Charge 6 <b>automatisch</b>. Bis dahin kannst du Werte selbst eintragen (z.B. aus der Fitbit-App) – so siehst du die Übersicht schon in Aktion.</div>
             </div>
 
-            <div class="disc" style="margin-top:16px">Die farbigen Ampeln (grün/gelb/rot) sind <b>allgemeine Orientierungswerte</b>, keine ärztliche Bewertung. Die „Tagesform" berechnet VITARA aus <b>deinen</b> Werten (Ruhepuls, HRV, Schlaf) – Fitbit gibt seine eigene „Readiness"-Zahl nicht über die Schnittstelle heraus. „Live" gibt es bei Fitbit nicht; es sind die zuletzt synchronisierten Werte. Alles wird nur <b>lokal auf deinem Gerät</b> gespeichert. VITARA ersetzt keine ärztliche Beurteilung.</div>
+            <div class="disc" style="margin-top:16px">Die farbigen Ampeln (grün/gelb/rot) sind <b>allgemeine Orientierungswerte</b>, keine ärztliche Bewertung. Die „Tagesform" berechnet VITARA aus <b>deinen</b> Werten (Ruhepuls, HRV, Schlaf) – Fitbit gibt seine eigene „Readiness"-Zahl nicht über die Schnittstelle heraus. „Live" gibt es bei Fitbit nicht; es sind die zuletzt synchronisierten Werte. Deine Werte liegen <b>auf deinem Gerät</b> und in deiner <b>privaten Datenbank auf dem Server</b> – nur für dich, damit der Verlauf geräteübergreifend erhalten bleibt. VITARA ersetzt keine ärztliche Beurteilung.</div>
           </section>
 
           <!-- SUPPLEMENTS -->
           <section class="view" id="v-supp" hidden>
-            <div class="apphead"><div><div class="greet">Heute · 27. Juli</div><div class="name">Nahrungsergänzung</div></div><div class="avatar" style="background:linear-gradient(135deg,var(--supp),#b06d18)">💊</div></div>
+            <div class="apphead"><div><div class="greet" id="suppGreet">Heute</div><div class="name">Nahrungsergänzung</div></div><div class="avatar" style="background:linear-gradient(135deg,var(--supp),#b06d18)">💊</div></div>
 
             <div class="card" style="background:color-mix(in srgb,var(--supp) 12%,var(--surface))">
               <div style="display:flex;align-items:center;gap:14px">
@@ -596,11 +596,8 @@
                     <circle class="bpin" data-j="Rechtes Sprunggelenk" data-lv="2" cx="76" cy="250" r="8" fill="var(--warn)"/>
                   </svg>
                 </div>
-                <div class="jointlist">
-                  <div class="jrow"><span class="lv" style="background:var(--warn)"></span><span class="n">Rechte Schulter</span><span class="g">3/10</span></div>
-                  <div class="jrow"><span class="lv" style="background:var(--warn)"></span><span class="n">Nacken / HWS</span><span class="g">2/10</span></div>
-                  <div class="jrow"><span class="lv" style="background:var(--warn)"></span><span class="n">Sprunggelenk re.</span><span class="g">2/10</span></div>
-                  <div class="jrow"><span class="lv" style="background:var(--vital)"></span><span class="n">Hüfte re.</span><span class="g">Prothese</span></div>
+                <div class="jointlist" id="jointList">
+                  <div class="jrow"><span class="lv" style="background:var(--line)"></span><span class="n">wird geladen …</span><span class="g"> </span></div>
                 </div>
               </div>
             </div>
@@ -708,7 +705,7 @@
               <div class="supp-row" style="padding-top:2px"><div class="supp-ico" style="background:color-mix(in srgb,var(--vital) 14%,transparent)">⌚</div><div class="supp-meta"><div class="t">Geräte verbinden</div><div class="s">Fitbit Charge 6 · Smartwatch</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
               <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--supp) 14%,transparent)">🎯</div><div class="supp-meta"><div class="t">Meine Ziele</div><div class="s">Zielbereiche & Erinnerungen</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
               <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--joint) 14%,transparent)">📄</div><div class="supp-meta"><div class="t">Bericht für den Arzt</div><div class="s">PDF-Export der letzten 3 Monate</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
-              <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--pine) 14%,transparent)">🔒</div><div class="supp-meta"><div class="t">Daten & Privatsphäre</div><div class="s">Lokal gespeichert · deine Kontrolle</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
+              <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--pine) 14%,transparent)">🔒</div><div class="supp-meta"><div class="t">Daten & Privatsphäre</div><div class="s">Gerät & privater Server · deine Kontrolle</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
             </div>
             <p class="hint" style="text-align:center;margin-top:16px">VITARA ist ein Konzept-Entwurf und ersetzt keine ärztliche Beratung.</p>
           </section>
@@ -1005,6 +1002,8 @@
   function homeUpdate(){
     var greet=document.getElementById('homeGreet');
     if(greet){ try{ greet.textContent = new Date().toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long'}); }catch(e){} }
+    var sg=document.getElementById('suppGreet');
+    if(sg){ try{ sg.textContent = 'Heute · ' + new Date().toLocaleDateString('de-DE',{day:'numeric',month:'long'}); }catch(e){} }
 
     // Nahrungsergänzung heute (für Hero-Zeile & Tipp)
     var checks=document.querySelectorAll('.check[data-key^="supp-"]');
@@ -1083,8 +1082,31 @@
   var scale = document.getElementById('painScale');
   var painInfo = document.getElementById('painInfo');
   function schmerzFarbe(v){ return v>=6 ? 'var(--crit)' : v>=3 ? 'var(--warn)' : 'var(--good)'; }
+  function kurzGelenk(n){ var m=n.match(/^(Rechte[rs]?|Linke[rs]?)\s+(.+)$/); if(!m) return n;
+    return m[2].charAt(0).toUpperCase()+m[2].slice(1)+' '+(m[1].indexOf('Rechte')===0?'re.':'li.'); }
+  // Körperkarte + Liste aus den WIRKLICH eingetragenen Schmerzwerten (heute) aufbauen
+  function aktualisiereKarte(){
+    var liste=[];
+    document.querySelectorAll('#bodySvg .bpin').forEach(function(p){
+      var name=p.dataset.j;
+      if(name.indexOf('Prothese')>=0){ p.setAttribute('fill','var(--vital)'); p.setAttribute('r','8'); return; }
+      var v=ladeWert('schmerz.'+name);
+      if(v!==null){ var n=+v; p.setAttribute('fill', schmerzFarbe(n)); p.setAttribute('r', String(n>=6?9:n>=3?7.5:6)); liste.push({name:name,v:n}); }
+      else { p.setAttribute('fill','var(--line)'); p.setAttribute('r','6'); }
+    });
+    var box=document.getElementById('jointList'); if(!box) return;
+    liste.sort(function(a,b){ return b.v-a.v; });
+    var html='';
+    if(liste.length){ liste.slice(0,4).forEach(function(e){
+      html+='<div class="jrow"><span class="lv" style="background:'+schmerzFarbe(e.v)+'"></span><span class="n">'+kurzGelenk(e.name)+'</span><span class="g">'+e.v+'/10</span></div>';
+    }); }
+    else { html='<div class="jrow"><span class="lv" style="background:var(--line)"></span><span class="n">Heute noch nichts eingetragen</span><span class="g">–</span></div>'; }
+    html+='<div class="jrow"><span class="lv" style="background:var(--vital)"></span><span class="n">Hüfte re.</span><span class="g">Prothese</span></div>';
+    box.innerHTML=html;
+  }
   function zeigeSchmerz(){                                 // gespeicherten Wert des Gelenks anzeigen
     var wert = ladeWert('schmerz.' + aktuellesGelenk);
+    aktualisiereKarte();                                    // Karte & Liste an echte Daten anpassen
     if(scale){ scale.querySelectorAll('button').forEach(function(x){ x.classList.remove('sel'); x.style.background=''; });
       if(wert !== null){ var b = scale.querySelector('[data-v="'+wert+'"]'); if(b){ b.classList.add('sel'); b.style.background = schmerzFarbe(+wert); } }
     }
