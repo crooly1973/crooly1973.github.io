@@ -1009,8 +1009,13 @@
     var tf=berechneTagesform();
     var hrv=ladeWert('vital.hrv'), baseHrv=mittel(vitReihe('vital.hrv',30));
     var schlaf=ladeWert('vital.schlafMin');
+    // Luftdruck-Trend (jüngster bekannter Tag vs. Vortag), falls Wetter vorhanden
+    var druckJetzt=null, druckVor=null;
+    for(var dt=0; dt<3 && druckJetzt===null; dt++){ var p=wGet(datumMinus(dt),'wetter.druck'); if(p!==null){ druckJetzt=p; druckVor=wGet(datumMinus(dt+1),'wetter.druck'); } }
+    var druckFall = (druckJetzt!==null && druckVor!==null) ? (druckJetzt-druckVor) : null;
     var msg;
     if(maxV>=6) msg='Deine '+maxJoint+' meldet heute '+maxV+'/10. Wärme & sanfte Bewegung haben dir bisher geholfen. 🔥';
+    else if(druckFall!==null && druckFall<=-3) msg='Der Luftdruck ist um '+Math.round(Math.abs(druckFall))+' hPa gefallen – das spüren viele in den Gelenken. Heute helfen Wärme & sanfte Bewegung. 🌦️';
     else if(tf && tf.score<45) msg='Deine Tagesform ist heute niedrig ('+tf.score+'/100). Gönn dir einen ruhigeren Tag – Spazieren oder Sauna statt intensiv. 🌙';
     else if(hrv!==null && baseHrv!==null && (+hrv) < baseHrv*0.85) msg='Deine HRV liegt heute unter deinem Schnitt – oft ein Zeichen für weniger Erholung. Heute lieber ruhiger angehen. 〰️';
     else if(tf && tf.score>=70 && done<2) msg='Erholung top (Tagesform '+tf.score+'/100) – ein idealer Tag für dein Krafttraining! 💪';
