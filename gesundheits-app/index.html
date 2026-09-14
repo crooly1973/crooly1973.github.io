@@ -619,6 +619,26 @@
 
             <div class="disc" style="margin-top:14px">🦴 <b>Rechte Hüfte = künstliches Gelenk (seit Mai 2025).</b> Übungen bitte hüft-schonend und mit Physio/Arzt abgestimmt wählen. Die App dokumentiert nur — sie gibt keine medizinischen Anweisungen.</div>
 
+            <div class="sec-title" style="margin-top:20px">🌦️ Wetter & Gelenke</div>
+            <div class="card" id="wetterCard">
+              <div id="wetterLeer" style="font-size:12.5px;color:var(--ink-2);line-height:1.55">
+                Viele Menschen spüren Wetterwechsel in den Gelenken – besonders <b>fallenden Luftdruck</b>. Gib deinen Standort frei, dann lädt VITARA das lokale Wetter und sucht Zusammenhänge zu deinen Schmerz-Einträgen.
+                <div style="margin-top:11px"><button class="btn-save" id="wetterGeo" type="button" style="width:auto;padding:9px 16px">📍 Standort freigeben</button></div>
+                <div id="wetterGeoHint" style="font-size:11.5px;color:var(--ink-3);margin-top:9px"></div>
+              </div>
+              <div id="wetterBody" hidden>
+                <div class="rangebox" style="margin:0;padding:0;border:none">
+                  <div>Luftdruck<b id="wDruck">—</b></div>
+                  <div>Temperatur<b id="wTemp">—</b></div>
+                  <div>Luftfeuchte<b id="wLuftf">—</b></div>
+                </div>
+                <div id="wetterInsight" style="font-size:12.5px;color:var(--ink);line-height:1.55;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)">Sammle an ein paar Tagen Schmerz-Einträge – dann erkenne ich hier, ob das Wetter bei dir mitspielt.</div>
+                <canvas id="wetterChart" width="640" height="260" style="width:100%;height:130px;margin-top:12px"></canvas>
+                <div class="legend2"><span id="wetterLegend" style="color:var(--ink-3)">Schmerz (0–10) vs. Luftdruck · letzte 30 Tage</span></div>
+                <div style="font-size:11px;color:var(--ink-3);margin-top:8px"><a href="#" id="wetterRefresh" style="color:var(--pine);text-decoration:none;font-weight:700">↻ Wetter aktualisieren</a> <span id="wetterStand"></span> · Quelle: Open-Meteo</div>
+              </div>
+            </div>
+
             <div class="sec-title">Verlauf · <span id="jointVerlaufTitle">Rechte Schulter</span></div>
             <div class="card"><canvas id="jointChart" width="640" height="240" style="width:100%;height:120px"></canvas>
               <div class="legend2"><span id="jointLegend" style="color:var(--ink-3)">Schmerz 0–10 · letzte 30 Tage</span></div>
@@ -945,6 +965,7 @@
     try{ homeUpdate(); }catch(e){}
     try{ vitOverview(); drawVit(); }catch(e){}
     try{ drawJoint(); drawEx(); }catch(e){}
+    try{ wetterUpdate(); }catch(e){}
   }
 
   // Zählt die genommenen Präparate und aktualisiert Zahl + Balken
@@ -1490,7 +1511,113 @@
     line(ctx, mapPts(v,w,h,18), css('--pine'), 'color-mix(in srgb,'+css('--pine')+' 22%, transparent)');
     var pp=mapPts(v,w,h,18), last=pp[pp.length-1]; ctx.beginPath(); ctx.arc(last[0],last[1],5,0,7); ctx.fillStyle=css('--pine'); ctx.fill(); ctx.strokeStyle=css('--surface'); ctx.lineWidth=2.5; ctx.stroke();
     if(legende){ var letzter=v[v.length-1], diff=letzter-v[0]; legende.textContent='Gesamt (Sätze×Wdh) · '+v.length+' Einträge · zuletzt '+letzter+' ('+(diff>0?'▲ +'+diff:diff<0?'▼ '+diff:'±0')+')'; } }
-  function drawAll(){ drawVit(); vitOverview(); drawJoint(); drawEx(); }
+  // --- Wetter & Gelenke: Luftdruck/Temperatur/Luftfeuchte (Open-Meteo) + Korrelation mit Schmerz ---
+  var WETTER_TAGE = 92;
+  function geoLaden(){ try{ var s=localStorage.getItem('vitara.geo'); return s?JSON.parse(s):null; }catch(e){ return null; } }
+  function geoSpeichern(g){ try{ localStorage.setItem('vitara.geo', JSON.stringify(g)); }catch(e){} }
+  function wSet(datum,feld,wert){ try{ localStorage.setItem('vitara.'+datum+'.'+feld, String(wert)); }catch(e){} dbPush(feld, String(wert), datum); }
+  function wGet(datum,feld){ try{ var v=localStorage.getItem('vitara.'+datum+'.'+feld); return v!==null? +v : null; }catch(e){ return null; } }
+  function gelenkNamen(){ var out=[]; document.querySelectorAll('#bodySvg .bpin').forEach(function(p){ var n=p.dataset.j; if(n.indexOf('Prothese')<0) out.push(n); }); return out; }
+  function tagesSchmerz(datum){ var mx=null; gelenkNamen().forEach(function(n){ try{ var v=localStorage.getItem('vitara.'+datum+'.schmerz.'+n); if(v!==null){ var x=+v; if(mx===null||x>mx) mx=x; } }catch(e){} }); return mx; }
+  function pearson(xs,ys){ var n=xs.length; if(n<3) return null; var sx=0,sy=0,sxx=0,syy=0,sxy=0;
+    for(var i=0;i<n;i++){ sx+=xs[i]; sy+=ys[i]; sxx+=xs[i]*xs[i]; syy+=ys[i]*ys[i]; sxy+=xs[i]*ys[i]; }
+    var den=Math.sqrt((n*sxx-sx*sx)*(n*syy-sy*sy)); return den===0? null : (n*sxy-sx*sy)/den; }
+  function kommaEins(v){ return (Math.round(v*10)/10).toString().replace('.',','); }
+
+  function wetterHolen(g){
+    if(!g) return;
+    var url='https://api.open-meteo.com/v1/forecast?latitude='+g.lat+'&longitude='+g.lon+'&hourly=pressure_msl,temperature_2m,relative_humidity_2m&past_days='+WETTER_TAGE+'&forecast_days=1&timezone=auto';
+    fetch(url,{cache:'no-store'}).then(function(r){ return r.json(); }).then(function(d){
+      if(!d||!d.hourly||!d.hourly.time) return;
+      var t=d.hourly.time, pr=d.hourly.pressure_msl, tp=d.hourly.temperature_2m, hu=d.hourly.relative_humidity_2m;
+      var agg={};
+      for(var i=0;i<t.length;i++){ var tag=t[i].slice(0,10); if(!agg[tag]) agg[tag]={p:[],t:[],h:[]};
+        if(pr&&pr[i]!=null) agg[tag].p.push(pr[i]); if(tp&&tp[i]!=null) agg[tag].t.push(tp[i]); if(hu&&hu[i]!=null) agg[tag].h.push(hu[i]); }
+      var heuteStr=heute();
+      function mean(arr){ return arr.length? arr.reduce(function(x,y){return x+y;},0)/arr.length : null; }
+      Object.keys(agg).forEach(function(tag){ if(tag>heuteStr) return; var a=agg[tag];
+        var mp=mean(a.p), mt=mean(a.t), mh=mean(a.h);
+        if(mp!=null) wSet(tag,'wetter.druck', Math.round(mp*10)/10);
+        if(mt!=null) wSet(tag,'wetter.temp', Math.round(mt*10)/10);
+        if(mh!=null) wSet(tag,'wetter.luftf', Math.round(mh)); });
+      try{ localStorage.setItem('vitara.wetter.stand', new Date().toISOString()); }catch(e){}
+      wetterUpdate();
+    }).catch(function(){});
+  }
+
+  function wetterUpdate(){
+    var leer=document.getElementById('wetterLeer'), body=document.getElementById('wetterBody');
+    var g=geoLaden();
+    if(!g){ if(leer) leer.hidden=false; if(body) body.hidden=true; return; }
+    if(leer) leer.hidden=true; if(body) body.hidden=false;
+    function juengster(feld){ for(var t=0;t<7;t++){ var v=wGet(datumMinus(t),feld); if(v!==null) return {v:v,t:t}; } return null; }
+    var jp=juengster('wetter.druck'), jt=juengster('wetter.temp'), jh=juengster('wetter.luftf');
+    var eDruck=document.getElementById('wDruck'), eTemp=document.getElementById('wTemp'), eLuftf=document.getElementById('wLuftf');
+    if(eDruck){ if(jp){ var vor=wGet(datumMinus(jp.t+1),'wetter.druck'); var pfeil='';
+        if(vor!==null){ var dd=jp.v-vor; pfeil = dd<=-2? ' <small style="color:var(--crit)">▼</small>' : dd>=2? ' <small style="color:var(--good)">▲</small>' : ' <small style="color:var(--ink-3)">→</small>'; }
+        eDruck.innerHTML=Math.round(jp.v)+' <small>hPa</small>'+pfeil; } else eDruck.textContent='—'; }
+    if(eTemp) eTemp.innerHTML= jt? (kommaEins(jt.v)+' <small>°C</small>') : '—';
+    if(eLuftf) eLuftf.innerHTML= jh? (Math.round(jh.v)+' <small>%</small>') : '—';
+
+    var xsP=[], ysP=[], fallPain=[], restPain=[];
+    for(var t=90;t>=0;t--){ var dtm=datumMinus(t); var sm=tagesSchmerz(dtm); var pr2=wGet(dtm,'wetter.druck');
+      if(sm!==null && pr2!==null){ xsP.push(pr2); ysP.push(sm);
+        var vor2=wGet(datumMinus(t+1),'wetter.druck'); if(vor2!==null){ if((pr2-vor2)<=-2) fallPain.push(sm); else restPain.push(sm); } } }
+    var ins=document.getElementById('wetterInsight');
+    if(ins){
+      if(ysP.length<8){ ins.innerHTML='Bisher <b>'+ysP.length+'</b> Tag(e) mit Schmerz + Wetter erfasst. Ab ca. 8 gemeinsamen Tagen zeige ich hier, ob Luftdruck & Schmerz bei dir zusammenhängen.'; }
+      else {
+        var r=pearson(xsP,ysP), teil='';
+        if(fallPain.length>=3 && restPain.length>=3){
+          var mf=fallPain.reduce(function(a,b){return a+b;},0)/fallPain.length;
+          var mr=restPain.reduce(function(a,b){return a+b;},0)/restPain.length;
+          var diff=mf-mr;
+          if(diff>=0.5) teil='An Tagen mit <b>fallendem Luftdruck</b> lag dein Schmerz im Schnitt bei <b>'+kommaEins(mf)+'</b>/10 – sonst bei '+kommaEins(mr)+'/10. ';
+          else if(diff<=-0.5) teil='Bei dir ist der Schmerz an Tagen mit fallendem Luftdruck eher <b>niedriger</b> ('+kommaEins(mf)+' vs. '+kommaEins(mr)+'). ';
+          else teil='Zwischen fallendem und stabilem Luftdruck sehe ich bisher <b>kaum einen Unterschied</b> beim Schmerz. ';
+        }
+        if(r!==null){ var ar=Math.abs(r), staerke = ar<0.2?'kein erkennbarer':ar<0.4?'ein schwacher':ar<0.6?'ein deutlicher':'ein starker';
+          teil += 'Statistisch: '+staerke+' Zusammenhang (r='+kommaEins(r)+', '+ysP.length+' Tage).'; }
+        ins.innerHTML = teil + '<div style="font-size:11px;color:var(--ink-3);margin-top:6px">Hinweis: Zusammenhang ≠ Ursache – nur eine Beobachtung aus deinen Daten.</div>';
+      }
+    }
+    wetterDraw();
+    var stand=document.getElementById('wetterStand'); try{ var s=localStorage.getItem('vitara.wetter.stand'); if(s&&stand) stand.textContent='· Stand '+new Date(s).toLocaleString('de-DE',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}); }catch(e){}
+  }
+
+  function wetterDraw(){
+    var c=document.getElementById('wetterChart'); if(!c) return; var ctx=c.getContext('2d'); var w=c.width,h=c.height; ctx.clearRect(0,0,w,h);
+    ctx.strokeStyle=css('--line'); ctx.lineWidth=1; for(var gr=1;gr<4;gr++){ var yy=h/4*gr; ctx.beginPath(); ctx.moveTo(20,yy); ctx.lineTo(w-10,yy); ctx.stroke(); }
+    var pain=[], druck=[];
+    for(var t=29;t>=0;t--){ var dtm=datumMinus(t); pain.push(tagesSchmerz(dtm)); druck.push(wGet(dtm,'wetter.druck')); }
+    var leg=document.getElementById('wetterLegend');
+    var druckVorh=druck.filter(function(v){return v!==null;});
+    if(druckVorh.length<2){ if(leg) leg.textContent='Wetter wird geladen …'; return; }
+    var pmn=Math.min.apply(0,druckVorh)-3, pmx=Math.max.apply(0,druckVorh)+3;
+    function pts(vals, mn, mx){ var out=[]; for(var i=0;i<vals.length;i++){ if(vals[i]===null) continue; var x=20 + i/(vals.length-1)*(w-30); var y=h-14-(vals[i]-mn)/((mx-mn)||1)*(h-28); out.push([x,y]); } return out; }
+    line(ctx,pts(druck,pmn,pmx),css('--vital'),'color-mix(in srgb,'+css('--vital')+' 16%, transparent)');
+    var painVorh=pain.filter(function(v){return v!==null;});
+    if(painVorh.length){ var pPain=pts(pain,0,10); line(ctx,pPain,css('--joint'),null);
+      pPain.forEach(function(pt){ ctx.beginPath(); ctx.arc(pt[0],pt[1],3.5,0,7); ctx.fillStyle=css('--joint'); ctx.fill(); }); }
+    if(leg) leg.innerHTML='<span style="color:var(--joint)">■</span> Schmerz 0–10 &nbsp; <span style="color:var(--vital)">■</span> Luftdruck '+Math.round(pmn+3)+'–'+Math.round(pmx-3)+' hPa · 30 Tage';
+  }
+
+  function wetterInit(){
+    var btn=document.getElementById('wetterGeo'), hint=document.getElementById('wetterGeoHint');
+    if(btn){ btn.addEventListener('click', function(){
+      if(!navigator.geolocation){ if(hint) hint.textContent='Dein Browser unterstützt keine Standortbestimmung.'; return; }
+      if(hint) hint.textContent='Standort wird bestimmt …';
+      navigator.geolocation.getCurrentPosition(function(pos){
+        var ng={lat:Math.round(pos.coords.latitude*1000)/1000, lon:Math.round(pos.coords.longitude*1000)/1000};
+        geoSpeichern(ng); if(hint) hint.textContent='Standort gespeichert – Wetter wird geladen …'; wetterHolen(ng);
+      }, function(err){ if(hint) hint.textContent='Standort nicht verfügbar ('+(err&&err.message?err.message:'abgelehnt')+'). Später erneut versuchen.'; });
+    }); }
+    var refr=document.getElementById('wetterRefresh'); if(refr){ refr.addEventListener('click', function(e){ e.preventDefault(); var gg=geoLaden(); if(gg) wetterHolen(gg); }); }
+    var g=geoLaden(); if(g){ wetterUpdate(); wetterHolen(g); }
+  }
+
+  function drawAll(){ drawVit(); vitOverview(); drawJoint(); drawEx(); try{ wetterDraw(); }catch(e){} }
+  wetterInit();
   drawAll();
   window.addEventListener('resize', function(){ setTimeout(drawAll,60); });
 })();
