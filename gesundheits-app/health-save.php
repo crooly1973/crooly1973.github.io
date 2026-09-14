@@ -17,7 +17,7 @@ $wert  = isset($_GET['wert'])  ? $_GET['wert']  : '';
 
 if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $datum)) { echo json_encode(array('ok' => false, 'error' => 'datum')); exit; }
 
-$erlaubt = array('schmerz.', 'exercise-', 'reps.', 'sets.', 'supp-', 'joint-', 'vital.');
+$erlaubt = array('schmerz.', 'exercise-', 'reps.', 'sets.', 'supp-', 'joint-', 'vital.', 'wetter.');
 $ok = false; foreach ($erlaubt as $pfx) { if (strpos($feld, $pfx) === 0) { $ok = true; break; } }
 if (!$ok || strlen($feld) > 80 || strlen($wert) > 40) { echo json_encode(array('ok' => false, 'error' => 'feld')); exit; }
 
