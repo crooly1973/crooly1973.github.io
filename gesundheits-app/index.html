@@ -431,6 +431,16 @@
               </div>
             </div>
 
+            <div class="sec-title" id="homeWetterTitle" hidden>Wetter heute <a href="#" data-goto="joints">Details ›</a></div>
+            <div class="card clickable" id="homeWetterCard" data-goto="joints" hidden>
+              <div class="rangebox" style="margin:0;padding:0;border:none">
+                <div>Luftdruck<b id="hwDruck">—</b></div>
+                <div>Temperatur<b id="hwTemp">—</b></div>
+                <div>Luftfeuchte<b id="hwLuftf">—</b></div>
+              </div>
+              <div id="hwHint" style="font-size:12px;color:var(--ink-2);line-height:1.45;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)"></div>
+            </div>
+
             <div class="sec-title">Gut für die Gelenke heute <a href="#" data-goto="joints">Eintragen ›</a></div>
             <div class="card clickable" data-goto="joints">
               <div class="supp-row" style="padding-top:2px">
@@ -1025,6 +1035,30 @@
     else msg='Stark – heute schon alles im Blick: Präparate, Training und Werte. Weiter so! 🌊';
     el.innerHTML='<b>Tipp für heute:</b> '+msg;
   }
+  // Startseiten-Wetterkachel (nur sichtbar, wenn Wetterdaten vorhanden sind)
+  function homeWetter(){
+    var titel=document.getElementById('homeWetterTitle'), karte=document.getElementById('homeWetterCard');
+    if(!karte) return;
+    function juengst(feld){ for(var t=0;t<7;t++){ var v=wGet(datumMinus(t),feld); if(v!==null) return {v:v,t:t}; } return null; }
+    var jp=juengst('wetter.druck');
+    if(!jp){ if(titel) titel.hidden=true; karte.hidden=true; return; }   // kein Wetter → Kachel ausblenden
+    if(titel) titel.hidden=false; karte.hidden=false;
+    var jt=juengst('wetter.temp'), jh=juengst('wetter.luftf');
+    var vor=wGet(datumMinus(jp.t+1),'wetter.druck'), dd = vor!==null ? (jp.v-vor) : null;
+    var pfeil='', trend='stabil';
+    if(dd!==null){ if(dd<=-2){ pfeil=' <small style="color:var(--crit)">▼</small>'; trend='fallend'; }
+      else if(dd>=2){ pfeil=' <small style="color:var(--good)">▲</small>'; trend='steigend'; }
+      else { pfeil=' <small style="color:var(--ink-3)">→</small>'; trend='stabil'; } }
+    var eD=document.getElementById('hwDruck'), eT=document.getElementById('hwTemp'), eL=document.getElementById('hwLuftf');
+    if(eD) eD.innerHTML=Math.round(jp.v)+' <small>hPa</small>'+pfeil;
+    if(eT) eT.innerHTML= jt? (kommaEins(jt.v)+' <small>°C</small>') : '—';
+    if(eL) eL.innerHTML= jh? (Math.round(jh.v)+' <small>%</small>') : '—';
+    var hint=document.getElementById('hwHint');
+    if(hint){ var txt = trend==='fallend' ? '🌦️ Luftdruck fällt – das spüren viele in den Gelenken. Wärme & sanfte Bewegung tun jetzt gut.'
+      : trend==='steigend' ? '⛅ Luftdruck steigt – meist angenehm für die Gelenke.'
+      : '🌤️ Luftdruck stabil – gute Bedingungen für die Gelenke.';
+      hint.textContent = txt; }
+  }
   function homeUpdate(){
     var greet=document.getElementById('homeGreet');
     if(greet){ try{ greet.textContent = new Date().toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long'}); }catch(e){} }
@@ -1082,6 +1116,7 @@
     }
 
     homeTipp(taken,total);
+    homeWetter();
   }
 
   // Knöpfe MIT Namensschild (data-key): merken sich ihren Stand
