@@ -220,6 +220,29 @@
   .fab-item .fi { font-size: 18px; width: 24px; text-align: center; flex: none; }
   .fab-menu[hidden], .fab-backdrop[hidden] { display: none !important; }
 
+  /* Arzt-Bericht (druckbar, bewusst hell & neutral – auch im Dark-Mode) */
+  .reportView { position: fixed; inset: 0; z-index: 60; background: #ffffff; color: #14232e; overflow-y: auto; padding: 16px 20px 48px; font-size: 13px; line-height: 1.5; }
+  .reportView[hidden] { display: none !important; }
+  .reportView h1 { font-size: 21px; margin: 4px 0 2px; letter-spacing: -.01em; }
+  .reportView h2 { font-size: 14px; margin: 20px 0 6px; padding-bottom: 5px; border-bottom: 2px solid #06c2cf; color: #0a5b66; }
+  .reportView .rmeta { color: #5a6b76; font-size: 12px; }
+  .reportView table { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 12px; }
+  .reportView th, .reportView td { text-align: left; padding: 5px 7px; border-bottom: 1px solid #e6ebee; }
+  .reportView th { color: #5a6b76; font-weight: 700; background: #f4f7f9; }
+  .reportView td.num, .reportView th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .reportView .rnote { font-size: 12px; color: #5a6b76; margin: 6px 0 0; }
+  .reportView .rdisc { margin-top: 20px; font-size: 11px; color: #6a7a84; border-top: 1px solid #dfe5e8; padding-top: 10px; }
+  .report-actions { position: sticky; top: 0; display: flex; gap: 10px; justify-content: flex-end; background: #ffffff; padding: 4px 0 12px; }
+  .report-actions button { font: inherit; font-weight: 700; font-size: 13px; border-radius: 10px; padding: 9px 15px; cursor: pointer; border: 1px solid #c6d0d6; background: #fff; color: #14232e; }
+  .report-actions .prim { background: #06c2cf; border-color: #06c2cf; color: #fff; }
+  @media print {
+    body * { visibility: hidden !important; }
+    .reportView, .reportView * { visibility: visible !important; }
+    .reportView { position: absolute; left: 0; top: 0; width: 100%; padding: 0; overflow: visible; }
+    .report-actions { display: none !important; }
+    @page { margin: 15mm; }
+  }
+
   .foot-note { text-align: center; color: var(--ink-3); font-size: 12.5px; margin-top: 26px; }
 
   /* Knowledge / Wissen */
@@ -734,7 +757,7 @@
             <div class="card stack">
               <div class="supp-row" style="padding-top:2px"><div class="supp-ico" style="background:color-mix(in srgb,var(--vital) 14%,transparent)">⌚</div><div class="supp-meta"><div class="t">Geräte verbinden</div><div class="s">Fitbit Charge 6 · Smartwatch</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
               <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--supp) 14%,transparent)">🎯</div><div class="supp-meta"><div class="t">Meine Ziele</div><div class="s">Zielbereiche & Erinnerungen</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
-              <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--joint) 14%,transparent)">📄</div><div class="supp-meta"><div class="t">Bericht für den Arzt</div><div class="s">PDF-Export der letzten 3 Monate</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
+              <div class="supp-row clickable" id="reportOpen" style="cursor:pointer"><div class="supp-ico" style="background:color-mix(in srgb,var(--joint) 14%,transparent)">📄</div><div class="supp-meta"><div class="t">Bericht für den Arzt</div><div class="s">PDF-Export der letzten 3 Monate</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
               <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--pine) 14%,transparent)">🔒</div><div class="supp-meta"><div class="t">Daten & Privatsphäre</div><div class="s">Gerät & privater Server · deine Kontrolle</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
             </div>
             <p class="hint" style="text-align:center;margin-top:16px">VITARA ist ein Konzept-Entwurf und ersetzt keine ärztliche Beratung.</p>
@@ -786,6 +809,14 @@
     </div>
   </div>
   <p class="foot-note">Interaktiver Konzept-Prototyp · Tabs, Häkchen, Zeiträume und die Körperkarte reagieren auf Klicks.</p>
+</div>
+
+<div class="reportView" id="reportView" hidden>
+  <div class="report-actions">
+    <button class="prim" id="reportPrint">🖨️ Drucken / Als PDF sichern</button>
+    <button id="reportClose">Schließen</button>
+  </div>
+  <div id="reportBody"></div>
 </div>
 
 <script>
@@ -1655,6 +1686,92 @@
     var refr=document.getElementById('wetterRefresh'); if(refr){ refr.addEventListener('click', function(e){ e.preventDefault(); var gg=geoLaden(); if(gg) wetterHolen(gg); }); }
     var g=geoLaden(); if(g){ wetterUpdate(); wetterHolen(g); }
   }
+
+  // --- Arzt-Bericht: druckbare Zusammenfassung der letzten 90 Tage ---
+  function statReihe(arr){ var f=[],last=null; for(var i=0;i<arr.length;i++){ if(arr[i]!==null){ f.push(arr[i]); last=arr[i]; } }
+    if(!f.length) return null;
+    return { n:f.length, min:Math.min.apply(0,f), max:Math.max.apply(0,f), avg:f.reduce(function(a,b){return a+b;},0)/f.length, last:last }; }
+  function fmtNum(v,dec){ return dec ? kommaEins(v) : nfmt(Math.round(v)); }
+  function trendWort(arr){ var f=[]; for(var i=0;i<arr.length;i++){ if(arr[i]!==null) f.push(arr[i]); }
+    if(f.length<4) return '–'; var hh=Math.floor(f.length/2); var a=f.slice(0,hh), b=f.slice(f.length-hh);
+    var d=(b.reduce(function(x,y){return x+y;},0)/b.length)-(a.reduce(function(x,y){return x+y;},0)/a.length);
+    return d<=-0.5?'↓ abnehmend':d>=0.5?'↑ zunehmend':'→ stabil'; }
+  function escH(s){ return String(s).replace(/[&<>]/g,function(c){return c==='&'?'&amp;':c==='<'?'&lt;':'&gt;';}); }
+
+  function berichtBauen(){
+    var tage=90;
+    var vonD=new Date(); vonD.setDate(vonD.getDate()-(tage-1));
+    var von=vonD.toLocaleDateString('de-DE'), bis=new Date().toLocaleDateString('de-DE');
+    var jetzt=new Date().toLocaleString('de-DE',{day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    var H=[];
+    H.push('<h1>VITARA · Gesundheitsbericht</h1>');
+    H.push('<div class="rmeta">Oliver Rock · Zeitraum '+von+' – '+bis+' (letzte 90 Tage) · erstellt '+jetzt+'</div>');
+    H.push('<div class="rmeta">Bekannt: rechte Hüfte künstliches Gelenk (seit Mai 2025).</div>');
+
+    var vitM=[
+      {l:'Ruhepuls', k:'vital.puls', u:'bpm'},
+      {l:'HRV', k:'vital.hrv', u:'ms'},
+      {l:'Atemfrequenz', k:'vital.atem', u:'/min', dec:true},
+      {l:'Schlaf', k:'vital.schlafMin', u:'h', teilen:60, dec:true},
+      {l:'Schritte', k:'vital.schritte', u:''},
+      {l:'Aktivzonenminuten', k:'vital.azm', u:'Min.'}
+    ];
+    H.push('<h2>Vitalwerte (Fitbit Charge 6)</h2>');
+    var vRows='', anyVit=false;
+    vitM.forEach(function(m){ var arr=vitReihe(m.k,tage); if(m.teilen) arr=arr.map(function(v){return v===null?null:v/m.teilen;});
+      var s=statReihe(arr); if(!s) return; anyVit=true;
+      vRows+='<tr><td>'+m.l+'</td><td class="num">'+fmtNum(s.avg,m.dec)+'</td><td class="num">'+fmtNum(s.min,m.dec)+'</td><td class="num">'+fmtNum(s.max,m.dec)+'</td><td class="num">'+fmtNum(s.last,m.dec)+'</td><td class="num">'+s.n+'</td><td>'+m.u+'</td></tr>'; });
+    if(anyVit) H.push('<table><tr><th>Wert</th><th class="num">Ø</th><th class="num">min</th><th class="num">max</th><th class="num">zuletzt</th><th class="num">Tage</th><th>Einheit</th></tr>'+vRows+'</table>');
+    else H.push('<p class="rnote">Noch keine Vitalwerte im Zeitraum erfasst.</p>');
+
+    H.push('<h2>Gelenkschmerz (0–10, selbst eingetragen)</h2>');
+    var gRows='', anyG=false;
+    gelenkNamen().forEach(function(n){ var arr=vitReihe('schmerz.'+n,tage); var s=statReihe(arr); if(!s) return; anyG=true;
+      gRows+='<tr><td>'+escH(n)+'</td><td class="num">'+kommaEins(s.avg)+'</td><td class="num">'+s.max+'</td><td class="num">'+s.last+'</td><td>'+trendWort(arr)+'</td><td class="num">'+s.n+'</td></tr>'; });
+    if(anyG) H.push('<table><tr><th>Gelenk</th><th class="num">Ø</th><th class="num">max</th><th class="num">zuletzt</th><th>Trend</th><th class="num">Einträge</th></tr>'+gRows+'</table>');
+    else H.push('<p class="rnote">Noch keine Schmerz-Einträge im Zeitraum.</p>');
+
+    H.push('<h2>Wetter &amp; Schmerz</h2>');
+    var xs=[],ys=[],fall=[],rest=[];
+    for(var t=tage;t>=0;t--){ var dtm=datumMinus(t); var sm=tagesSchmerz(dtm); var pr=wGet(dtm,'wetter.druck');
+      if(sm!==null&&pr!==null){ xs.push(pr); ys.push(sm); var vor=wGet(datumMinus(t+1),'wetter.druck'); if(vor!==null){ if((pr-vor)<=-2) fall.push(sm); else rest.push(sm); } } }
+    if(ys.length<8){ H.push('<p class="rnote">Für eine belastbare Aussage sind noch zu wenige gemeinsame Tage erfasst ('+ys.length+').</p>'); }
+    else { var r=pearson(xs,ys); var txt='';
+      if(fall.length>=3&&rest.length>=3){ var mf=fall.reduce(function(a,b){return a+b;},0)/fall.length, mr=rest.reduce(function(a,b){return a+b;},0)/rest.length;
+        txt='Schmerz an Tagen mit fallendem Luftdruck: Ø '+kommaEins(mf)+'/10; sonst Ø '+kommaEins(mr)+'/10. '; }
+      if(r!==null){ var ar=Math.abs(r), st=ar<0.2?'kein erkennbarer':ar<0.4?'schwacher':ar<0.6?'deutlicher':'starker'; txt+='Statistischer Zusammenhang: '+st+' (r='+kommaEins(r)+', '+ys.length+' gemeinsame Tage).'; }
+      H.push('<p class="rnote">'+txt+' <i>Zusammenhang bedeutet nicht Ursache.</i></p>'); }
+
+    H.push('<h2>Nahrungsergänzung (Einnahme letzte 30 Tage)</h2>');
+    var sRows='', anyS=false;
+    document.querySelectorAll('#v-supp .check[data-key^="supp-"]').forEach(function(chk){ var key=chk.dataset.key;
+      var row=chk.closest('.supp-row'); var tEl=row?row.querySelector('.t'):null; var name=tEl?tEl.textContent:key;
+      var genommen=0; for(var t=0;t<30;t++){ try{ if(localStorage.getItem('vitara.'+datumMinus(t)+'.'+key)==='1') genommen++; }catch(e){} }
+      anyS=true; sRows+='<tr><td>'+escH(name)+'</td><td class="num">'+genommen+' / 30</td><td class="num">'+Math.round(genommen/30*100)+' %</td></tr>'; });
+    if(anyS) H.push('<table><tr><th>Präparat</th><th class="num">Tage genommen</th><th class="num">Quote</th></tr>'+sRows+'</table>');
+    else H.push('<p class="rnote">Keine Präparate hinterlegt.</p>');
+
+    H.push('<h2>Krafttraining</h2>');
+    var exKeys=['exercise-liegestuetz','exercise-kniebeugen','exercise-bizeps','exercise-schulter'];
+    var komplett=0; for(var tk=0;tk<tage;tk++){ var dd=datumMinus(tk); if(exKeys.every(function(k){ try{return localStorage.getItem('vitara.'+dd+'.'+k)==='1';}catch(e){return false;} })) komplett++; }
+    H.push('<p class="rnote">Komplette Einheiten (alle Übungen) in 90 Tagen: <b>'+komplett+'</b> · Ø '+kommaEins(komplett/(tage/7))+' pro Woche.</p>');
+    var exRows=''; document.querySelectorAll('#v-training .check[data-key^="exercise-"]').forEach(function(chk){ var key=chk.dataset.key;
+      var row=chk.closest('.supp-row'); var tEl=row?row.querySelector('.t'):null; var name=tEl?tEl.textContent:key;
+      var reps=null,sets=null; for(var t=0;t<tage&&reps===null;t++){ try{ var rr=localStorage.getItem('vitara.'+datumMinus(t)+'.reps.'+key); if(rr!==null){ reps=rr; sets=localStorage.getItem('vitara.'+datumMinus(t)+'.sets.'+key); } }catch(e){} }
+      exRows+='<tr><td>'+escH(name)+'</td><td class="num">'+(reps!==null?((sets||'?')+' × '+reps):'–')+'</td></tr>'; });
+    if(exRows) H.push('<table><tr><th>Übung</th><th class="num">zuletzt (Sätze × Wdh)</th></tr>'+exRows+'</table>');
+
+    H.push('<div class="rdisc">Quellen: Vitalwerte von Fitbit Charge 6 (Google Health), Wetter von Open-Meteo; Schmerz, Präparate und Training selbst eingetragen. Dieser Bericht dokumentiert ausschließlich die erfassten bzw. vom Gerät gelieferten Werte und stellt <b>keine ärztliche Bewertung oder Diagnose</b> dar. „Tagesform" und Ampeln sind grobe Orientierungswerte.</div>');
+
+    var body=document.getElementById('reportBody'); if(body) body.innerHTML=H.join('');
+  }
+  (function(){
+    var open=document.getElementById('reportOpen'), view=document.getElementById('reportView');
+    var pr=document.getElementById('reportPrint'), cl=document.getElementById('reportClose');
+    if(open&&view){ open.addEventListener('click', function(){ berichtBauen(); view.hidden=false; try{ view.scrollTop=0; }catch(e){} }); }
+    if(cl&&view){ cl.addEventListener('click', function(){ view.hidden=true; }); }
+    if(pr){ pr.addEventListener('click', function(){ window.print(); }); }
+  })();
 
   function drawAll(){ drawVit(); vitOverview(); drawJoint(); drawEx(); try{ wetterDraw(); }catch(e){} }
   wetterInit();
