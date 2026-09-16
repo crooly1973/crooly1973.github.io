@@ -1788,15 +1788,15 @@
     var anBtn=document.getElementById('testDatenAn'), wegBtn=document.getElementById('testDatenWeg'), info=document.getElementById('testDatenInfo');
     if(!anBtn) return;
     var REG='vitara.testdaten';                 // Registry der angelegten Schlüssel
-    var testGelenke=[{n:'Rechte Schulter',b:4},{n:'Nacken / HWS',b:3},{n:'Rechtes Sprunggelenk',b:3}];
-    function snapEven(v){ return Math.max(0, Math.min(10, Math.round(v/2)*2)); }
+    var testGelenke=[{n:'Rechte Schulter',b:6},{n:'Nacken / HWS',b:5},{n:'Rechtes Sprunggelenk',b:5}];
+    function snapEven(v){ return Math.max(2, Math.min(10, Math.round(v/2)*2)); }
     function anlegen(){
       var keys=[]; var tage=14;
       for(var t=1;t<=tage;t++){ var dtm=datumMinus(t); var druck=wGet(dtm,'wetter.druck');
         testGelenke.forEach(function(g){
           var wert = g.b;
-          if(druck!==null) wert = g.b + (1015 - druck)/5;   // niedriger Druck -> mehr Schmerz
-          wert = snapEven(wert + (Math.random()*2 - 1));      // etwas Streuung
+          if(druck!==null) wert = g.b + (1015 - druck)/6;   // niedriger Druck -> mehr Schmerz
+          wert = snapEven(wert + (Math.random()*2 - 1));      // etwas Streuung, min. 2 (klar sichtbar)
           var k='vitara.'+dtm+'.schmerz.'+g.n;
           try{ localStorage.setItem(k, String(wert)); keys.push(k); }catch(e){}
         });
