@@ -1,0 +1,8 @@
+# VITARA – HTML nicht cachen, damit Updates sofort ankommen.
+# Durch <IfModule> abgesichert: fehlt das Modul, passiert einfach nichts (kein Fehler).
+<IfModule mod_headers.c>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+  </FilesMatch>
+</IfModule>

@@ -36,3 +36,18 @@ jobs:
           remote_path: '/Oliver/gesundheitsapp'   # Ziel = Dokumenten-Wurzel von oliver-rock.de
           sftp_only: true
           delete_remote_files: false          # nichts anderes auf dem Webspace anfassen
+
+      # Der *-Glob oben überspringt versteckte Dateien. Die .htaccess daher separat hochladen.
+      # continue-on-error: schlägt dieser Zusatzschritt fehl, bleibt der Haupt-Deploy trotzdem grün.
+      - name: .htaccess separat hochladen (Dotfile)
+        continue-on-error: true
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        with:
+          server:   ${{ secrets.IONOS_FTP_SERVER }}
+          username: ${{ secrets.IONOS_FTP_USER }}
+          password: ${{ secrets.IONOS_FTP_PASSWORD }}
+          port: 22
+          local_path: './dist/.htaccess'
+          remote_path: '/Oliver/gesundheitsapp'
+          sftp_only: true
+          delete_remote_files: false
