@@ -1790,23 +1790,26 @@
     var REG='vitara.testdaten';                 // Registry der angelegten Schlüssel
     var testGelenke=[{n:'Rechte Schulter',b:6},{n:'Nacken / HWS',b:5},{n:'Rechtes Sprunggelenk',b:5}];
     function snapEven(v){ return Math.max(2, Math.min(10, Math.round(v/2)*2)); }
+    function entferneTest(){ var n=0; try{ var arr=JSON.parse(localStorage.getItem(REG)||'[]'); if(arr&&arr.length){ arr.forEach(function(k){ try{ localStorage.removeItem(k); n++; }catch(e){} }); } localStorage.removeItem(REG); }catch(e){} return n; }
     function anlegen(){
-      var keys=[]; var tage=14;
-      for(var t=1;t<=tage;t++){ var dtm=datumMinus(t); var druck=wGet(dtm,'wetter.druck');
+      entferneTest();                              // alte Testdaten sauber entfernen (auch heutiger Testwert)
+      var keys=[]; var tage=14; var heuteUeber=0;
+      for(var t=0;t<=tage;t++){ var dtm=datumMinus(t); var druck=wGet(dtm,'wetter.druck');
         testGelenke.forEach(function(g){
+          var k='vitara.'+dtm+'.schmerz.'+g.n;
+          if(t===0){ var da=null; try{ da=localStorage.getItem(k); }catch(e){} if(da!==null){ heuteUeber++; return; } }  // echten heutigen Eintrag nicht überschreiben
           var wert = g.b;
           if(druck!==null) wert = g.b + (1015 - druck)/6;   // niedriger Druck -> mehr Schmerz
           wert = snapEven(wert + (Math.random()*2 - 1));      // etwas Streuung, min. 2 (klar sichtbar)
-          var k='vitara.'+dtm+'.schmerz.'+g.n;
           try{ localStorage.setItem(k, String(wert)); keys.push(k); }catch(e){}
         });
       }
       try{ localStorage.setItem(REG, JSON.stringify(keys)); }catch(e){}
       try{ refreshFromStorage(); }catch(e){}
-      if(info) info.innerHTML='✓ '+tage+' Tage Beispieldaten für 3 Gelenke angelegt. Schau in <b>Gelenke</b> (Körperkarte, Verlauf, Wetter) und in den <b>Arzt-Bericht</b>.';
+      if(info) info.innerHTML='✓ 15 Tage Beispieldaten (inkl. heute) für 3 Gelenke angelegt – jetzt auch auf der <b>Körperkarte</b> sichtbar.' + (heuteUeber? ' (Dein echter heutiger Eintrag blieb erhalten.)' : '');
     }
     function loeschen(){
-      var n=0; try{ var arr=JSON.parse(localStorage.getItem(REG)||'[]'); if(arr&&arr.length){ arr.forEach(function(k){ try{ localStorage.removeItem(k); n++; }catch(e){} }); } localStorage.removeItem(REG); }catch(e){}
+      var n=entferneTest();
       try{ refreshFromStorage(); }catch(e){}
       if(info) info.textContent = n? ('✓ Testdaten gelöscht ('+n+' Einträge entfernt).') : 'Es waren keine Testdaten vorhanden.';
     }
