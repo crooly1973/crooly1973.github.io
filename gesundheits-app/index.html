@@ -770,7 +770,7 @@
               <div id="testDatenInfo" style="font-size:11.5px;color:var(--ink-3);margin-top:9px"></div>
             </div>
 
-            <p class="hint" style="text-align:center;margin-top:16px">VITARA ist ein Konzept-Entwurf und ersetzt keine ärztliche Beratung.<br><span style="color:var(--ink-3);font-size:11px">Version 55 · 16.09.2026</span></p>
+            <p class="hint" style="text-align:center;margin-top:16px">VITARA ist ein Konzept-Entwurf und ersetzt keine ärztliche Beratung.<br><span style="color:var(--ink-3);font-size:11px">Version 56 · 16.09.2026</span></p>
           </section>
 
           <div class="fab-backdrop" id="fabBackdrop" hidden></div>
@@ -1788,7 +1788,7 @@
     var anBtn=document.getElementById('testDatenAn'), wegBtn=document.getElementById('testDatenWeg'), info=document.getElementById('testDatenInfo');
     if(!anBtn) return;
     var REG='vitara.testdaten';                 // Registry der angelegten Schlüssel
-    var testGelenke=[{n:'Rechte Schulter',b:6},{n:'Nacken / HWS',b:5},{n:'Rechtes Sprunggelenk',b:5}];
+    var testGelenke=[{n:'Rechte Schulter',b:7},{n:'Nacken / HWS',b:5},{n:'Rechtes Sprunggelenk',b:4}];
     function snapEven(v){ return Math.max(2, Math.min(10, Math.round(v/2)*2)); }
     function entferneTest(){ var n=0; try{ var arr=JSON.parse(localStorage.getItem(REG)||'[]'); if(arr&&arr.length){ arr.forEach(function(k){ try{ localStorage.removeItem(k); n++; }catch(e){} }); } localStorage.removeItem(REG); }catch(e){} return n; }
     function anlegen(){
@@ -1798,9 +1798,8 @@
         testGelenke.forEach(function(g){
           var k='vitara.'+dtm+'.schmerz.'+g.n;
           if(t===0){ var da=null; try{ da=localStorage.getItem(k); }catch(e){} if(da!==null){ heuteUeber++; return; } }  // echten heutigen Eintrag nicht überschreiben
-          var wert = g.b;
-          if(druck!==null) wert = g.b + (1015 - druck)/6;   // niedriger Druck -> mehr Schmerz
-          wert = snapEven(wert + (Math.random()*2 - 1));      // etwas Streuung, min. 2 (klar sichtbar)
+          var term = (druck!==null) ? Math.max(-1.5, Math.min(2.5, (1015 - druck)/10)) : 0;  // niedriger Druck -> mehr Schmerz, Einfluss begrenzt
+          var wert = snapEven(g.b + term + (Math.random()*2 - 1));  // etwas Streuung, min. 2
           try{ localStorage.setItem(k, String(wert)); keys.push(k); }catch(e){}
         });
       }
