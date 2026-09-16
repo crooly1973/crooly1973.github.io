@@ -454,6 +454,9 @@
               </div>
             </div>
 
+            <div class="sec-title">🧠 Deine Auswertung <a href="#" id="ausToggle" style="display:none">alle ›</a></div>
+            <div class="stack" id="ausListe"></div>
+
             <div class="sec-title" id="homeWetterTitle" hidden>Wetter heute <a href="#" data-goto="joints">Details ›</a></div>
             <div class="card clickable" id="homeWetterCard" data-goto="joints" hidden>
               <div class="rangebox" style="margin:0;padding:0;border:none">
@@ -760,17 +763,7 @@
               <div class="supp-row clickable" id="reportOpen" style="cursor:pointer"><div class="supp-ico" style="background:color-mix(in srgb,var(--joint) 14%,transparent)">📄</div><div class="supp-meta"><div class="t">Bericht für den Arzt</div><div class="s">PDF-Export der letzten 3 Monate</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
               <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--pine) 14%,transparent)">🔒</div><div class="supp-meta"><div class="t">Daten & Privatsphäre</div><div class="s">Gerät & privater Server · deine Kontrolle</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
             </div>
-            <div class="sec-title" style="margin-top:20px">🧪 Testdaten</div>
-            <div class="card">
-              <div style="font-size:12.5px;color:var(--ink-2);line-height:1.5">Nur zum Ausprobieren: legt für die letzten 14 Tage Beispiel-Schmerzwerte an (Schulter, Nacken, Sprunggelenk) – <b>nur lokal auf diesem Gerät</b>, nicht auf dem Server. Damit siehst du Körperkarte, Verlauf, Wetter-Auswertung und den Arzt-Bericht sofort in Aktion.</div>
-              <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
-                <button class="btn-save" id="testDatenAn" type="button" style="width:auto;padding:9px 15px">Beispieldaten anlegen</button>
-                <button class="btn-save" id="testDatenWeg" type="button" style="width:auto;padding:9px 15px;background:var(--surface-2);color:var(--ink);border:1px solid var(--line)">Testdaten löschen</button>
-              </div>
-              <div id="testDatenInfo" style="font-size:11.5px;color:var(--ink-3);margin-top:9px"></div>
-            </div>
-
-            <p class="hint" style="text-align:center;margin-top:16px">VITARA ist ein Konzept-Entwurf und ersetzt keine ärztliche Beratung.<br><span style="color:var(--ink-3);font-size:11px">Version 57 · 16.09.2026</span></p>
+            <p class="hint" style="text-align:center;margin-top:16px">VITARA ist ein Konzept-Entwurf und ersetzt keine ärztliche Beratung.<br><span style="color:var(--ink-3);font-size:11px">Version 58 · 16.09.2026</span></p>
           </section>
 
           <div class="fab-backdrop" id="fabBackdrop" hidden></div>
@@ -1158,6 +1151,7 @@
 
     homeTipp(taken,total);
     homeWetter();
+    try{ renderAus(); }catch(e){}
   }
 
   // Knöpfe MIT Namensschild (data-key): merken sich ihren Stand
@@ -1783,37 +1777,51 @@
     if(pr){ pr.addEventListener('click', function(){ window.print(); }); }
   })();
 
-  // --- Testdaten: Beispiel-Schmerzwerte (nur lokal, jederzeit löschbar) ---
+  // Einmaliges Aufräumen: evtl. früher angelegte Testdaten (nur lokal) wieder entfernen.
   (function(){
-    var anBtn=document.getElementById('testDatenAn'), wegBtn=document.getElementById('testDatenWeg'), info=document.getElementById('testDatenInfo');
-    if(!anBtn) return;
-    var REG='vitara.testdaten';                 // Registry der angelegten Schlüssel
-    var testGelenke=[{n:'Rechte Schulter',b:7},{n:'Nacken / HWS',b:5},{n:'Rechtes Sprunggelenk',b:4}];
-    function snapEven(v){ return Math.max(2, Math.min(10, Math.round(v/2)*2)); }
-    function entferneTest(){ var n=0; try{ var arr=JSON.parse(localStorage.getItem(REG)||'[]'); if(arr&&arr.length){ arr.forEach(function(k){ try{ localStorage.removeItem(k); n++; }catch(e){} }); } localStorage.removeItem(REG); }catch(e){} return n; }
-    function anlegen(){
-      entferneTest();                              // alte Testdaten sauber entfernen (auch heutiger Testwert)
-      var keys=[]; var tage=14;
-      for(var t=0;t<=tage;t++){ var dtm=datumMinus(t); var druck=wGet(dtm,'wetter.druck');
-        testGelenke.forEach(function(g){
-          var k='vitara.'+dtm+'.schmerz.'+g.n;
-          var term = (druck!==null) ? Math.max(-1.5, Math.min(2.5, (1015 - druck)/10)) : 0;  // niedriger Druck -> mehr Schmerz, Einfluss begrenzt
-          var wert = snapEven(g.b + term + (Math.random()*2 - 1));  // etwas Streuung, min. 2
-          try{ localStorage.setItem(k, String(wert)); keys.push(k); }catch(e){}
-        });
-      }
-      try{ localStorage.setItem(REG, JSON.stringify(keys)); }catch(e){}
-      try{ refreshFromStorage(); }catch(e){}
-      if(info) info.innerHTML='✓ 15 Tage Beispieldaten (inkl. heute) für 3 Gelenke angelegt – jetzt auch auf der <b>Körperkarte</b> sichtbar. Schulter sollte rot/orange sein.';
-    }
-    function loeschen(){
-      var n=entferneTest();
-      try{ refreshFromStorage(); }catch(e){}
-      if(info) info.textContent = n? ('✓ Testdaten gelöscht ('+n+' Einträge entfernt).') : 'Es waren keine Testdaten vorhanden.';
-    }
-    anBtn.addEventListener('click', anlegen);
-    if(wegBtn) wegBtn.addEventListener('click', loeschen);
+    try{ var arr=JSON.parse(localStorage.getItem('vitara.testdaten')||'null');
+      if(arr && arr.length){ arr.forEach(function(k){ try{ localStorage.removeItem(k); }catch(e){} }); localStorage.removeItem('vitara.testdaten'); try{ refreshFromStorage(); }catch(e){} }
+    }catch(e){}
   })();
+
+  // --- KI-Auswertung: automatische Muster & Zusammenhänge aus den eigenen Daten (auf dem Gerät) ---
+  var ausAlle=false;
+  function nn(v){ return v!==null; }
+  function analyse(){
+    var out=[];
+    // Schlaf -> Ruhepuls
+    (function(){ var kurz=[], lang=[]; for(var t=59;t>=0;t--){ var d=datumMinus(t); var s=wGet(d,'vital.schlafMin'), r=wGet(d,'vital.puls'); if(s!==null&&r!==null){ if(s<390) kurz.push(r); else if(s>=420) lang.push(r); } }
+      if(kurz.length>=4&&lang.length>=4){ var mk=mittel(kurz), ml=mittel(lang), diff=Math.round(mk-ml); if(Math.abs(diff)>=1) out.push({icon:'😴',titel:'Schlaf wirkt auf deinen Ruhepuls',text:'Nach kurzen Nächten (unter 6,5 h) liegt dein Ruhepuls im Schnitt bei '+Math.round(mk)+' bpm, nach langen (ab 7 h) bei '+Math.round(ml)+' bpm ('+(diff>0?'+':'')+diff+' bpm).'}); } })();
+    // Schlaf -> HRV
+    (function(){ var kurz=[], lang=[]; for(var t=59;t>=0;t--){ var d=datumMinus(t); var s=wGet(d,'vital.schlafMin'), h=wGet(d,'vital.hrv'); if(s!==null&&h!==null){ if(s<390) kurz.push(h); else if(s>=420) lang.push(h); } }
+      if(kurz.length>=4&&lang.length>=4){ var mk=mittel(kurz), ml=mittel(lang), diff=Math.round(ml-mk); if(Math.abs(diff)>=2) out.push({icon:'〰️',titel:'Schlaf & Herzratenvariabilität',text:'Nach langen Nächten ist deine HRV im Schnitt '+(diff>0?'höher':'niedriger')+' ('+Math.round(ml)+' vs. '+Math.round(mk)+' ms) – ein Zeichen für bessere Erholung.'}); } })();
+    // Luftdruck -> Schmerz
+    (function(){ var xs=[],ys=[],fall=[],rest=[]; for(var t=90;t>=0;t--){ var d=datumMinus(t); var sm=tagesSchmerz(d), pr=wGet(d,'wetter.druck'); if(sm!==null&&pr!==null){ xs.push(pr); ys.push(sm); var vor=wGet(datumMinus(t+1),'wetter.druck'); if(vor!==null){ if((pr-vor)<=-2) fall.push(sm); else rest.push(sm); } } }
+      if(ys.length>=8){ var r=pearson(xs,ys), tx=''; if(fall.length>=3&&rest.length>=3){ var mf=mittel(fall),mr=mittel(rest); if(mf-mr>=0.5) tx='An Tagen mit fallendem Luftdruck ist dein Schmerz im Schnitt höher ('+kommaEins(mf)+' vs. '+kommaEins(mr)+'/10). '; }
+        if(!tx && r!==null && Math.abs(r)>=0.3) tx='Luftdruck und Schmerz hängen bei dir spürbar zusammen (r='+kommaEins(r)+'). '; if(tx) out.push({icon:'🌦️',titel:'Wetterfühligkeit',text:tx+'Beobachtung aus '+ys.length+' Tagen.'}); } })();
+    // Ruhepuls-Trend
+    (function(){ var r30=vitReihe('vital.puls',30).filter(nn); if(r30.length>=10){ var akt=mittel(vitReihe('vital.puls',7).filter(nn)), base=mittel(r30); if(akt&&base){ var diff=Math.round(akt-base);
+      if(diff>=2) out.push({icon:'❤️',titel:'Ruhepuls zuletzt erhöht',text:'Dein Ruhepuls liegt in den letzten Tagen etwa '+diff+' bpm über deinem Monatsschnitt ('+Math.round(akt)+' vs. '+Math.round(base)+'). Häufige Gründe: Stress, wenig Schlaf oder eine beginnende Erkältung – beobachte es.'});
+      else if(diff<=-2) out.push({icon:'❤️',titel:'Ruhepuls zuletzt niedriger',text:'Dein Ruhepuls liegt zuletzt etwa '+Math.abs(diff)+' bpm unter deinem Monatsschnitt – ein gutes Zeichen für Erholung.'}); } } })();
+    // HRV aktuell vs Schnitt
+    (function(){ var base=mittel(vitReihe('vital.hrv',30).filter(nn)); var akt=null; for(var t=0;t<5&&akt===null;t++){ var v=wGet(datumMinus(t),'vital.hrv'); if(v!==null) akt=v; }
+      if(base&&akt!==null&&akt<base*0.85) out.push({icon:'〽️',titel:'HRV unter deinem Schnitt',text:'Deine aktuelle HRV ('+Math.round(akt)+' ms) liegt unter deinem 30-Tage-Schnitt ('+Math.round(base)+' ms) – heute lieber etwas ruhiger angehen.'}); })();
+    // Schritte-Trend
+    (function(){ var w1=vitReihe('vital.schritte',7).filter(nn), w4=vitReihe('vital.schritte',28).filter(nn); if(w1.length>=4&&w4.length>=10){ var a=mittel(w1), b=mittel(w4); if(a&&b){ var p=Math.round((a-b)/b*100); if(Math.abs(p)>=10) out.push({icon:'👟',titel:'Schritte-Trend',text:'Diese Woche gehst du im Schnitt '+nfmt(Math.round(a))+' Schritte/Tag – '+(p>0?('+'+p+'% mehr'):(p+'% weniger'))+' als im Monatsschnitt.'}); } } })();
+    return out;
+  }
+  function renderAus(){
+    var liste=document.getElementById('ausListe'); if(!liste) return;
+    var arr=analyse(), tgl=document.getElementById('ausToggle');
+    if(!arr.length){ liste.innerHTML='<div class="card"><div style="font-size:12.5px;color:var(--ink-2);line-height:1.5">Sobald ein paar Wochen Daten zusammenkommen (Schlaf, Ruhepuls, HRV, Schmerz, Wetter), erkenne ich hier automatisch <b>Muster & Zusammenhänge</b> – direkt auf deinem Gerät.</div></div>'; if(tgl) tgl.style.display='none'; return; }
+    if(tgl) tgl.style.display = arr.length>3?'':'none';
+    var zeige = ausAlle? arr : arr.slice(0,3);
+    var html = zeige.map(function(i){ return '<div class="card"><div style="display:flex;gap:11px;align-items:flex-start"><div style="font-size:20px;line-height:1.1">'+i.icon+'</div><div><div style="font-weight:800;font-size:13.5px">'+i.titel+'</div><div style="font-size:12px;color:var(--ink-2);line-height:1.45;margin-top:2px">'+i.text+'</div></div></div></div>'; }).join('');
+    html += '<div class="disc" style="margin-top:2px">Automatische Auswertung deiner eigenen Daten – <b>nur auf dem Gerät</b>, nichts wird verschickt. Beobachtungen, keine Diagnosen.</div>';
+    liste.innerHTML=html;
+    if(tgl) tgl.textContent = ausAlle? 'weniger ›' : ('alle ('+arr.length+') ›');
+  }
+  (function(){ var tgl=document.getElementById('ausToggle'); if(tgl) tgl.addEventListener('click', function(e){ e.preventDefault(); ausAlle=!ausAlle; renderAus(); }); })();
 
   function drawAll(){ drawVit(); vitOverview(); drawJoint(); drawEx(); try{ wetterDraw(); }catch(e){} }
   wetterInit();
