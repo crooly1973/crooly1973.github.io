@@ -760,6 +760,16 @@
               <div class="supp-row clickable" id="reportOpen" style="cursor:pointer"><div class="supp-ico" style="background:color-mix(in srgb,var(--joint) 14%,transparent)">📄</div><div class="supp-meta"><div class="t">Bericht für den Arzt</div><div class="s">PDF-Export der letzten 3 Monate</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
               <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--pine) 14%,transparent)">🔒</div><div class="supp-meta"><div class="t">Daten & Privatsphäre</div><div class="s">Gerät & privater Server · deine Kontrolle</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
             </div>
+            <div class="sec-title" style="margin-top:20px">🧪 Testdaten</div>
+            <div class="card">
+              <div style="font-size:12.5px;color:var(--ink-2);line-height:1.5">Nur zum Ausprobieren: legt für die letzten 14 Tage Beispiel-Schmerzwerte an (Schulter, Nacken, Sprunggelenk) – <b>nur lokal auf diesem Gerät</b>, nicht auf dem Server. Damit siehst du Körperkarte, Verlauf, Wetter-Auswertung und den Arzt-Bericht sofort in Aktion.</div>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+                <button class="btn-save" id="testDatenAn" type="button" style="width:auto;padding:9px 15px">Beispieldaten anlegen</button>
+                <button class="btn-save" id="testDatenWeg" type="button" style="width:auto;padding:9px 15px;background:var(--surface-2);color:var(--ink);border:1px solid var(--line)">Testdaten löschen</button>
+              </div>
+              <div id="testDatenInfo" style="font-size:11.5px;color:var(--ink-3);margin-top:9px"></div>
+            </div>
+
             <p class="hint" style="text-align:center;margin-top:16px">VITARA ist ein Konzept-Entwurf und ersetzt keine ärztliche Beratung.</p>
           </section>
 
@@ -1771,6 +1781,37 @@
     if(open&&view){ open.addEventListener('click', function(){ berichtBauen(); view.hidden=false; try{ view.scrollTop=0; }catch(e){} }); }
     if(cl&&view){ cl.addEventListener('click', function(){ view.hidden=true; }); }
     if(pr){ pr.addEventListener('click', function(){ window.print(); }); }
+  })();
+
+  // --- Testdaten: Beispiel-Schmerzwerte (nur lokal, jederzeit löschbar) ---
+  (function(){
+    var anBtn=document.getElementById('testDatenAn'), wegBtn=document.getElementById('testDatenWeg'), info=document.getElementById('testDatenInfo');
+    if(!anBtn) return;
+    var REG='vitara.testdaten';                 // Registry der angelegten Schlüssel
+    var testGelenke=[{n:'Rechte Schulter',b:4},{n:'Nacken / HWS',b:3},{n:'Rechtes Sprunggelenk',b:3}];
+    function snapEven(v){ return Math.max(0, Math.min(10, Math.round(v/2)*2)); }
+    function anlegen(){
+      var keys=[]; var tage=14;
+      for(var t=1;t<=tage;t++){ var dtm=datumMinus(t); var druck=wGet(dtm,'wetter.druck');
+        testGelenke.forEach(function(g){
+          var wert = g.b;
+          if(druck!==null) wert = g.b + (1015 - druck)/5;   // niedriger Druck -> mehr Schmerz
+          wert = snapEven(wert + (Math.random()*2 - 1));      // etwas Streuung
+          var k='vitara.'+dtm+'.schmerz.'+g.n;
+          try{ localStorage.setItem(k, String(wert)); keys.push(k); }catch(e){}
+        });
+      }
+      try{ localStorage.setItem(REG, JSON.stringify(keys)); }catch(e){}
+      try{ refreshFromStorage(); }catch(e){}
+      if(info) info.innerHTML='✓ '+tage+' Tage Beispieldaten für 3 Gelenke angelegt. Schau in <b>Gelenke</b> (Körperkarte, Verlauf, Wetter) und in den <b>Arzt-Bericht</b>.';
+    }
+    function loeschen(){
+      var n=0; try{ var arr=JSON.parse(localStorage.getItem(REG)||'[]'); if(arr&&arr.length){ arr.forEach(function(k){ try{ localStorage.removeItem(k); n++; }catch(e){} }); } localStorage.removeItem(REG); }catch(e){}
+      try{ refreshFromStorage(); }catch(e){}
+      if(info) info.textContent = n? ('✓ Testdaten gelöscht ('+n+' Einträge entfernt).') : 'Es waren keine Testdaten vorhanden.';
+    }
+    anBtn.addEventListener('click', anlegen);
+    if(wegBtn) wegBtn.addEventListener('click', loeschen);
   })();
 
   function drawAll(){ drawVit(); vitOverview(); drawJoint(); drawEx(); try{ wetterDraw(); }catch(e){} }
