@@ -763,7 +763,7 @@
               <div class="supp-row clickable" id="reportOpen" style="cursor:pointer"><div class="supp-ico" style="background:color-mix(in srgb,var(--joint) 14%,transparent)">📄</div><div class="supp-meta"><div class="t">Bericht für den Arzt</div><div class="s">PDF-Export der letzten 3 Monate</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
               <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--pine) 14%,transparent)">🔒</div><div class="supp-meta"><div class="t">Daten & Privatsphäre</div><div class="s">Gerät & privater Server · deine Kontrolle</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
             </div>
-            <p class="hint" style="text-align:center;margin-top:16px">VITARA ist ein Konzept-Entwurf und ersetzt keine ärztliche Beratung.<br><span style="color:var(--ink-3);font-size:11px">Version 58 · 16.09.2026</span></p>
+            <p class="hint" style="text-align:center;margin-top:16px">VITARA ist ein Konzept-Entwurf und ersetzt keine ärztliche Beratung.<br><span style="color:var(--ink-3);font-size:11px">Version 59 · 21.09.2026</span></p>
           </section>
 
           <div class="fab-backdrop" id="fabBackdrop" hidden></div>
@@ -1578,14 +1578,28 @@
   var chartEx = 'exercise-liegestuetz';                        // welche Übung im Diagramm gezeigt wird
   function drawEx(){ var c=document.getElementById('exChart'); if(!c) return; var ctx=c.getContext('2d'); var w=c.width,h=c.height; ctx.clearRect(0,0,w,h);
     var legende=document.getElementById('exLegend');
+    // 1) Wenn geführte Workouts (Sätze×Wdh) vorhanden sind: Volumen-Verlauf zeigen
     var v=[];                                                   // Gesamt (Sätze×Wdh) je Tag, älteste zuerst
     for(var t=59;t>=0;t--){ var d='vitara.'+datumMinus(t)+'.'; var r=null, st=null;
       try{ r=localStorage.getItem(d+'reps.'+chartEx); st=localStorage.getItem(d+'sets.'+chartEx); }catch(e){}
       if(r!==null){ v.push( (st!==null?+st:1) * (+r) ); } }
-    if(v.length < 2){ if(legende) legende.textContent='Noch zu wenig Daten – trag ein paar Workouts ein, dann erscheint hier dein Verlauf.'; return; }
-    line(ctx, mapPts(v,w,h,18), css('--pine'), 'color-mix(in srgb,'+css('--pine')+' 22%, transparent)');
-    var pp=mapPts(v,w,h,18), last=pp[pp.length-1]; ctx.beginPath(); ctx.arc(last[0],last[1],5,0,7); ctx.fillStyle=css('--pine'); ctx.fill(); ctx.strokeStyle=css('--surface'); ctx.lineWidth=2.5; ctx.stroke();
-    if(legende){ var letzter=v[v.length-1], diff=letzter-v[0]; legende.textContent='Gesamt (Sätze×Wdh) · '+v.length+' Einträge · zuletzt '+letzter+' ('+(diff>0?'▲ +'+diff:diff<0?'▼ '+diff:'±0')+')'; } }
+    if(v.length >= 2){
+      line(ctx, mapPts(v,w,h,18), css('--pine'), 'color-mix(in srgb,'+css('--pine')+' 22%, transparent)');
+      var pp=mapPts(v,w,h,18), last=pp[pp.length-1]; ctx.beginPath(); ctx.arc(last[0],last[1],5,0,7); ctx.fillStyle=css('--pine'); ctx.fill(); ctx.strokeStyle=css('--surface'); ctx.lineWidth=2.5; ctx.stroke();
+      var letzter=v[v.length-1], diff=letzter-v[0]; if(legende) legende.textContent='Volumen (Sätze×Wdh) · '+v.length+' Workouts · zuletzt '+letzter+' ('+(diff>0?'▲ +'+diff:diff<0?'▼ '+diff:'±0')+')';
+      return;
+    }
+    // 2) Fallback: „Erledigt pro Woche" aus den Häkchen (letzte 8 Wochen, je 7-Tage-Fenster)
+    var wochen=8, counts=[], total=0;
+    for(var wk=wochen-1; wk>=0; wk--){ var cnt=0; for(var dd=0; dd<7; dd++){ var off=wk*7+dd; var key='vitara.'+datumMinus(off)+'.'+chartEx; try{ if(localStorage.getItem(key)==='1') cnt++; }catch(e){} } counts.push(cnt); total+=cnt; }
+    if(total===0){ if(legende) legende.textContent='Noch keine Trainingseinheiten erfasst – hake im Programm eine Übung ab oder starte ein „Workout".'; return; }
+    var pad=18, n=counts.length, innerW=w-2*pad, slot=innerW/n, bw=slot*0.6, maxC=Math.max(3, Math.max.apply(0,counts)), col=css('--pine');
+    ctx.strokeStyle=css('--line'); ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(pad,h-16); ctx.lineTo(w-10,h-16); ctx.stroke();
+    for(var i=0;i<n;i++){ var bh=(counts[i]/maxC)*(h-30); var x=pad+slot*i+(slot-bw)/2, y=h-16-bh;
+      ctx.fillStyle=col; ctx.globalAlpha=(i===n-1?1:0.55); if(bh>0){ ctx.beginPath(); ctx.rect(x,y,bw,bh); ctx.fill(); } ctx.globalAlpha=1;
+    }
+    if(legende) legende.textContent='Erledigt · letzte 8 Wochen · diese Woche '+counts[n-1]+'× · gesamt '+total+'×';
+  }
   // --- Wetter & Gelenke: Luftdruck/Temperatur/Luftfeuchte (Open-Meteo) + Korrelation mit Schmerz ---
   var WETTER_TAGE = 92;
   function geoLaden(){ try{ var s=localStorage.getItem('vitara.geo'); return s?JSON.parse(s):null; }catch(e){ return null; } }
