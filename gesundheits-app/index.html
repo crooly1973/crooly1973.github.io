@@ -718,8 +718,13 @@
               <button class="chip" data-ex="exercise-bizeps">Bizeps</button>
               <button class="chip" data-ex="exercise-schulter">Schulter</button>
             </div>
+            <div class="rangebox" id="exStats" style="margin:0 0 10px">
+              <div>Diese Woche<b id="exWeek">—</b></div>
+              <div>30 Tage<b id="exMonth">—</b></div>
+              <div>Letzte Einheit<b id="exLast">—</b></div>
+            </div>
             <div class="card"><canvas id="exChart" width="640" height="240" style="width:100%;height:120px"></canvas>
-              <div class="legend2"><span id="exLegend" style="color:var(--ink-3)">Noch keine Daten – trag im Workout deine Wiederholungen ein.</span></div>
+              <div class="legend2"><span id="exLegend" style="color:var(--ink-3)">Noch keine Daten – hake eine Übung ab oder starte ein Workout.</span></div>
             </div>
 
             <div class="disc" style="margin-top:14px">💡 Auf dich abgestimmt: <b>Schulterdrücken</b> ist wegen deiner rechten Schulter als „schulterschonend" markiert (leichteres Gewicht, saubere Ausführung). Bei <b>Kniebeugen</b> auf die Hüftprothese achten. Übungen bei Bedarf mit Physio/Arzt abstimmen — die App dokumentiert nur.</div>
@@ -763,7 +768,7 @@
               <div class="supp-row clickable" id="reportOpen" style="cursor:pointer"><div class="supp-ico" style="background:color-mix(in srgb,var(--joint) 14%,transparent)">📄</div><div class="supp-meta"><div class="t">Bericht für den Arzt</div><div class="s">PDF-Export der letzten 3 Monate</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
               <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--pine) 14%,transparent)">🔒</div><div class="supp-meta"><div class="t">Daten & Privatsphäre</div><div class="s">Gerät & privater Server · deine Kontrolle</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
             </div>
-            <p class="hint" style="text-align:center;margin-top:16px">VITARA ist ein Konzept-Entwurf und ersetzt keine ärztliche Beratung.<br><span style="color:var(--ink-3);font-size:11px">Version 59 · 21.09.2026</span></p>
+            <p class="hint" style="text-align:center;margin-top:16px">VITARA ist ein Konzept-Entwurf und ersetzt keine ärztliche Beratung.<br><span style="color:var(--ink-3);font-size:11px">Version 60 · 28.09.2026</span></p>
           </section>
 
           <div class="fab-backdrop" id="fabBackdrop" hidden></div>
@@ -1576,29 +1581,43 @@
     if(legende){ var diff=v[v.length-1]-v[0]; legende.textContent='Schmerz 0–10 · '+v.length+' Einträge · '+(diff<0?('▼ besser ('+diff+')'):diff>0?('▲ mehr (+'+diff+')'):'→ stabil'); }
   }
   var chartEx = 'exercise-liegestuetz';                        // welche Übung im Diagramm gezeigt wird
+  function exErledigt(key,off){ try{ return localStorage.getItem('vitara.'+datumMinus(off)+'.'+key)==='1'; }catch(e){ return false; } }
   function drawEx(){ var c=document.getElementById('exChart'); if(!c) return; var ctx=c.getContext('2d'); var w=c.width,h=c.height; ctx.clearRect(0,0,w,h);
     var legende=document.getElementById('exLegend');
-    // 1) Wenn geführte Workouts (Sätze×Wdh) vorhanden sind: Volumen-Verlauf zeigen
-    var v=[];                                                   // Gesamt (Sätze×Wdh) je Tag, älteste zuerst
-    for(var t=59;t>=0;t--){ var d='vitara.'+datumMinus(t)+'.'; var r=null, st=null;
+    // Zahlen-Übersicht (aus den Häkchen) – immer, unabhängig vom Diagramm
+    var week=0, month=0; for(var t=0;t<30;t++){ if(exErledigt(chartEx,t)){ if(t<7) week++; month++; } }
+    var lastOff=null; for(var t2=0;t2<90 && lastOff===null;t2++){ if(exErledigt(chartEx,t2)) lastOff=t2; }
+    var lastTxt='—';
+    if(lastOff!==null){ lastTxt = lastOff===0?'heute':lastOff===1?'gestern':('vor '+lastOff+' T.');
+      var rr=null,ss=null; try{ rr=localStorage.getItem('vitara.'+datumMinus(lastOff)+'.reps.'+chartEx); ss=localStorage.getItem('vitara.'+datumMinus(lastOff)+'.sets.'+chartEx); }catch(e){}
+      if(rr!==null) lastTxt += ' · '+(ss||'?')+'×'+rr; }
+    var eW=document.getElementById('exWeek'), eM=document.getElementById('exMonth'), eL=document.getElementById('exLast');
+    if(eW) eW.textContent=week+'×'; if(eM) eM.textContent=month+'×'; if(eL) eL.textContent=lastTxt;
+
+    // 1) Geführte Workouts vorhanden? -> Volumen-Verlauf (Sätze×Wdh)
+    var v=[]; for(var t3=59;t3>=0;t3--){ var d='vitara.'+datumMinus(t3)+'.'; var r=null, st=null;
       try{ r=localStorage.getItem(d+'reps.'+chartEx); st=localStorage.getItem(d+'sets.'+chartEx); }catch(e){}
       if(r!==null){ v.push( (st!==null?+st:1) * (+r) ); } }
     if(v.length >= 2){
       line(ctx, mapPts(v,w,h,18), css('--pine'), 'color-mix(in srgb,'+css('--pine')+' 22%, transparent)');
-      var pp=mapPts(v,w,h,18), last=pp[pp.length-1]; ctx.beginPath(); ctx.arc(last[0],last[1],5,0,7); ctx.fillStyle=css('--pine'); ctx.fill(); ctx.strokeStyle=css('--surface'); ctx.lineWidth=2.5; ctx.stroke();
+      var pp=mapPts(v,w,h,18), lp=pp[pp.length-1]; ctx.beginPath(); ctx.arc(lp[0],lp[1],5,0,7); ctx.fillStyle=css('--pine'); ctx.fill(); ctx.strokeStyle=css('--surface'); ctx.lineWidth=2.5; ctx.stroke();
       var letzter=v[v.length-1], diff=letzter-v[0]; if(legende) legende.textContent='Volumen (Sätze×Wdh) · '+v.length+' Workouts · zuletzt '+letzter+' ('+(diff>0?'▲ +'+diff:diff<0?'▼ '+diff:'±0')+')';
       return;
     }
-    // 2) Fallback: „Erledigt pro Woche" aus den Häkchen (letzte 8 Wochen, je 7-Tage-Fenster)
+    // 2) Sonst: Balken „erledigt pro Woche" (letzte 8 Wochen)
     var wochen=8, counts=[], total=0;
-    for(var wk=wochen-1; wk>=0; wk--){ var cnt=0; for(var dd=0; dd<7; dd++){ var off=wk*7+dd; var key='vitara.'+datumMinus(off)+'.'+chartEx; try{ if(localStorage.getItem(key)==='1') cnt++; }catch(e){} } counts.push(cnt); total+=cnt; }
-    if(total===0){ if(legende) legende.textContent='Noch keine Trainingseinheiten erfasst – hake im Programm eine Übung ab oder starte ein „Workout".'; return; }
-    var pad=18, n=counts.length, innerW=w-2*pad, slot=innerW/n, bw=slot*0.6, maxC=Math.max(3, Math.max.apply(0,counts)), col=css('--pine');
-    ctx.strokeStyle=css('--line'); ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(pad,h-16); ctx.lineTo(w-10,h-16); ctx.stroke();
-    for(var i=0;i<n;i++){ var bh=(counts[i]/maxC)*(h-30); var x=pad+slot*i+(slot-bw)/2, y=h-16-bh;
-      ctx.fillStyle=col; ctx.globalAlpha=(i===n-1?1:0.55); if(bh>0){ ctx.beginPath(); ctx.rect(x,y,bw,bh); ctx.fill(); } ctx.globalAlpha=1;
+    for(var wk=wochen-1; wk>=0; wk--){ var cnt=0; for(var dd=0; dd<7; dd++){ if(exErledigt(chartEx, wk*7+dd)) cnt++; } counts.push(cnt); total+=cnt; }
+    if(total===0){ if(legende) legende.textContent='Für „'+(exNamen[chartEx]||'diese Übung')+'" noch nichts erfasst – hake sie im Programm ab oder starte ein „Workout".'; return; }
+    var pad=20, base=h-22, n=counts.length, innerW=w-2*pad, slot=innerW/n, bw=Math.min(34, slot*0.62), maxC=Math.max(3, Math.max.apply(0,counts)), col=css('--pine');
+    ctx.strokeStyle=css('--line'); ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(pad-4,base); ctx.lineTo(w-10,base); ctx.stroke();
+    ctx.font='11px '+css('--font'); ctx.textAlign='center';
+    for(var i=0;i<n;i++){ var bh=counts[i]>0 ? Math.max(6,(counts[i]/maxC)*(base-14)) : 0; var cx=pad+slot*i+slot/2, x=cx-bw/2, y=base-bh;
+      if(bh>0){ ctx.fillStyle=col; ctx.globalAlpha=(i===n-1?1:0.5); ctx.beginPath(); ctx.rect(x,y,bw,bh); ctx.fill(); ctx.globalAlpha=1;
+        ctx.fillStyle=css('--ink-2'); ctx.fillText(String(counts[i]), cx, y-4); }
+      else { ctx.fillStyle=css('--line'); ctx.beginPath(); ctx.arc(cx,base-3,2,0,7); ctx.fill(); }
     }
-    if(legende) legende.textContent='Erledigt · letzte 8 Wochen · diese Woche '+counts[n-1]+'× · gesamt '+total+'×';
+    ctx.fillStyle=css('--ink-3'); ctx.textAlign='left'; ctx.fillText('vor 8 Wo.', pad-4, h-4); ctx.textAlign='right'; ctx.fillText('diese Woche', w-10, h-4);
+    if(legende) legende.textContent='Erledigt pro Woche · letzte 8 Wochen · gesamt '+total+'×';
   }
   // --- Wetter & Gelenke: Luftdruck/Temperatur/Luftfeuchte (Open-Meteo) + Korrelation mit Schmerz ---
   var WETTER_TAGE = 92;
