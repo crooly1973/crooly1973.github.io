@@ -768,7 +768,7 @@
               <div class="supp-row clickable" id="reportOpen" style="cursor:pointer"><div class="supp-ico" style="background:color-mix(in srgb,var(--joint) 14%,transparent)">📄</div><div class="supp-meta"><div class="t">Bericht für den Arzt</div><div class="s">PDF-Export der letzten 3 Monate</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
               <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--pine) 14%,transparent)">🔒</div><div class="supp-meta"><div class="t">Daten & Privatsphäre</div><div class="s">Gerät & privater Server · deine Kontrolle</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
             </div>
-            <p class="hint" style="text-align:center;margin-top:16px">VITARA ist ein Konzept-Entwurf und ersetzt keine ärztliche Beratung.<br><span style="color:var(--ink-3);font-size:11px">Version 60 · 28.09.2026</span></p>
+            <p class="hint" style="text-align:center;margin-top:16px">VITARA ist ein Konzept-Entwurf und ersetzt keine ärztliche Beratung.<br><span style="color:var(--ink-3);font-size:11px">Version 61 · 28.09.2026</span></p>
           </section>
 
           <div class="fab-backdrop" id="fabBackdrop" hidden></div>
@@ -1169,6 +1169,7 @@
       updateSupp();
       updateTraining();
       homeUpdate();
+      if(name.indexOf('exercise-')===0){ try{ drawEx(); }catch(e){} }   // Trainings-Chart sofort mitziehen
     });
   });
   updateSupp();
@@ -1594,17 +1595,7 @@
     var eW=document.getElementById('exWeek'), eM=document.getElementById('exMonth'), eL=document.getElementById('exLast');
     if(eW) eW.textContent=week+'×'; if(eM) eM.textContent=month+'×'; if(eL) eL.textContent=lastTxt;
 
-    // 1) Geführte Workouts vorhanden? -> Volumen-Verlauf (Sätze×Wdh)
-    var v=[]; for(var t3=59;t3>=0;t3--){ var d='vitara.'+datumMinus(t3)+'.'; var r=null, st=null;
-      try{ r=localStorage.getItem(d+'reps.'+chartEx); st=localStorage.getItem(d+'sets.'+chartEx); }catch(e){}
-      if(r!==null){ v.push( (st!==null?+st:1) * (+r) ); } }
-    if(v.length >= 2){
-      line(ctx, mapPts(v,w,h,18), css('--pine'), 'color-mix(in srgb,'+css('--pine')+' 22%, transparent)');
-      var pp=mapPts(v,w,h,18), lp=pp[pp.length-1]; ctx.beginPath(); ctx.arc(lp[0],lp[1],5,0,7); ctx.fillStyle=css('--pine'); ctx.fill(); ctx.strokeStyle=css('--surface'); ctx.lineWidth=2.5; ctx.stroke();
-      var letzter=v[v.length-1], diff=letzter-v[0]; if(legende) legende.textContent='Volumen (Sätze×Wdh) · '+v.length+' Workouts · zuletzt '+letzter+' ('+(diff>0?'▲ +'+diff:diff<0?'▼ '+diff:'±0')+')';
-      return;
-    }
-    // 2) Sonst: Balken „erledigt pro Woche" (letzte 8 Wochen)
+    // Diagramm: „erledigt pro Woche" (letzte 8 Wochen) – reagiert direkt auf die Häkchen
     var wochen=8, counts=[], total=0;
     for(var wk=wochen-1; wk>=0; wk--){ var cnt=0; for(var dd=0; dd<7; dd++){ if(exErledigt(chartEx, wk*7+dd)) cnt++; } counts.push(cnt); total+=cnt; }
     if(total===0){ if(legende) legende.textContent='Für „'+(exNamen[chartEx]||'diese Übung')+'" noch nichts erfasst – hake sie im Programm ab oder starte ein „Workout".'; return; }
