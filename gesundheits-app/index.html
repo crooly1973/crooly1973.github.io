@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#06c2cf">
 <link rel="apple-touch-icon" href="apple-touch-icon-180-v2.png">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512-v2.png">
@@ -244,6 +244,34 @@
   }
 
   .foot-note { text-align: center; color: var(--ink-3); font-size: 12.5px; margin-top: 26px; }
+
+  /* === Vollbild-/App-Modus: auf dem iPhone füllt VITARA den ganzen Bildschirm,
+        das Telefon-Mockup (Rahmen, Notch, Status-Leiste, Konzept-Text) verschwindet. === */
+  @media (max-width: 760px) {
+    body { background: var(--surface-2); }
+    .wrap { max-width: none; margin: 0; padding: 0; }
+    .intro, .rail, .foot-note, .notch, .statusbar { display: none !important; }
+    .stage { display: block; gap: 0; }
+    .phone-area { display: block; }
+    .phone { width: 100%; max-width: none; padding: 0; border: 0; border-radius: 0; box-shadow: none; background: var(--surface-2); }
+    .screen { height: 100vh; height: 100dvh; border-radius: 0; }
+    .view { padding-top: calc(8px + env(safe-area-inset-top)); }
+    .fab { bottom: calc(92px + env(safe-area-inset-bottom)); }
+    .fab-menu { bottom: calc(156px + env(safe-area-inset-bottom)); }
+  }
+  /* Als Home-Bildschirm-App (PWA) immer Vollbild – auch auf größeren Geräten */
+  @media (display-mode: standalone) {
+    body { background: var(--surface-2); }
+    .wrap { max-width: none; margin: 0; padding: 0; }
+    .intro, .rail, .foot-note, .notch, .statusbar { display: none !important; }
+    .stage { display: block; gap: 0; }
+    .phone-area { display: block; }
+    .phone { width: 100%; max-width: none; padding: 0; border: 0; border-radius: 0; box-shadow: none; background: var(--surface-2); }
+    .screen { height: 100vh; height: 100dvh; border-radius: 0; }
+    .view { padding-top: calc(8px + env(safe-area-inset-top)); }
+    .fab { bottom: calc(92px + env(safe-area-inset-bottom)); }
+    .fab-menu { bottom: calc(156px + env(safe-area-inset-bottom)); }
+  }
 
   /* Knowledge / Wissen */
   .searchbar { display: flex; align-items: center; gap: 9px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 11px 14px; color: var(--ink-3); font-size: 13.5px; box-shadow: var(--shadow); }
@@ -768,7 +796,7 @@
               <div class="supp-row clickable" id="reportOpen" style="cursor:pointer"><div class="supp-ico" style="background:color-mix(in srgb,var(--joint) 14%,transparent)">📄</div><div class="supp-meta"><div class="t">Bericht für den Arzt</div><div class="s">PDF-Export der letzten 3 Monate</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
               <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--pine) 14%,transparent)">🔒</div><div class="supp-meta"><div class="t">Daten & Privatsphäre</div><div class="s">Gerät & privater Server · deine Kontrolle</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
             </div>
-            <p class="hint" style="text-align:center;margin-top:16px">VITARA ist ein Konzept-Entwurf und ersetzt keine ärztliche Beratung.<br><span style="color:var(--ink-3);font-size:11px">Version 61 · 28.09.2026</span></p>
+            <p class="hint" style="text-align:center;margin-top:16px">VITARA ist ein Konzept-Entwurf und ersetzt keine ärztliche Beratung.<br><span style="color:var(--ink-3);font-size:11px">Version 62 · 01.10.2026</span></p>
           </section>
 
           <div class="fab-backdrop" id="fabBackdrop" hidden></div>
