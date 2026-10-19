@@ -251,7 +251,7 @@
         ist das UNTERSTE Flex-Element (nicht position:fixed) -> sitzt zuverlässig am echten
         unteren Rand, auch wenn die Seite gerade nicht scrollt (iOS-Safari-Eigenheit). === */
   @media (max-width: 760px), (display-mode: standalone) {
-    html, body { margin: 0; height: 100%; }
+    html, body { margin: 0; height: var(--app-h, 100%); }
     body { background: var(--surface); overflow: hidden; }
     .wrap { max-width: none; margin: 0; padding: 0; height: 100%; }
     .intro, .rail, .foot-note, .notch, .statusbar { display: none !important; }
@@ -261,9 +261,9 @@
     .screen { position: relative; display: flex; flex-direction: column; height: 100%; min-height: 100%; overflow: hidden; border-radius: 0; background: var(--surface-2); }
     .view { overflow-y: auto; flex: 1; min-height: 0; padding-top: calc(8px + env(safe-area-inset-top)); padding-bottom: 14px; }
     .tabbar { flex: none; padding: 6px 4px calc(4px + env(safe-area-inset-bottom)); background: var(--surface); box-shadow: 0 -1px 0 var(--line), 0 -8px 20px -12px rgba(15,40,60,.18); }
-    .fab { position: fixed; right: 18px; bottom: calc(96px + env(safe-area-inset-bottom)); }
-    .fab-menu { position: fixed; right: 18px; bottom: calc(160px + env(safe-area-inset-bottom)); }
-    .fab-backdrop { position: fixed; inset: 0; }
+    .fab { position: absolute; right: 18px; bottom: calc(84px + env(safe-area-inset-bottom)); }
+    .fab-menu { position: absolute; right: 18px; bottom: calc(148px + env(safe-area-inset-bottom)); }
+    .fab-backdrop { position: absolute; inset: 0; }
     .wkout { overflow-y: auto; padding-top: calc(20px + env(safe-area-inset-top)); }
   }
 
@@ -386,6 +386,33 @@
 </style>
 </head>
 <body>
+<script>
+// Echte App-Höhe ermitteln: Neuere iOS-Versionen melden Web-Apps eine zu kleine
+// Viewport-Höhe (100%, 100dvh und position:fixed enden ~100pt über dem Rand).
+// Im App-Modus nehmen wir daher die tatsächliche Bildschirmhöhe.
+(function(){
+  function probe(css){ try{ var d=document.createElement('div'); d.style.cssText='position:absolute;visibility:hidden;left:-9999px;top:0;width:1px;'+css; document.body.appendChild(d); var h=Math.round(d.getBoundingClientRect().height); d.parentNode.removeChild(d); return h; }catch(e){ return 0; } }
+  function setH(){
+    var app = window.navigator.standalone===true || (window.matchMedia && matchMedia('(display-mode: standalone)').matches);
+    var quer = innerWidth > innerHeight;
+    var bild = quer ? Math.min(screen.width, screen.height) : Math.max(screen.width, screen.height);
+    var v = { inner: innerHeight, client: document.documentElement.clientHeight,
+              vv: window.visualViewport ? Math.round(visualViewport.height) : 0,
+              lvh: probe('height:100lvh'), dvh: probe('height:100dvh'),
+              sab: probe('height:env(safe-area-inset-bottom)'), bild: bild };
+    var h = Math.max(v.inner, v.client, v.vv);
+    if (app) h = Math.max(h, v.lvh, bild);
+    document.documentElement.style.setProperty('--app-h', h + 'px');
+    var dbg = document.getElementById('vpDebug');
+    if (dbg) dbg.textContent = (app ? 'App' : 'Browser') + ' · inner ' + v.inner + ' · vv ' + v.vv + ' · dvh ' + v.dvh + ' · lvh ' + v.lvh + ' · Bildschirm ' + v.bild + ' · unten ' + v.sab + ' → ' + h;
+  }
+  setH();
+  addEventListener('load', setH);
+  addEventListener('resize', setH);
+  addEventListener('orientationchange', function(){ setTimeout(setH, 300); });
+  if (window.visualViewport) visualViewport.addEventListener('resize', setH);
+})();
+</script>
 
 <div class="wrap">
   <div class="intro">
@@ -790,7 +817,7 @@
               <div class="supp-row clickable" id="reportOpen" style="cursor:pointer"><div class="supp-ico" style="background:color-mix(in srgb,var(--joint) 14%,transparent)">📄</div><div class="supp-meta"><div class="t">Bericht für den Arzt</div><div class="s">PDF-Export der letzten 3 Monate</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
               <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--pine) 14%,transparent)">🔒</div><div class="supp-meta"><div class="t">Daten & Privatsphäre</div><div class="s">Gerät & privater Server · deine Kontrolle</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
             </div>
-            <p class="hint" style="text-align:center;margin-top:16px">VITARA ist ein Konzept-Entwurf und ersetzt keine ärztliche Beratung.<br><span style="color:var(--ink-3);font-size:11px">Version 70 · 20.10.2026</span></p>
+            <p class="hint" style="text-align:center;margin-top:16px">VITARA ist ein Konzept-Entwurf und ersetzt keine ärztliche Beratung.<br><span style="color:var(--ink-3);font-size:11px">Version 71 · 20.10.2026</span><br><span id="vpDebug" style="color:var(--ink-3);font-size:10px;opacity:.75"></span></p>
           </section>
 
           <div class="fab-backdrop" id="fabBackdrop" hidden></div>
