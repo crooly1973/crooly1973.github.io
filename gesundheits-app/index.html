@@ -247,8 +247,9 @@
 
   /* === Vollbild-/App-Modus: auf dem iPhone füllt VITARA den ganzen Bildschirm,
         das Telefon-Mockup (Rahmen, Notch, Status-Leiste, Konzept-Text) verschwindet.
-        .screen ist genau bildschirmhoch; der Inhalt scrollt INNEN. Nur die Tableiste
-        ist fix. Overlays (Workout) liegen absolut über dem sichtbaren Bereich. === */
+        .screen ist exakt bildschirmhoch (100dvh); der Inhalt scrollt INNEN. Die Tableiste
+        ist das UNTERSTE Flex-Element (nicht position:fixed) -> sitzt zuverlässig am echten
+        unteren Rand, auch wenn die Seite gerade nicht scrollt (iOS-Safari-Eigenheit). === */
   @media (max-width: 760px), (display-mode: standalone) {
     html, body { margin: 0; height: 100%; }
     body { background: var(--surface); overflow: hidden; }
@@ -258,8 +259,8 @@
     .phone-area { display: block; height: 100%; }
     .phone { width: 100%; max-width: none; height: 100%; padding: 0; border: 0; border-radius: 0; box-shadow: none; background: var(--surface-2); }
     .screen { position: relative; display: flex; flex-direction: column; height: 100dvh; overflow: hidden; border-radius: 0; background: var(--surface-2); }
-    .view { overflow-y: auto; flex: 1; padding-top: calc(8px + env(safe-area-inset-top)); padding-bottom: calc(84px + env(safe-area-inset-bottom)); }
-    .tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 25; background: var(--surface); box-shadow: 0 -1px 0 var(--line), 0 -8px 20px -12px rgba(15,40,60,.18); }
+    .view { overflow-y: auto; flex: 1; min-height: 0; padding-top: calc(8px + env(safe-area-inset-top)); padding-bottom: 14px; }
+    .tabbar { flex: none; background: var(--surface); box-shadow: 0 -1px 0 var(--line), 0 -8px 20px -12px rgba(15,40,60,.18); }
     .fab { position: fixed; right: 18px; bottom: calc(96px + env(safe-area-inset-bottom)); }
     .fab-menu { position: fixed; right: 18px; bottom: calc(160px + env(safe-area-inset-bottom)); }
     .fab-backdrop { position: fixed; inset: 0; }
@@ -789,7 +790,7 @@
               <div class="supp-row clickable" id="reportOpen" style="cursor:pointer"><div class="supp-ico" style="background:color-mix(in srgb,var(--joint) 14%,transparent)">📄</div><div class="supp-meta"><div class="t">Bericht für den Arzt</div><div class="s">PDF-Export der letzten 3 Monate</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
               <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--pine) 14%,transparent)">🔒</div><div class="supp-meta"><div class="t">Daten & Privatsphäre</div><div class="s">Gerät & privater Server · deine Kontrolle</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
             </div>
-            <p class="hint" style="text-align:center;margin-top:16px">VITARA ist ein Konzept-Entwurf und ersetzt keine ärztliche Beratung.<br><span style="color:var(--ink-3);font-size:11px">Version 68 · 19.10.2026</span></p>
+            <p class="hint" style="text-align:center;margin-top:16px">VITARA ist ein Konzept-Entwurf und ersetzt keine ärztliche Beratung.<br><span style="color:var(--ink-3);font-size:11px">Version 69 · 20.10.2026</span></p>
           </section>
 
           <div class="fab-backdrop" id="fabBackdrop" hidden></div>
