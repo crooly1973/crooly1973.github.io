@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Liegestütz" viewBox="148 94 670 236">
+  <!-- Matte -->
+  <path d="M118 286 L900 286 L880 336 L86 336 Z" fill="#7AAAD8"/>
+  <path d="M118 286 L900 286 L896 296 L114 296 Z" fill="#93BCE4"/>
+  <ellipse cx="470" cy="312" rx="330" ry="9" fill="#5F8FC0" opacity=".55"/>
+  <!-- hinterer Arm (dunkler) -->
+  <path d="M668 160 C672 205 680 262 686 318 L708 318 C704 262 698 205 694 156 Z" fill="#DDA780"/>
+  <path d="M680 312 C700 310 726 314 740 322 C726 327 700 328 684 326 Z" fill="#DDA780"/>
+  <!-- Bein: Schienbein (Haut) -->
+  <path d="M302 206 C270 216 236 228 206 236 L212 264 C244 256 278 246 306 240 Z" fill="#F3C6A2"/>
+  <!-- Schuh: auf den Zehenspitzen, Ferse oben -->
+  <path d="M214 236 C194 226 170 230 163 246 C158 260 174 294 192 318 L232 322 C234 306 228 284 218 262 Z" fill="#D86F5B"/>
+  <path d="M164 252 C170 278 182 302 196 319" stroke="#F0A08E" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <path d="M196 321 L232 322" stroke="#F0A08E" stroke-width="5" stroke-linecap="round"/>
+  <path d="M206 258 L216 252 M210 270 L220 264" stroke="#F6C2B6" stroke-width="3" stroke-linecap="round" opacity=".8"/>
+  <!-- Leggings (Oberschenkel + Knie) -->
+  <path d="M296 204 C330 192 400 168 462 142 C492 128 524 112 552 118 C572 124 580 150 572 172 C540 182 498 186 462 194 C400 210 340 230 302 242 Z" fill="#3B1F17"/>
+  <!-- Rumpf (Haut: Bauch/Taille) -->
+  <path d="M548 120 C600 122 652 128 690 138 L708 170 C704 196 684 210 648 208 C612 205 584 194 560 182 Z" fill="#F3C6A2"/>
+  <!-- Crop-Top -->
+  <path d="M590 124 C630 126 664 131 690 138 L708 170 C704 196 684 210 650 208 L606 200 C600 176 594 150 590 124 Z" fill="#E8973A"/>
+  <path d="M600 132 C632 134 660 138 684 144" stroke="#F5B260" stroke-width="5" fill="none" stroke-linecap="round" opacity=".7"/>
+  <!-- Hals -->
+  <path d="M688 140 L732 136 L746 176 L706 184 Z" fill="#E7B48F"/>
+  <!-- Zopf -->
+  <path d="M736 116 C716 112 700 128 704 152 C708 176 722 198 734 206 C730 184 734 160 744 140 Z" fill="#5B2D1C"/>
+  <!-- Kopf -->
+  <ellipse cx="764" cy="150" rx="33" ry="37" transform="rotate(-18 764 150)" fill="#F3C6A2"/>
+  <!-- Haare oben/hinten -->
+  <path d="M732 140 C728 112 752 98 776 104 C796 110 806 128 800 140 C788 128 768 124 748 136 C742 142 738 150 736 160 Z" fill="#5B2D1C"/>
+  <path d="M751 116 C760 109 772 107 784 109" stroke="#5BA3D9" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <!-- Gesicht: Ohr, Auge (geschlossen), Nase -->
+  <ellipse cx="752" cy="156" rx="5" ry="7.5" fill="#E2A985"/>
+  <path d="M778 166 C782 170 788 171 792 168" stroke="#4A2A1E" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <ellipse cx="795" cy="172" rx="7" ry="6" fill="#F3C6A2"/>
+  <!-- vorderer Arm -->
+  <path d="M690 154 C694 204 700 262 706 318 L732 318 C728 262 722 202 718 150 Z" fill="#F3C6A2"/>
+  <path d="M700 312 C722 310 752 314 768 322 C752 328 722 330 702 328 Z" fill="#F3C6A2"/>
+</svg>
