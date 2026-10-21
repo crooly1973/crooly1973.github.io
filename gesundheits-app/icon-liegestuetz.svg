@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Liegestütz" viewBox="4 24 104 50">
+  <defs>
+    <linearGradient id="sk" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FFD03F"/><stop offset="1" stop-color="#FFB52B"/></linearGradient>
+    <linearGradient id="skd" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#E9A526"/><stop offset="1" stop-color="#D88F18"/></linearGradient>
+    <linearGradient id="sh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF9E70"/><stop offset="1" stop-color="#EE6438"/></linearGradient>
+    <linearGradient id="pa" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5376AA"/><stop offset="1" stop-color="#2F4A74"/></linearGradient>
+    <radialGradient id="hd" cx=".42" cy=".35" r=".8"><stop offset="0" stop-color="#FFE07A"/><stop offset=".65" stop-color="#FFC437"/><stop offset="1" stop-color="#F3A322"/></radialGradient>
+  </defs>
+  <ellipse cx="56" cy="70.6" rx="50" ry="3.2" fill="#0B2E3C" opacity=".14"/>
+  <!-- hinten: Arm & Bein -->
+  <path d="M79.5 45 L78.5 67.4" stroke="url(#skd)" stroke-width="7.4" stroke-linecap="round"/>
+  <path d="M49 54.5 L19 62.6" stroke="#29416A" stroke-width="9.5" stroke-linecap="round"/>
+  <path d="M12.6 66.6 L19.6 62.4" stroke="#1F232A" stroke-width="6.4" stroke-linecap="round"/>
+  <!-- Rumpf: schmale Hüfte, breite Brust -->
+  <g fill="url(#sh)">
+    <polygon points="47.6,48.6 79.2,33.4 84.6,50.2 51.8,60.4"/>
+    <circle cx="81.8" cy="41.9" r="8.7"/>
+  </g>
+  <path d="M53 48.4 L78 36.6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" opacity=".3"/>
+  <!-- vorne: Bein + Schuh -->
+  <path d="M52.4 55.2 L17 64.2" stroke="url(#pa)" stroke-width="10.5" stroke-linecap="round"/>
+  <path d="M9.6 68.2 L17.6 63.6" stroke="#2A2F37" stroke-width="7.2" stroke-linecap="round"/>
+  <!-- Hals + Kopf (Blick nach unten) -->
+  <path d="M85 41 L91 38.6" stroke="url(#sk)" stroke-width="6.4" stroke-linecap="round"/>
+  <circle cx="95.6" cy="36.6" r="8.6" fill="url(#hd)"/>
+  <path d="M87.2 35.4 A8.6 8.6 0 0 1 103.4 32.6 C99.6 30.4 93.6 30.8 90.4 35.6 C89.6 37 88.6 37.8 87.4 38.2 Z" fill="#6E4524"/>
+  <circle cx="99.6" cy="39.4" r="1.25" fill="#3A2716"/>
+  <path d="M97 43.4 Q99.2 44 100.8 42.6" stroke="#C17616" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+  <!-- vorderer Arm mit Ärmel -->
+  <path d="M84.6 46 L85.4 67" stroke="url(#sk)" stroke-width="8.2" stroke-linecap="round"/>
+  <path d="M83.8 43.2 L84.3 48.2" stroke="url(#sh)" stroke-width="9.2" stroke-linecap="round"/>
+  <ellipse cx="87.4" cy="68.6" rx="4.6" ry="2.3" fill="#F2A21F"/>
+</svg>
