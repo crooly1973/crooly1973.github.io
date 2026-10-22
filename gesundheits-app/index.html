@@ -474,7 +474,7 @@
                 <div>
                   <div class="big" id="heroBig">Tagesform</div>
                   <div class="sub">aus Ruhepuls, HRV &amp; Schlaf</div>
-                  <span class="tag" id="heroTag">💊 0/4 · 👟 –</span>
+                  <span class="tag" id="heroTag">💊 0/5 · 👟 –</span>
                 </div>
               </div>
             </div>
@@ -631,7 +631,7 @@
 
             <div class="card" style="background:color-mix(in srgb,var(--supp) 12%,var(--surface))">
               <div style="display:flex;align-items:center;gap:14px">
-                <div style="font-size:26px;font-weight:800;font-variant-numeric:tabular-nums"><span id="suppDone">0</span><span style="color:var(--ink-3);font-size:18px">/4</span></div>
+                <div style="font-size:26px;font-weight:800;font-variant-numeric:tabular-nums"><span id="suppDone">0</span><span style="color:var(--ink-3);font-size:18px">/<span id="suppTotal">5</span></span></div>
                 <div style="flex:1"><div style="font-weight:700;font-size:14px">Heute schon genommen</div><div class="bar"><i id="suppBar" style="width:0%;background:var(--supp)"></i></div></div>
               </div>
             </div>
@@ -641,6 +641,7 @@
               <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--supp) 16%,transparent)">☀️</div><div class="supp-meta"><div class="t">Vitamin D3 + K2</div><div class="s">natural elements · 1 Tablette</div></div><button class="check" data-key="supp-d3k2" aria-label="eingenommen"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button></div>
               <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--pine) 14%,transparent)">💪</div><div class="supp-meta"><div class="t">Kreatin Monohydrat</div><div class="s">WeightWorld · 3000 mg · mit dem D3</div></div><button class="check" data-key="supp-kreatin" aria-label="eingenommen"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button></div>
               <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--joint) 14%,transparent)">💜</div><div class="supp-meta"><div class="t">Vitamin B12</div><div class="s">Cosphera Spray · 1 Sprühstoß (25 µg)</div></div><button class="check" data-key="supp-b12" aria-label="eingenommen"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button></div>
+              <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--supp) 16%,transparent)">🫚</div><div class="supp-meta"><div class="t">Ingwer-Kurkuma-Shot</div><div class="s">Ingwer & Kurkuma · 1 Shot</div></div><button class="check" data-key="supp-ingwer" aria-label="eingenommen"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button></div>
             </div>
 
             <div class="sec-title">🌙 Abends</div>
@@ -817,7 +818,7 @@
               <div class="supp-row clickable" id="reportOpen" style="cursor:pointer"><div class="supp-ico" style="background:color-mix(in srgb,var(--joint) 14%,transparent)">📄</div><div class="supp-meta"><div class="t">Bericht für den Arzt</div><div class="s">PDF-Export der letzten 3 Monate</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
               <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--pine) 14%,transparent)">🔒</div><div class="supp-meta"><div class="t">Daten & Privatsphäre</div><div class="s">Gerät & privater Server · deine Kontrolle</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
             </div>
-            <p class="hint" style="text-align:center;margin-top:16px">VITARA ist ein Konzept-Entwurf und ersetzt keine ärztliche Beratung.<br><span style="color:var(--ink-3);font-size:11px">Version 75 · 21.10.2026</span><br><span id="vpDebug" style="color:var(--ink-3);font-size:10px;opacity:.75"></span></p>
+            <p class="hint" style="text-align:center;margin-top:16px">VITARA ist ein Konzept-Entwurf und ersetzt keine ärztliche Beratung.<br><span style="color:var(--ink-3);font-size:11px">Version 76 · 22.10.2026</span><br><span id="vpDebug" style="color:var(--ink-3);font-size:10px;opacity:.75"></span></p>
           </section>
 
           <div class="fab-backdrop" id="fabBackdrop" hidden></div>
@@ -1071,6 +1072,7 @@
     var checks = document.querySelectorAll('.check[data-key^="supp-"]');
     var genommen = [].filter.call(checks, function(c){ return c.classList.contains('on'); }).length;
     var zahl = document.getElementById('suppDone'); if(zahl) zahl.textContent = genommen;
+    var ges = document.getElementById('suppTotal'); if(ges) ges.textContent = checks.length;
     var bar = document.getElementById('suppBar'); if(bar) bar.style.width = (checks.length ? genommen/checks.length*100 : 0) + '%';
   }
 
