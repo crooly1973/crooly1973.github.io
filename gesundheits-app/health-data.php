@@ -5,8 +5,8 @@
  * enthalten mehrere Tage -> damit füllt sich der Verlauf automatisch (Backfill).
  * Mit ?debug=1 werden zusätzlich Roh-Antworten mitgeliefert.
  */
-require __DIR__ . '/health-lib.php';
-require __DIR__ . '/health-store.php';
+require_once __DIR__ . '/health-lib.php';
+require_once __DIR__ . '/health-store.php';
 header('Content-Type: application/json; charset=utf-8');
 
 $debug = isset($_GET['debug']);
@@ -14,6 +14,7 @@ $out = array('ok' => false);
 
 $cfg = vitara_config();
 if (!vitara_config_ok($cfg)) { $out['error'] = 'konfig_fehlt'; echo json_encode($out); exit; }
+vitara_require_key($cfg);
 
 $err = '';
 $access = vitara_access_token($cfg, $err);

@@ -1595,11 +1595,18 @@
       var fs=el('fitbitStatus'); if(fs){ fs.textContent='verbunden ✓'; fs.className='pill good'; }
       prefill(); vitOverview(); drawVit(); homeUpdate();
     }
+    // Schutz aktiv, dieses Gerät aber noch nicht entsperrt -> einmal fragen und zur Entsperr-Seite
+    var schluesselGefragt=false;
+    function schluesselFehlt(){
+      if(schluesselGefragt) return; schluesselGefragt=true;
+      if(confirm('Deine Daten sind jetzt mit einem Schlüssel geschützt. Dieses Gerät jetzt einmal entsperren?')){ window.location.href='health-unlock.php'; }
+    }
     function fitbitSync(goConnect){
       if(!istServer){ if(goConnect){ alert('Die Fitbit-Verbindung funktioniert nur auf der echten Adresse oliver-rock.de/gesundheitsapp/ – dort läuft der Server-Teil. In dieser Vorschau kannst du unten „Selbst eintragen" nutzen.'); if(manBody){ manBody.hidden=false; if(manToggle) manToggle.textContent='ausblenden ▾'; } } return; }
       var fs=el('fitbitStatus'); if(fs && goConnect){ fs.textContent='lädt …'; }
       fetch('health-data.php',{cache:'no-store'}).then(function(r){ return r.json(); }).then(function(d){
         if(d && d.ok){ applyFitbit(d); }
+        else if(d && d.error==='schluessel'){ schluesselFehlt(); }
         else if(goConnect){ window.location.href='health-connect.php'; }
       }).catch(function(){ if(goConnect){ window.location.href='health-connect.php'; } });
     }
@@ -1613,6 +1620,7 @@
     function ladeHistorie(){
       if(!istServer) return;
       fetch('health-history.php?all=1',{cache:'no-store'}).then(function(r){ return r.json(); }).then(function(d){
+        if(d && d.error==='schluessel'){ schluesselFehlt(); return; }
         if(!d || !d.ok || !d.daten) return;
         Object.keys(d.daten).forEach(function(feld){ var reihe=d.daten[feld]||{}; Object.keys(reihe).forEach(function(datum){ try{ localStorage.setItem('vitara.'+datum+'.'+feld, String(reihe[datum])); }catch(e){} }); });
         prefill(); refreshFromStorage();

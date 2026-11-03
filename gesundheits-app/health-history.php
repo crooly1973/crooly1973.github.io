@@ -3,12 +3,13 @@
  * VITARA – liefert den gespeicherten Verlauf aus der Datenbank als JSON an die App.
  * { ok:true, speicher:"sqlite|json", daten: { "vital.hrv": {"2026-09-05":"41", ...}, ... } }
  */
-require __DIR__ . '/health-lib.php';
-require __DIR__ . '/health-store.php';
+require_once __DIR__ . '/health-lib.php';
+require_once __DIR__ . '/health-store.php';
 header('Content-Type: application/json; charset=utf-8');
 
 $cfg = vitara_config();
 if (!vitara_config_ok($cfg)) { echo json_encode(array('ok' => false, 'error' => 'konfig_fehlt')); exit; }
+vitara_require_key($cfg);
 
 $days = isset($_GET['days']) ? intval($_GET['days']) : 120;
 

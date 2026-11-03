@@ -4,12 +4,13 @@
  * Aufruf aus der App: health-save.php?datum=YYYY-MM-DD&feld=schmerz.Rücken&wert=5
  * Nimmt nur bekannte App-Felder an (kein beliebiges Schreiben).
  */
-require __DIR__ . '/health-lib.php';
-require __DIR__ . '/health-store.php';
+require_once __DIR__ . '/health-lib.php';
+require_once __DIR__ . '/health-store.php';
 header('Content-Type: application/json; charset=utf-8');
 
 $cfg = vitara_config();
 if (!vitara_config_ok($cfg)) { echo json_encode(array('ok' => false, 'error' => 'konfig_fehlt')); exit; }
+vitara_require_key($cfg);
 
 $datum = isset($_GET['datum']) ? $_GET['datum'] : '';
 $feld  = isset($_GET['feld'])  ? $_GET['feld']  : '';

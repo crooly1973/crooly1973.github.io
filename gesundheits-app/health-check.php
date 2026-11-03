@@ -48,6 +48,8 @@ if (file_exists($cfgPath)) {
     echo "  client_id:         " . (!empty($cfg['client_id']) ? "gesetzt" : "FEHLT") . "\n";
     echo "  client_secret:     " . ($secretOk ? "gesetzt" : "FEHLT – bitte eintragen") . "\n";
     echo "  redirect_uri:      " . (!empty($cfg['redirect_uri']) ? $cfg['redirect_uri'] : "FEHLT") . "\n";
+    echo "  app_key (Schutz):  " . (!empty($cfg['app_key']) ? "gesetzt" : "leer – Daten-Adressen sind OFFEN") . "\n";
+    echo "  brain_key:         " . (!empty($cfg['brain_key']) ? "gesetzt" : "leer – Second-Brain-Adresse aus") . "\n";
 } else {
     echo "health-config.php:   NICHT gefunden\n";
     echo "  -> Bitte auf dem Server anlegen (Vorlage: health-config.sample.php)\n";

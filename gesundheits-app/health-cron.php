@@ -6,11 +6,15 @@
  *
  * Einrichtung: als IONOS-Cronjob 1× täglich (z.B. 00:30) ausführen:
  *   php /Oliver/gesundheitsapp/health-cron.php
- * oder per URL aufrufen:
- *   https://oliver-rock.de/gesundheitsapp/health-cron.php
+ * oder per URL aufrufen (bei aktivem Schutz mit Schlüssel):
+ *   https://oliver-rock.de/gesundheitsapp/health-cron.php?key=<app_key>
  *
  * Gibt keine Gesundheitsdaten aus (nur ein kurzes OK/Fehler), damit nichts Sensibles im Log landet.
  */
+
+// Schutz: per Kommandozeile immer erlaubt, per URL nur mit ?key=<app_key>
+require_once __DIR__ . '/health-lib.php';
+vitara_require_key(vitara_config(), 'text');
 
 $_GET = array();            // kein Debug, keine Parameter
 ob_start();
