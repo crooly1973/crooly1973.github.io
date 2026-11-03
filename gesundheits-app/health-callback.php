@@ -3,7 +3,7 @@
  * VITARA – Google leitet nach der Zustimmung hierher zurück (Schritt 2 des OAuth-Ablaufs).
  * Tauscht den Code gegen Token, speichert sie und macht einen Test-Abruf (Schritte heute).
  */
-require __DIR__ . '/health-lib.php';
+require_once __DIR__ . '/health-lib.php';
 header('Content-Type: text/html; charset=utf-8');
 
 function seite($html) {
@@ -15,6 +15,7 @@ function seite($html) {
 
 $cfg = vitara_config();
 if (!vitara_config_ok($cfg)) seite('<h2>Konfiguration fehlt</h2><p>Bitte health-config.php anlegen.</p>');
+vitara_require_key($cfg, 'html');
 
 if (isset($_GET['error'])) {
     seite('<h2>Abgebrochen</h2><p>Google meldet: <b>' . htmlspecialchars($_GET['error']) . '</b></p>'

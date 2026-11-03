@@ -3,9 +3,10 @@
  * VITARA – startet die Anmeldung bei Google (Schritt 1 des OAuth-Ablaufs).
  * Leitet den Nutzer zur Google-Zustimmungsseite weiter.
  */
-require __DIR__ . '/health-lib.php';
+require_once __DIR__ . '/health-lib.php';
 
 $cfg = vitara_config();
+vitara_require_key($cfg, 'html');
 if (!vitara_config_ok($cfg)) {
     header('Content-Type: text/html; charset=utf-8');
     echo '<meta charset=utf-8><body style="font-family:system-ui;max-width:520px;margin:40px auto;padding:0 16px">'

@@ -20,4 +20,12 @@ return [
 
     // Muss exakt mit der in der Google Cloud hinterlegten Weiterleitungs-URI übereinstimmen:
     'redirect_uri'  => 'https://oliver-rock.de/gesundheitsapp/health-callback.php',
+
+    // SCHUTZ (empfohlen): langer Zufallsschlüssel. Ist er gesetzt, muss jedes Gerät
+    // einmal über health-unlock.php entsperrt werden. Leer lassen = kein Schutz.
+    'app_key'       => '',
+
+    // Second Brain (nur lesen): eigener Zufallsschlüssel für brain-export.php.
+    // Leer lassen = Adresse abgeschaltet.
+    'brain_key'     => '',
 ];

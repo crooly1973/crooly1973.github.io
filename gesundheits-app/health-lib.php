@@ -21,6 +21,57 @@ function vitara_config_ok($cfg) {
         && !empty($cfg['redirect_uri']);
 }
 
+/* ------------------------------------------------------------------
+ * ZUGANGSSCHUTZ
+ * Steht in health-config.php ein 'app_key', brauchen alle Daten-Adressen
+ * (Lesen, Speichern, Fitbit verbinden) diesen Schlüssel. Jedes Gerät wird
+ * dafür einmal über health-unlock.php entsperrt (Cookie, ca. 1 Jahr).
+ * Ohne 'app_key' bleibt alles offen wie bisher (nichts bricht beim Update).
+ * ------------------------------------------------------------------ */
+
+/** Vergleicht einen angegebenen Schlüssel sicher mit dem Wert aus der Konfiguration. */
+function vitara_key_matches($cfg, $name, $given) {
+    $k = ($cfg && !empty($cfg[$name])) ? (string)$cfg[$name] : '';
+    return $k !== '' && is_string($given) && $given !== '' && hash_equals($k, $given);
+}
+
+/** Ist der App-Schutz eingeschaltet? */
+function vitara_key_active($cfg) {
+    return $cfg && !empty($cfg['app_key']);
+}
+
+/** Merkt sich den Schlüssel auf diesem Gerät (nur per HTTPS, für Skripte unsichtbar). */
+function vitara_set_key_cookie($key) {
+    setcookie('vitara_key', $key, array(
+        'expires'  => time() + 400 * 86400,
+        'path'     => '/',
+        'secure'   => true,
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ));
+}
+
+/** Bricht ab, wenn der App-Schutz aktiv ist und kein gültiger Schlüssel vorliegt.
+ *  $mode: 'json' (Daten-Adressen), 'html' (Seiten -> Entsperr-Seite), 'text' (Cron). */
+function vitara_require_key($cfg, $mode = 'json') {
+    if (defined('VITARA_KEY_OK') || PHP_SAPI === 'cli') return;
+    if (!vitara_key_active($cfg)) return;
+    $kandidaten = array(
+        isset($_SERVER['HTTP_X_VITARA_KEY']) ? $_SERVER['HTTP_X_VITARA_KEY'] : '',
+        isset($_COOKIE['vitara_key']) ? $_COOKIE['vitara_key'] : '',
+        isset($_GET['key']) ? $_GET['key'] : '',
+    );
+    foreach ($kandidaten as $k) {
+        if (vitara_key_matches($cfg, 'app_key', $k)) { define('VITARA_KEY_OK', true); return; }
+    }
+    http_response_code(401);
+    if ($mode === 'html') { header('Location: health-unlock.php'); exit; }
+    if ($mode === 'text') { header('Content-Type: text/plain; charset=utf-8'); echo "FEHLER – Schlüssel fehlt oder falsch.\n"; exit; }
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode(array('ok' => false, 'error' => 'schluessel'));
+    exit;
+}
+
 /** Nicht erratbarer Dateiname für die Token (aus dem geheimen Schlüssel abgeleitet) -> Schutz ohne .htaccess. */
 function vitara_token_path($cfg) {
     $suffix = substr(hash('sha256', 'vitara-tokens|' . ($cfg['client_secret'] ?? 'x')), 0, 24);
