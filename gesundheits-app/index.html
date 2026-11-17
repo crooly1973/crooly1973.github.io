@@ -219,6 +219,7 @@
   .fab-item:hover { background: var(--surface-2); }
   .fab-item .fi { font-size: 18px; width: 24px; text-align: center; flex: none; }
   .fab-menu[hidden], .fab-backdrop[hidden] { display: none !important; }
+  .sec-title[hidden], .card[hidden] { display: none !important; }
 
   /* Arzt-Bericht (druckbar, bewusst hell & neutral – auch im Dark-Mode) */
   .reportView { position: fixed; inset: 0; z-index: 60; background: #ffffff; color: #14232e; overflow-y: auto; padding: 16px 20px 48px; font-size: 13px; line-height: 1.5; }
@@ -528,6 +529,11 @@
                 <div class="supp-meta"><div class="t">Bewegung</div><div class="s">Lockert & hält beweglich</div></div>
                 <span class="pill warn" id="homeBewegung">offen</span>
               </div>
+              <div class="supp-row">
+                <div class="supp-ico" style="background:color-mix(in srgb,var(--vital) 14%,transparent)">🧘</div>
+                <div class="supp-meta"><div class="t">Yoga</div><div class="s">1× pro Woche bis alle 2 Wochen</div></div>
+                <span class="pill" id="homeYoga">–</span>
+              </div>
             </div>
 
             <div class="sec-title">Training diese Woche <a href="#" data-goto="training">Öffnen ›</a></div>
@@ -701,6 +707,7 @@
             <div class="card">
               <div class="supp-row" style="padding-top:2px"><div class="supp-ico" style="background:color-mix(in srgb,var(--joint) 14%,transparent)">🔥</div><div class="supp-meta"><div class="t">Wärme / Sauna gemacht</div><div class="s">Heute eintragen · tut den Gelenken gut</div></div><button class="check" data-key="joint-waerme" aria-label="Wärme/Sauna eintragen"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button></div>
               <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--pine) 14%,transparent)">🚶</div><div class="supp-meta"><div class="t">Bewegung gemacht</div><div class="s">Lockert Nacken, Schulter & Hüfte</div></div><button class="check" data-key="joint-bewegung" aria-label="Bewegung eintragen"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button></div>
+              <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--vital) 14%,transparent)">🧘</div><div class="supp-meta"><div class="t">Yoga gemacht</div><div class="s">1× pro Woche bis alle 2 Wochen · Beweglichkeit</div></div><button class="check" data-key="joint-yoga" aria-label="Yoga eintragen"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2"><path d="M20 6 9 17l-5-5"/></svg></button></div>
             </div>
 
             <div class="disc" style="margin-top:14px">🦴 <b>Rechte Hüfte = künstliches Gelenk (seit Mai 2025).</b> Übungen bitte hüft-schonend und mit Physio/Arzt abgestimmt wählen. Die App dokumentiert nur — sie gibt keine medizinischen Anweisungen.</div>
@@ -818,7 +825,7 @@
               <div class="supp-row clickable" id="reportOpen" style="cursor:pointer"><div class="supp-ico" style="background:color-mix(in srgb,var(--joint) 14%,transparent)">📄</div><div class="supp-meta"><div class="t">Bericht für den Arzt</div><div class="s">PDF-Export der letzten 3 Monate</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
               <div class="supp-row"><div class="supp-ico" style="background:color-mix(in srgb,var(--pine) 14%,transparent)">🔒</div><div class="supp-meta"><div class="t">Daten & Privatsphäre</div><div class="s">Gerät & privater Server · deine Kontrolle</div></div><span class="g" style="color:var(--ink-3)">›</span></div>
             </div>
-            <p class="hint" style="text-align:center;margin-top:16px">VITARA ist ein Konzept-Entwurf und ersetzt keine ärztliche Beratung.<br><span style="color:var(--ink-3);font-size:11px">Version 76 · 22.10.2026</span><br><span id="vpDebug" style="color:var(--ink-3);font-size:10px;opacity:.75"></span></p>
+            <p class="hint" style="text-align:center;margin-top:16px">VITARA ist ein Konzept-Entwurf und ersetzt keine ärztliche Beratung.<br><span style="color:var(--ink-3);font-size:11px">Version 77 · 17.11.2026</span><br><span id="vpDebug" style="color:var(--ink-3);font-size:10px;opacity:.75"></span></p>
           </section>
 
           <div class="fab-backdrop" id="fabBackdrop" hidden></div>
@@ -1185,6 +1192,12 @@
     // Gut für die Gelenke heute
     setHomePill('homeWaerme', ladeStand('joint-waerme'));
     setHomePill('homeBewegung', ladeStand('joint-bewegung'));
+    // Yoga: kein tägliches "offen", sondern "zuletzt vor X Tagen" (Ziel: mind. alle 2 Wochen)
+    (function(){ var p=document.getElementById('homeYoga'); if(!p) return; var tage=null;
+      for(var t=0;t<90 && tage===null;t++){ try{ if(localStorage.getItem('vitara.'+datumMinus(t)+'.joint-yoga')==='1') tage=t; }catch(e){} }
+      if(tage===null){ p.textContent='noch kein Eintrag'; p.className='pill'; return; }
+      p.textContent = tage===0 ? 'heute ✓' : tage===1 ? 'gestern' : ('vor '+tage+' Tagen');
+      p.className = 'pill ' + (tage<=14 ? 'good' : 'warn'); })();
 
     // Gelenk-Status: heutige Schmerzwerte
     var box=document.getElementById('homeJoints');
